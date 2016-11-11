@@ -12,7 +12,8 @@ export class Login extends Component {
 	loginWithGoogle() {
 
 		Meteor.loginWithGoogle({
-			requestPermissions: ['email', 'profile']
+			requestPermissions: ['email', 'profile'],
+			loginStyle: "popup"
 		}, (err) => {
 			if (err) {
 				console.log(err);
