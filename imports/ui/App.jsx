@@ -40,6 +40,7 @@ export class App extends Component {
 		return (<div>
 			I am route :_:. Hello { this.props.email + this.props.name }
 			{ this.getLogoutButton() }
+			<br/>
 		</div>);
 	}
 }

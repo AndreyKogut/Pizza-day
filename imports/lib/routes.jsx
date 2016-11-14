@@ -7,6 +7,7 @@ import {mount} from 'react-mounter';
 
 import {AppContainer} from '../ui/App';
 import {LoginContainer} from '../ui/Login';
+import {SignUpContainer} from '../ui/SignUp';
 
 Accounts.onLogin(()=> {
 	FlowRouter.go('Home');
@@ -24,4 +25,11 @@ FlowRouter.route('/login', {
 	action(props) {
 		mount(LoginContainer);
 	},
+});
+
+FlowRouter.route('/signup', {
+	name: 'SignUp',
+	action(props) {
+		mount(SignUpContainer);
+	}
 });

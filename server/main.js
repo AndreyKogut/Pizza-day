@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 import '../imports/api/googleOauth';
+
+import '../imports/api/registration';
 /*
 import '../imports/lib/routes';*/
 

@@ -16,9 +16,9 @@ export class Login extends Component {
 			loginStyle: "popup"
 		}, (err) => {
 			if (err) {
-				console.log(err);
+				console.log(err.reason);
 			} else {
-				console.log('Ez');
+				console.log('Success!');
 			}
 		});
 
@@ -41,10 +41,11 @@ export class Login extends Component {
 
 	render() {
 		return (<div>
+			<h1>Authorization</h1>
 			<form onSubmit={ this.submit.bind(this) }>
 				<button onClick={ this.loginWithGoogle.bind(this) }>Google</button>
-				<input type="text" ref="login" name="login"/>
-				<input type="password" ref="password" name="password"/>
+				<input type="text" ref="login" name="login" placeholder="email"/>
+				<input type="password" ref="password" name="password" placeholder="pass"/>
 				<input type="submit" value={'submit'}/>
 			</form>
 		</div>);
