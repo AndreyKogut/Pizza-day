@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import {AccountsTemplates} from 'meteor/useraccounts:core';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
@@ -9,27 +10,42 @@ import {AppContainer} from '../ui/App';
 import {LoginContainer} from '../ui/Login';
 import {SignUpContainer} from '../ui/SignUp';
 
-Accounts.onLogin(()=> {
-	FlowRouter.go('Home');
+Accounts.onLogin(() => {
+	FlowRouter.go('/');
 });
 
-FlowRouter.route('/', {
+Accounts.onLogout(() => {
+	FlowRouter.go('/signin');
+});
+
+const app = FlowRouter.group({
+	name: 'app',
+	triggersEnter: [(context, redirect) => {
+		if(Meteor.user()) {
+			FlowRouter.go('/');
+		} else {
+			FlowRouter.go('/signin');
+		}
+	}]
+});
+
+app.route('/', {
 	name: 'Home',
-	action(props) {
+	action() {
 		mount(AppContainer);
 	},
 });
 
-FlowRouter.route('/login', {
-	name: 'Login',
-	action(props) {
+app.route('/signin', {
+	name: 'SignIn',
+	action() {
 		mount(LoginContainer);
 	},
 });
 
-FlowRouter.route('/signup', {
+app.route('/signup', {
 	name: 'SignUp',
-	action(props) {
+	action() {
 		mount(SignUpContainer);
 	}
 });

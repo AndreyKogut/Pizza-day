@@ -9,7 +9,6 @@ class SignUp extends Component {
 		super(props);
 	}
 
-
 	submit(e) {
 		e.preventDefault();
 
