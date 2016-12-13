@@ -38,7 +38,7 @@ export class App extends Component {
 
 	render() {
 		return (<div>
-			I am route :_:. Hello { this.props.name + "(" + this.props.email + ")" }
+			I am route :_:. Hello <a href={ FlowRouter.path('/user/:id', { id: Meteor.userId()}) }> { this.props.name } ( { this.props.email } ) </a>
 			{ this.getLogoutButton() }
 			<br/>
 		</div>);

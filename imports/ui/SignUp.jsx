@@ -16,18 +16,17 @@ class SignUp extends Component {
 		const confirmPassword = this.refs.confirmPassword.value.trim();
 
 		if (password == confirmPassword) {
-			let callback = (err) => {
+
+			Meteor.call("insertUser", {
+				email,
+				password
+			}, (err) => {
 				if(err) {
 					throw new Error(err);
 				} else {
 					Meteor.loginWithPassword(email, password);
 				}
-			};
-
-			Meteor.call("insertUser", {
-				email,
-				password
-			}, callback);
+			});
 
 		} else {
 			console.log('Passwords not equal!');

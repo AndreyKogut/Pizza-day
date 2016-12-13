@@ -6,8 +6,9 @@ import {Accounts} from 'meteor/accounts-base';
 import {mount} from 'react-mounter';
 
 import {AppContainer} from '../ui/App';
-import {LoginContainer} from '../ui/Login';
+import Login from '../ui/Login';
 import {SignUpContainer} from '../ui/SignUp';
+import {UserCabinet} from '../ui/UserCabinet';
 
 Accounts.onLogin(() => {
 	FlowRouter.go('/');
@@ -35,10 +36,19 @@ app.route('/', {
 	},
 });
 
+app.route('/user/:id', {
+	name: 'Cabinet',
+	action(props) {
+		mount(UserCabinet, {
+			id: props.id
+		});
+	}
+});
+
 app.route('/signin', {
 	name: 'SignIn',
 	action() {
-		mount(LoginContainer);
+		mount(Login);
 	},
 });
 
@@ -46,5 +56,5 @@ app.route('/signup', {
 	name: 'SignUp',
 	action() {
 		mount(SignUpContainer);
-	}
+	},
 });

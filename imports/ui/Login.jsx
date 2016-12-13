@@ -1,9 +1,9 @@
 import React, {Component, PropTypes} from "react";
 import {createContainer} from "meteor/react-meteor-data";
-import { Meteor } from 'meteor/meteor';
+import {Meteor} from 'meteor/meteor';
 
 
-export class Login extends Component {
+export default class Login extends Component {
 	constructor(props) {
 		super(props);
 	}
@@ -29,11 +29,13 @@ export class Login extends Component {
 		const email = this.refs.login.value.trim();
 		const password = this.refs.password.value.trim();
 
-		Meteor.loginWithPassword(email, password, function (err) {
-			if(!err) {
-				console.log(Meteor.user());
-			}
-		});
+		Meteor.loginWithPassword(email, password,
+			(err) => {
+				if (!err) {
+					Meteor.call('updateUser', { _id: Meteor.userId() });
+					console.log(Meteor.user());
+				}
+			});
 
 		return false;
 	}
@@ -52,7 +54,3 @@ export class Login extends Component {
 }
 
 Login.propTypes = {};
-
-export const LoginContainer = createContainer(() => {
-	return {}
-}, Login);
