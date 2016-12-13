@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import {AccountsTemplates} from 'meteor/useraccounts:core';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
@@ -21,11 +20,11 @@ Accounts.onLogout(() => {
 const app = FlowRouter.group({
 	name: 'app',
 	triggersEnter: [(context, redirect) => {
-		if(Meteor.user()) {
+	/*	if (Meteor.user()) {
 			FlowRouter.go('/');
 		} else {
 			FlowRouter.go('/signin');
-		}
+		}*/
 	}]
 });
 

@@ -11,23 +11,23 @@ export class App extends Component {
 		};
 	}
 
-	hideLogout() {
-		this.state.isLoggedIn = false;
-	}
-
 	logout() {
 		console.log('logout');
 		Meteor.logout((err) => {
-			if(err) {
+			if (err) {
 				console.log(err);
 			} else {
-				this.hideLogout();
+				this.setState({
+					state: {
+						isLoggedIn: false,
+					}
+				});
 			}
 		});
 	}
 
 	getLogoutButton() {
-		if(this.state.isLoggedIn) {
+		if (this.state.isLoggedIn) {
 			return (
 				<button onClick={ this.logout.bind(this) }>Logout</button>
 			);
@@ -38,7 +38,7 @@ export class App extends Component {
 
 	render() {
 		return (<div>
-			I am route :_:. Hello { this.props.email + this.props.name }
+			I am route :_:. Hello { this.props.name + "(" + this.props.email + ")" }
 			{ this.getLogoutButton() }
 			<br/>
 		</div>);
@@ -61,20 +61,17 @@ export const AppContainer = createContainer(() => {
 	};
 
 	if (currentUser) {
-		try {
+		if (currentUser.profile) {
 			userData.name = currentUser.profile.name;
-		} catch (e) {
-			console.log('Name is empty');
+		} else {
+			userData.name = 'No name';
 		}
 
-		try {
-			userData.email = currentUser.emails[0].address;
-		} catch (e) {
-			console.log('Email field is empty');
-		}
+		userData.email = currentUser.emails ? currentUser.emails[0].address : 'No emails';
 
 		console.log(userData);
-	} else {
+	}
+	else {
 		userData.name = 'there';
 	}
 

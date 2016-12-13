@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from "react";
 import {createContainer} from "meteor/react-meteor-data";
-import ReactDOM from 'react-dom';
 import {Meteor} from 'meteor/meteor';
 
 
@@ -12,21 +11,24 @@ class SignUp extends Component {
 	submit(e) {
 		e.preventDefault();
 
-		const email = ReactDOM.findDOMNode(this.refs.login).value.trim();
-		const password = ReactDOM.findDOMNode(this.refs.password).value.trim();
-		const confirmPassword = ReactDOM.findDOMNode(this.refs.confirmPassword).value.trim();
+		const email = this.refs.login.value.trim();
+		const password = this.refs.password.value.trim();
+		const confirmPassword = this.refs.confirmPassword.value.trim();
 
 		if (password == confirmPassword) {
-			try {
-				Meteor.call("insertUser", {
-					email,
-					password,
-				});
-			} catch (err) {
-				console.log(err);
-			} finally {
-				Meteor.loginWithPassword(email, password);
-			}
+			let callback = (err) => {
+				if(err) {
+					throw new Error(err);
+				} else {
+					Meteor.loginWithPassword(email, password);
+				}
+			};
+
+			Meteor.call("insertUser", {
+				email,
+				password
+			}, callback);
+
 		} else {
 			console.log('Passwords not equal!');
 		}
