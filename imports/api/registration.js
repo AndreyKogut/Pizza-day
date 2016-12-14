@@ -1,22 +1,30 @@
 import {Meteor} from 'meteor/meteor';
 import {Accounts} from 'meteor/accounts-base';
 
+const USER_PROFILE_FIELD_NAME = "profile";
+
 Meteor.methods({
-	"insertUser": function ({email, password}, callback) {
+	"insertUser"({email, password}, callback) {
 		Accounts.createUser({
 			email,
 			password,
 		}, callback);
 	},
-	"updateUser": function ({_id, ...data}) {
-		Meteor.users.update(_id, {
+	"updateUser"({_id, ...data}) {
+		let updateData = {};
+
+		for(let key in data) {
+			updateData[`${ USER_PROFILE_FIELD_NAME }.${ key }`] = data[key];
+		}
+
+		console.log(updateData);
+
+		Meteor.users.update({_id}, {
 			$set: {
-				profile: {
-					...data
-				}
+				...updateData
 			}
 		}, (err) => {
-			if(err) {
+			if (err) {
 				throw new Error(err);
 			}
 		});

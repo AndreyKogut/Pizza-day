@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 
 import '../imports/api/googleOauth';
 
+import '../imports/api/imageLoading';
+
 import '../imports/api/registration';
 
 Meteor.startup(() => {
