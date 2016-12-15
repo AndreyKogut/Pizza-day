@@ -38,7 +38,8 @@ export class App extends Component {
 
 	render() {
 		return (<div>
-			I am route :_:. Hello <a href={ FlowRouter.path('/user/:id', { id: Meteor.userId()}) }> { this.props.name } ( { this.props.email } ) </a>
+			I am route :_:. Hello <a href={ FlowRouter.path('/user/:id', {id: Meteor.userId()}) }> { this.props.name }
+			( { this.props.email } ) </a>
 			{ this.getLogoutButton() }
 			<br/>
 		</div>);
@@ -51,29 +52,20 @@ App.propTypes = {
 };
 
 export const AppContainer = createContainer(() => {
-	const currentUser = Meteor.user() || {};
 
-	console.log(currentUser);
+	let {
+		emails : [
+			{
+				address: email = 'No emails'
+			} = {}
+		] = [],
+		profile : {
+			name = 'No name',
+		} = {}
+	} = Meteor.user() || {};
 
-	let userData = {
-		email: '',
-		name: '',
+	return {
+		name,
+		email
 	};
-
-	if (currentUser) {
-		if (currentUser.profile) {
-			userData.name = currentUser.profile.name;
-		} else {
-			userData.name = 'No name';
-		}
-
-		userData.email = currentUser.emails ? currentUser.emails[0].address : 'No emails';
-
-		console.log(userData);
-	}
-	else {
-		userData.name = 'there';
-	}
-
-	return userData;
 }, App);

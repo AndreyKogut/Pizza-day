@@ -1,47 +1,51 @@
 import React, {Component, PropTypes} from "react";
 import {createContainer} from "meteor/react-meteor-data";
 import {Images} from "../configs/imageConfig";
+import {Meteor} from "meteor/meteor";
 
 export class UserCabinet extends Component {
 	constructor(props) {
 		super(props);
 	}
 
+	// Must be changed to
 	loadFile(event) {
 		event.preventDefault();
 
 		const file = this.refs.image.files[0];
 
-		Images.insert(file, (err, fileObj) => {
-			if (err) {
-				throw new Error(err.reason);
-			} else {
-				Meteor.call('updateUser', {_id: Meteor.userId(), avatar: `/cfs/files/avatars/${fileObj._id}`});
-			}
-		});
+		if (file) {
+			Images.insert(file, (err, fileObj) => {
+				if (err) {
+					throw new Error(err.reason);
+				} else {
+
+					fileObj.once('uploaded', () => {
+						Meteor.call('updateUser', {id: Meteor.userId(), "profile.avatar": `/cfs/files/avatars/${fileObj._id}`});
+					});
+				}
+			});
+		}
 
 		return false;
 	}
 
-	getProfileFields() {
-		const {emails, profile: userProfile} = Meteor.user();
+	updateUserData(event) {
+		event.preventDefault();
 
-		return (<div>
-			<ul>
-				<li><img src={ userProfile.avatar || ""} alt=""/></li>
-				<li>Name : { userProfile.name }</li>
-				<li>Email : { emails[0].address }</li>
-			</ul>
+		const userData = {
+			emails: [{ address: this.refs.email.value.trim() }],
+			"profile.name" : this.refs.name.value.trim(),
+		};
 
-			<span>Change avatar</span>
-			<form onSubmit={ this.loadFile.bind(this) }>
-				<input type="file" ref="image" name="image"/>
-				<input type="submit"/>
-			</form>
-		</div>);
+		Meteor.call('updateUser', {id: this.props.id, ...userData});
+
+		return false;
 	}
 
+
 	render() {
+
 		return (<div>
 			Hello { this.props.id }
 
@@ -49,12 +53,55 @@ export class UserCabinet extends Component {
 
 			<h3>Profile data</h3>
 
-			{ this.getProfileFields() }
+			<div>
+				<form onSubmit={this.updateUserData.bind(this)}>
+					<ul className="list">
+						<li>
+							<figure>
+								<img src={this.props.profile.avatar} className="avatar" alt=""/>
+								<figcaption>
+									<input type="file" ref="image" name="image"/>
+									<button onClick={ this.loadFile.bind(this) }>
+										Change avatar
+									</button>
+								</figcaption>
+							</figure>
+						</li>
+						<li>Name : <input type="text" defaultValue={this.props.profile.name} ref="name"/></li>
+						<li>Email :
+							<input type="text"
+										 defaultValue={this.props.emails[0].address || ""}
+										 placeholder="No emails"
+										 ref="email"/>
+						</li>
+						<li>
+							<input type="submit" value={'Update user data'}/>
+						</li>
+					</ul>
+				</form>
 
+			</div>
 		</div>);
 	}
 }
 
 UserCabinet.propTypes = {
 	id: PropTypes.string,
+	profile: PropTypes.object,
+	emails: PropTypes.array,
 };
+
+export const UserCabinetContainer = createContainer(({id}) => {
+	Meteor.subscribe('avatarLoading');
+
+	let {
+		profile,
+		emails
+	} = Meteor.users.findOne(id);
+
+	return {
+		id,
+		profile,
+		emails
+	}
+}, UserCabinet);

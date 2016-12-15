@@ -34,4 +34,4 @@ react
 kadira:react-layout
 check@1.2.4
 cfs:standard-packages
-cfs:gridfs
+cfs:filesystem

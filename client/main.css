@@ -1,1 +1,14 @@
 /* CSS declarations go here */
+
+.list {
+    list-style: none;
+}
+
+.avatar {
+    max-width: 190px;
+    width: 100%;
+}
+
+.block {
+    display: block;
+}

@@ -8,7 +8,7 @@ import {mount} from 'react-mounter';
 import {AppContainer} from '../ui/App';
 import Login from '../ui/Login';
 import {SignUpContainer} from '../ui/SignUp';
-import {UserCabinet} from '../ui/UserCabinet';
+import {UserCabinetContainer} from '../ui/UserCabinet';
 
 Accounts.onLogin(() => {
 	FlowRouter.go('/');
@@ -39,7 +39,7 @@ app.route('/', {
 app.route('/user/:id', {
 	name: 'Cabinet',
 	action(props) {
-		mount(UserCabinet, {
+		mount(UserCabinetContainer, {
 			id: props.id
 		});
 	}

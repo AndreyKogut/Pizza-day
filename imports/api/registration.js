@@ -1,7 +1,24 @@
 import {Meteor} from 'meteor/meteor';
 import {Accounts} from 'meteor/accounts-base';
 
-const USER_PROFILE_FIELD_NAME = "profile";
+/*
+ //Create convert function for update!
+
+ export function convertObjectForMongo(obj, prefix = '') {
+
+ for (let key in obj) {
+ if(key)
+ if (obj[key] instanceof Object) {
+ return { ...convertObjectForMongo(obj[key], key) };
+ }
+
+ obj[`${prefix ? prefix + '.' : ''}${key}`] = obj[key];
+
+ delete obj[key];
+ }
+
+ return obj;
+ }*/
 
 Meteor.methods({
 	"insertUser"({email, password}, callback) {
@@ -10,23 +27,19 @@ Meteor.methods({
 			password,
 		}, callback);
 	},
-	"updateUser"({_id, ...data}) {
-		let updateData = {};
+	"updateUser"({id, ...data}) {
 
-		for(let key in data) {
-			updateData[`${ USER_PROFILE_FIELD_NAME }.${ key }`] = data[key];
-		}
+		//const convertedObject = convertObjectForMongo(data);
 
-		console.log(updateData);
-
-		Meteor.users.update({_id}, {
-			$set: {
-				...updateData
-			}
-		}, (err) => {
-			if (err) {
-				throw new Error(err);
-			}
-		});
+		Meteor.users.upsert(id, {
+				$set: {
+					...data
+				}
+			},
+			(err) => {
+				if (err) {
+					throw new Error(err);
+				}
+			});
 	}
 });
