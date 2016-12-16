@@ -1,6 +1,9 @@
 import React, {Component, PropTypes} from "react";
 import {createContainer} from "meteor/react-meteor-data";
+import {Meteor} from 'meteor/meteor';
 
+import {Header} from "../ui/Header";
+import {Footer} from "../ui/Footer";
 
 export class App extends Component {
 	constructor(props) {
@@ -38,9 +41,15 @@ export class App extends Component {
 
 	render() {
 		return (<div>
-			I am route :_:. Hello <a href={ FlowRouter.path('/user/:id', {id: Meteor.userId()}) }> { this.props.name }
-			( { this.props.email } ) </a>
-			{ this.getLogoutButton() }
+
+			{ <Header id={this.props.id}/> }
+
+			Hello <a href={ FlowRouter.path('/user/:id', {id: Meteor.userId()}) }> { this.props.name }
+			( { this.props.email } ) </a> { this.getLogoutButton() }
+
+			{ this.props.content }
+
+			{ <Footer/> }
 			<br/>
 		</div>);
 	}
@@ -49,11 +58,13 @@ export class App extends Component {
 App.propTypes = {
 	email: PropTypes.string,
 	name: PropTypes.string,
+	id: PropTypes.string
 };
 
 export const AppContainer = createContainer(() => {
 
 	let {
+		_id : id,
 		emails : [
 			{
 				address: email = 'No emails'
@@ -65,6 +76,7 @@ export const AppContainer = createContainer(() => {
 	} = Meteor.user() || {};
 
 	return {
+		id,
 		name,
 		email
 	};

@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from "react";
 import {createContainer} from "meteor/react-meteor-data";
-import {Images} from "../configs/imageConfig";
 import {Meteor} from "meteor/meteor";
+
+import {Images} from "../configs/imageConfig";
 
 export class UserCabinet extends Component {
 	constructor(props) {
@@ -47,10 +48,6 @@ export class UserCabinet extends Component {
 	render() {
 
 		return (<div>
-			Hello { this.props.id }
-
-			<br/>
-
 			<h3>Profile data</h3>
 
 			<div>

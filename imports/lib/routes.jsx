@@ -1,14 +1,12 @@
 import {AccountsTemplates} from 'meteor/useraccounts:core';
 import {FlowRouter} from 'meteor/kadira:flow-router';
-
 import {Accounts} from 'meteor/accounts-base';
-
 import {mount} from 'react-mounter';
 
-import {AppContainer} from '../ui/App';
-import Login from '../ui/Login';
-import {SignUpContainer} from '../ui/SignUp';
 import {UserCabinetContainer} from '../ui/UserCabinet';
+import {AppContainer} from '../ui/App';
+import {SignUp} from '../ui/SignUp';
+import Login from '../ui/Login';
 
 Accounts.onLogin(() => {
 	FlowRouter.go('/');
@@ -39,8 +37,8 @@ app.route('/', {
 app.route('/user/:id', {
 	name: 'Cabinet',
 	action(props) {
-		mount(UserCabinetContainer, {
-			id: props.id
+		mount(AppContainer, {
+			content: <UserCabinetContainer id={props.id}/>
 		});
 	}
 });
@@ -48,13 +46,17 @@ app.route('/user/:id', {
 app.route('/signin', {
 	name: 'SignIn',
 	action() {
-		mount(Login);
+		mount(AppContainer, {
+			content: <Login/>
+		});
 	},
 });
 
 app.route('/signup', {
 	name: 'SignUp',
 	action() {
-		mount(SignUpContainer);
+		mount(AppContainer,{
+			content: <SignUp/>
+		});
 	},
 });

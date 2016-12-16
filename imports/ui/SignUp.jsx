@@ -2,8 +2,7 @@ import React, {Component, PropTypes} from "react";
 import {createContainer} from "meteor/react-meteor-data";
 import {Meteor} from 'meteor/meteor';
 
-
-class SignUp extends Component {
+export class SignUp extends Component {
 	constructor(props) {
 		super(props);
 	}
@@ -49,7 +48,3 @@ class SignUp extends Component {
 }
 
 SignUp.propTypes = {};
-
-export const SignUpContainer = createContainer(() => {
-	return {}
-}, SignUp);
