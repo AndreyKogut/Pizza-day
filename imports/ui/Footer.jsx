@@ -5,9 +5,9 @@ export class Footer extends Component {
 		super(props);
 	}
 	
-	render(){
-		return (<footer>
-			<a href="https://github.com/AndreyKogut/pizza-day">Pizza day</a>
+	render() {
+		return (<footer className="footer">
+			<a href="https://github.com/AndreyKogut/pizza-day" className="footer__link">Pizza day</a>
 		</footer>);
 	};
 }
