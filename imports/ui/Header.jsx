@@ -28,7 +28,7 @@ export class Header extends Component {
 							<a className="header__link"
 								 href={ FlowRouter.path('/user/:id', {id: this.props.id}) }> { this.props.name }</a>
 							<button onClick={ this.logout.bind(this) }
-											className="header__button clear-defaults">Logout
+											className="header__link header__link_logout clear-defaults">Logout
 							</button>
 						</li>
 						:
@@ -50,11 +50,6 @@ Header.propTypes = {
 export const HeaderContainer = createContainer(() => {
 	let {
 		_id : id,
-		/*emails : [
-			{
-				address: email = 'No emails'
-			} = {}
-		] = [],*/
 		profile : {
 			name = 'No name',
 		} = {}

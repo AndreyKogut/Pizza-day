@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 
 import '../imports/api/googleOauth';
 
-import '../imports/api/imageLoading';
+import '../imports/api/avatars';
 
-import '../imports/api/registration';
+import '../imports/api/users';
 
 Meteor.startup(() => {
 

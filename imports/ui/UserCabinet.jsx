@@ -7,9 +7,24 @@ import {Images} from "../configs/imageConfig";
 export class UserCabinet extends Component {
 	constructor(props) {
 		super(props);
+
+		console.log(props);
+
+		this.state = {
+			editable: this.props.id == Meteor.userId(),
+			edited: false
+		};
 	}
 
-	// Must be changed to
+	inputChanged(event) {
+		console.log(event.target, this.state.email);
+		this.setState({
+			[event.target.ref]: event.target.name,
+			edited: true
+		});
+	}
+
+	// Must be changed to image picker
 	loadFile(event) {
 		event.preventDefault();
 
@@ -35,8 +50,8 @@ export class UserCabinet extends Component {
 		event.preventDefault();
 
 		const userData = {
-			emails: [{ address: this.refs.email.value.trim() }],
-			"profile.name" : this.refs.name.value.trim(),
+			emails: [{address: this.refs.email.value.trim()}],
+			"profile.name": this.refs.name.value.trim(),
 		};
 
 		Meteor.call('updateUser', {id: this.props.id, ...userData});
@@ -44,40 +59,49 @@ export class UserCabinet extends Component {
 		return false;
 	}
 
-
 	render() {
 
-		return (<div>
-			<h3>Profile data</h3>
-
-			<div>
-				<form onSubmit={this.updateUserData.bind(this)}>
-					<ul className="list">
-						<li>
-							<figure>
-								<img src={this.props.profile.avatar} className="avatar" alt=""/>
+		return (<div className="user-cabinet">
+			<form onSubmit={this.updateUserData.bind(this)}>
+				<ul className="list">
+					<li>
+						<figure>
+							<img src={this.props.profile.avatar} className="avatar" alt=""/>
+							{ this.state.editable ?
 								<figcaption>
 									<input type="file" ref="image" name="image"/>
 									<button onClick={ this.loadFile.bind(this) }>
 										Change avatar
 									</button>
-								</figcaption>
-							</figure>
-						</li>
-						<li>Name : <input type="text" defaultValue={this.props.profile.name} ref="name"/></li>
-						<li>Email :
-							<input type="text"
-										 defaultValue={this.props.emails[0].address || ""}
-										 placeholder="No emails"
-										 ref="email"/>
-						</li>
+								</figcaption> : ''}
+						</figure>
+					</li>
+
+					<li>Name :
+						<input type="text"
+									 ref="name"
+									 value={this.state.name}
+									 placeholder="No name"
+									 readOnly={!this.state.editable}
+									 onChange={ this.inputChanged.bind(this) }
+									 className={!this.state.editable ? 'clear-defaults' : ''}/>
+					</li>
+
+					<li>Email :
+						<input type="email"
+									 ref="email"
+									 value={this.props.email}
+									 placeholder="No email"
+									 readOnly={!this.state.editable}
+									 onChange={ this.inputChanged.bind(this) }
+									 className={!this.state.editable ? 'clear-defaults' : ''}/>
+					</li>
+					{this.state.editable && this.state.edited ?
 						<li>
 							<input type="submit" value={'Update user data'}/>
-						</li>
-					</ul>
-				</form>
-
-			</div>
+						</li> : ''}
+				</ul>
+			</form>
 		</div>);
 	}
 }
@@ -85,20 +109,24 @@ export class UserCabinet extends Component {
 UserCabinet.propTypes = {
 	id: PropTypes.string,
 	profile: PropTypes.object,
-	emails: PropTypes.array,
+	email: PropTypes.string,
 };
 
 export const UserCabinetContainer = createContainer(({id}) => {
-	Meteor.subscribe('avatarLoading');
+	Meteor.subscribe('avatarLoading', id);
 
-	let {
-		profile,
-		emails
-	} = Meteor.users.findOne(id);
+	const {
+		profile = {},
+		emails : [
+			{
+				address : email
+			} = {}
+		] = []
+	} = Meteor.users.findOne(id) || {};
 
 	return {
 		id,
 		profile,
-		emails
+		email
 	}
 }, UserCabinet);

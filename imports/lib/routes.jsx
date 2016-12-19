@@ -2,14 +2,18 @@ import {AccountsTemplates} from 'meteor/useraccounts:core';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 import {Accounts} from 'meteor/accounts-base';
 import {mount} from 'react-mounter';
-
 import {UserCabinetContainer} from '../ui/UserCabinet';
 import {AppContainer} from '../ui/App';
 import {SignUp} from '../ui/SignUp';
 import Login from '../ui/Login';
 
 Accounts.onLogin(() => {
-	FlowRouter.go('/');
+	const current = FlowRouter.current().path;
+
+
+	if (current == '/signin' || current == '/signup') {
+		FlowRouter.go('/');
+	}
 });
 
 Accounts.onLogout(() => {
@@ -19,11 +23,11 @@ Accounts.onLogout(() => {
 const app = FlowRouter.group({
 	name: 'app',
 	triggersEnter: [(context, redirect) => {
-	/*	if (Meteor.user()) {
-			FlowRouter.go('/');
-		} else {
-			FlowRouter.go('/signin');
-		}*/
+		/*	if (Meteor.user()) {
+		 FlowRouter.go('/');
+		 } else {
+		 FlowRouter.go('/signin');
+		 }*/
 	}]
 });
 
@@ -36,9 +40,10 @@ app.route('/', {
 
 app.route('/user/:id', {
 	name: 'Cabinet',
-	action(props) {
+	action({id}) {
+
 		mount(AppContainer, {
-			content: <UserCabinetContainer id={props.id}/>
+			content: <UserCabinetContainer id={id}/>
 		});
 	}
 });
@@ -55,7 +60,7 @@ app.route('/signin', {
 app.route('/signup', {
 	name: 'SignUp',
 	action() {
-		mount(AppContainer,{
+		mount(AppContainer, {
 			content: <SignUp/>
 		});
 	},
