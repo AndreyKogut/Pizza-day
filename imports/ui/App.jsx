@@ -4,13 +4,13 @@ import Footer from '../ui/Footer';
 
 const App = ({ content = () => '' }) => (
   <div className="app-container">
-    { <HeaderContainer /> }
+    <HeaderContainer />
 
     <div className="content">
       { content() }
     </div>
 
-    { <Footer /> }
+    <Footer />
   </div>);
 
 App.propTypes = {

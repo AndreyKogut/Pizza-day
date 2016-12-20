@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-
-import Images from '../configs/imageConfig';
+import Avatars from '../api/avatars';
 
 class UserCabinet extends Component {
   constructor(props) {
@@ -13,7 +12,7 @@ class UserCabinet extends Component {
     this.state = {
       editable: this.props.id === Meteor.userId(),
       edited: false,
-      name: this.props.profile.name,
+      name: this.props.name,
       email: this.props.email,
     };
   }
@@ -31,12 +30,13 @@ class UserCabinet extends Component {
     event.preventDefault();
     const file = this.image.files[0];
     if (file) {
-      Images.insert(file, (err, fileObj) => {
+      Avatars.insert(file, (err, fileObj) => {
         if (err) {
           throw new Error(err.reason);
         } else {
           fileObj.once('uploaded', () => {
-            Meteor.call('user.update', { id: Meteor.userId(), 'profile.avatar': `/cfs/files/avatars/${fileObj._id}` });
+            Meteor.call('user.update',
+              { id: this.props.id, avatar: `/cfs/files/avatars/${fileObj._id}` });
           });
         }
       });
@@ -49,7 +49,7 @@ class UserCabinet extends Component {
 
     const userData = {
       emails: [{ address: this.email.value.trim() }],
-      'profile.name': this.name.value.trim(),
+      username: this.name.value.trim(),
     };
 
     Meteor.call('user.update', { id: this.props.id, ...userData });
@@ -63,7 +63,7 @@ class UserCabinet extends Component {
         <ul className="list">
           <li>
             <figure>
-              <img src={this.props.profile.avatar} className="avatar" alt="" />
+              <img src={this.props.avatar} className="avatar" alt="" />
               { this.state.editable ?
                 <figcaption>
                   <input type="file" ref={(image) => { this.image = image; }} />
@@ -109,26 +109,30 @@ class UserCabinet extends Component {
 
 UserCabinet.propTypes = {
   id: PropTypes.string,
-  profile: React.PropTypes.objectOf(PropTypes.any),
+  name: PropTypes.string,
   email: PropTypes.string,
+  avatar: PropTypes.string,
 };
 
 const UserCabinetContainer = createContainer(({ id }) => {
   Meteor.subscribe('user', id);
 
-  const {
-    profile = {},
-    emails: [
-      {
-        address: email,
-      } = {},
-    ] = [],
-  } = Meteor.users.findOne(id) || {};
+  const user = Meteor.users.findOne(id);
+  const userData = {
+    name: '',
+    email: '',
+    avatar: '',
+  };
+
+  if (user) {
+    userData.name = user.username;
+    userData.email = user.emails.length ? user.emails[0].address : '';
+    userData.avatar = user.avatar;
+  }
 
   return {
     id,
-    profile,
-    email,
+    ...userData,
   };
 }, UserCabinet);
 

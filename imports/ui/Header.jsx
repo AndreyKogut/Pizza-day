@@ -3,21 +3,11 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { createContainer } from 'meteor/react-meteor-data';
 
-
 class Header extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isLoggedIn: !!Meteor.userId(),
-    };
-  }
-  logout() {
-    Meteor.logout((err) => {
-      if (err) {
-        throw new Error(err);
-      }
-    });
-  }
+  logout = () => {
+    Meteor.logout();
+  };
+
   render() {
     return (<header className="header">
       <nav className="header__nav">
@@ -38,7 +28,8 @@ class Header extends Component {
             </li>
             :
             <li className="header__item header__item_login">
-              <a href="/signup" className="header__link">Sign up</a>/
+              <a href="/signup" className="header__link">Sign up</a>
+              <span className="header__separator">/</span>
               <a href="/signin" className="header__link">Sign in</a>
             </li>}
         </ul>
@@ -53,12 +44,8 @@ Header.propTypes = {
 };
 
 const HeaderContainer = createContainer(() => {
-  const {
-    _id: id,
-    profile: {
-      name = 'No name',
-    } = {},
-  } = Meteor.user() || {};
+  const id = Meteor.userId();
+  const { username: name = 'No name' } = Meteor.user() || {};
 
   return {
     id,
