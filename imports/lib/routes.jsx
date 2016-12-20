@@ -1,67 +1,58 @@
-import {AccountsTemplates} from 'meteor/useraccounts:core';
-import {FlowRouter} from 'meteor/kadira:flow-router';
-import {Accounts} from 'meteor/accounts-base';
-import {mount} from 'react-mounter';
-import {UserCabinetContainer} from '../ui/UserCabinet';
-import {AppContainer} from '../ui/App';
-import {SignUp} from '../ui/SignUp';
+import React from 'react';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Accounts } from 'meteor/accounts-base';
+import { mount } from 'react-mounter';
+import UserCabinetContainer from '../ui/UserCabinet';
+import SignUp from '../ui/SignUp';
 import Login from '../ui/Login';
+import App from '../ui/App';
 
 Accounts.onLogin(() => {
-	const current = FlowRouter.current().path;
-
-
-	if (current == '/signin' || current == '/signup') {
-		FlowRouter.go('/');
-	}
+  const current = FlowRouter.current().path;
+  if (current === '/signin' || current === '/signup') {
+    FlowRouter.go('/');
+  }
 });
 
 Accounts.onLogout(() => {
-	FlowRouter.go('/signin');
+  FlowRouter.go('/signin');
 });
 
 const app = FlowRouter.group({
-	name: 'app',
-	triggersEnter: [(context, redirect) => {
-		/*	if (Meteor.user()) {
-		 FlowRouter.go('/');
-		 } else {
-		 FlowRouter.go('/signin');
-		 }*/
-	}]
+  name: 'app',
+  //triggersEnter: [(context, redirect) => {}],
 });
 
 app.route('/', {
-	name: 'Home',
-	action() {
-		mount(AppContainer);
-	},
+  name: 'Home',
+  action() {
+    mount(App);
+  },
 });
 
 app.route('/user/:id', {
-	name: 'Cabinet',
-	action({id}) {
-
-		mount(AppContainer, {
-			content: <UserCabinetContainer id={id}/>
-		});
-	}
+  name: 'Cabinet',
+  action({ id }) {
+    mount(App, {
+      content: () => (<UserCabinetContainer id={id} />),
+    });
+  },
 });
 
 app.route('/signin', {
-	name: 'SignIn',
-	action() {
-		mount(AppContainer, {
-			content: <Login/>
-		});
-	},
+  name: 'SignIn',
+  action() {
+    mount(App, {
+      content: () => (<Login />),
+    });
+  },
 });
 
 app.route('/signup', {
-	name: 'SignUp',
-	action() {
-		mount(AppContainer, {
-			content: <SignUp/>
-		});
-	},
+  name: 'SignUp',
+  action() {
+    mount(App, {
+      content: () => (<SignUp />),
+    });
+  },
 });

@@ -1,19 +1,19 @@
-import {Images} from "../configs/imageConfig";
-import {Meteor} from "meteor/meteor";
+import { Meteor } from 'meteor/meteor';
+import Images from '../configs/imageConfig';
 
-if (Meteor.isServer)
-
-Images.allow({
-	insert: function () {
-		return true;
-	},
-	update: function () {
-		return true;
-	},
-	remove: function () {
-		return true;
-	},
-	download: function() {
-		return true
-	}
-});
+if (Meteor.isServer) {
+  Images.allow({
+    insert() {
+      return true;
+    },
+    update() {
+      return true;
+    },
+    remove() {
+      return true;
+    },
+    download() {
+      return true;
+    },
+  });
+}

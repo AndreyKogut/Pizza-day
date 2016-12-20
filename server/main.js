@@ -7,6 +7,5 @@ import '../imports/api/avatars';
 import '../imports/api/users';
 
 Meteor.startup(() => {
-
-	process.env.MAIL_URL = Meteor.settings.smtp;
+  process.env.MAIL_URL = Meteor.settings.smtp;
 });

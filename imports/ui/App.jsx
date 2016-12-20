@@ -1,35 +1,20 @@
-import React, {Component, PropTypes} from "react";
-import {createContainer} from "meteor/react-meteor-data";
+import React from 'react';
+import HeaderContainer from '../ui/Header';
+import Footer from '../ui/Footer';
 
-import {HeaderContainer} from "../ui/Header";
-import {Footer} from "../ui/Footer";
+const App = ({ content = () => null }) => (
+  <div className="app-container">
+    { <HeaderContainer /> }
 
-export class App extends Component {
-	constructor(props) {
-		super(props);
-	}
+    <div className="content">
+      { content() }
+    </div>
 
-	render() {
-		return (<div className="app-container">
-
-			{ <HeaderContainer/> }
-
-			<div className="content">
-				{ this.props.content }
-			</div>
-
-			{ <Footer/> }
-			<br/>
-		</div>);
-	}
-}
+    { <Footer /> }
+  </div>);
 
 App.propTypes = {
-
+  content: React.PropTypes.func,
 };
 
-export const AppContainer = createContainer(() => {
-
-	return {
-	};
-}, App);
+export default App;

@@ -1,50 +1,62 @@
-import React, {Component, PropTypes} from "react";
-import {createContainer} from "meteor/react-meteor-data";
-import {Meteor} from 'meteor/meteor';
+import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor';
 
-export class SignUp extends Component {
-	constructor(props) {
-		super(props);
-	}
+class SignUp extends Component {
+  constructor(props) {
+    super(props);
+    this.signUp = this.signUp.bind(this);
+  }
 
-	submit(e) {
-		e.preventDefault();
+  signUp(event) {
+    event.preventDefault();
+    const email = this.email.value.trim();
+    const password = this.password.password.value.trim();
+    const confirmPassword = this.confirmPassword.value.trim();
 
-		const email = this.refs.login.value.trim();
-		const password = this.refs.password.value.trim();
-		const confirmPassword = this.refs.confirmPassword.value.trim();
+    if (password === confirmPassword) {
+      Meteor.call('user.insert', {
+        email,
+        password,
+      }, (err) => {
+        if (err) {
+          throw new Error(err);
+        } else {
+          Meteor.loginWithPassword(email, password);
+        }
+      });
+    } else {
+      // Inform user that passwords not equal
+    }
 
-		if (password == confirmPassword) {
+    return false;
+  }
 
-			Meteor.call("insertUser", {
-				email,
-				password
-			}, (err) => {
-				if(err) {
-					throw new Error(err);
-				} else {
-					Meteor.loginWithPassword(email, password);
-				}
-			});
-
-		} else {
-			console.log('Passwords not equal!');
-		}
-
-		return false;
-	}
-
-	render() {
-		return (<div>
-			<h1>Registration</h1>
-			<form onSubmit={ this.submit.bind(this) }>
-				<input type="email" ref="login" name="login" placeholder="email"/>
-				<input type="password" ref="password" name="password" placeholder="pass"/>
-				<input type="password" ref="confirmPassword" name="confirmPassword" placeholder="confirm pass"/>
-				<input type="submit" value={'Join us'}/>
-			</form>
-		</div>);
-	}
+  render() {
+    return (<div>
+      <h1>Registration</h1>
+      <form onSubmit={this.signUp}>
+        <input
+          type="email"
+          ref={(email) => { this.email = email; }}
+          name="login"
+          placeholder="email"
+        />
+        <input
+          type="password"
+          ref={(password) => { this.password = password; }}
+          name="password"
+          placeholder="pass"
+        />
+        <input
+          type="password"
+          ref={(confirm) => { this.confirmPassword = confirm; }}
+          name="confirmPassword"
+          placeholder="confirm pass"
+        />
+        <input type="submit" value={'Join us'} />
+      </form>
+    </div>);
+  }
 }
 
-SignUp.propTypes = {};
+export default SignUp;
