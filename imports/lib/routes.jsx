@@ -10,7 +10,7 @@ import App from '../ui/App';
 Accounts.onLogin(() => {
   const current = FlowRouter.current().path;
   if (current === '/signin' || current === '/signup') {
-    FlowRouter.go('/');
+    FlowRouter.go('/user/:id', { id: Meteor.userId() });
   }
 });
 

@@ -12,9 +12,22 @@ class UserCabinet extends Component {
     this.state = {
       editable: this.props.id === Meteor.userId(),
       edited: false,
-      name: this.props.name,
-      email: this.props.email,
     };
+  }
+  getInput(type, ref, defaultValue) {
+    if (this.props.dataLoaded) {
+      return (<input
+        type={type}
+        ref={ref}
+        defaultValue={defaultValue}
+        placeholder="No name"
+        readOnly={!this.state.editable}
+        onChange={this.inputChanged}
+        className={!this.state.editable ? 'clear-defaults' : ''}
+      />);
+    }
+
+    return '';
   }
 
   inputChanged() {
@@ -49,7 +62,7 @@ class UserCabinet extends Component {
 
     const userData = {
       emails: [{ address: this.email.value.trim() }],
-      username: this.name.value.trim(),
+      name: this.name.value.trim(),
     };
 
     Meteor.call('user.update', { id: this.props.id, ...userData });
@@ -74,28 +87,10 @@ class UserCabinet extends Component {
             </figure>
           </li>
 
-          <li>Name :
-            <input
-              type="text"
-              ref={(name) => { this.name = name; }}
-              value={this.state.name}
-              placeholder="No name"
-              readOnly={!this.state.editable}
-              onChange={this.inputChanged}
-              className={!this.state.editable ? 'clear-defaults' : ''}
-            />
-          </li>
+          <li>Name : { this.getInput('text', (name) => { this.name = name; }, this.props.name) }</li>
 
-          <li>Email :
-            <input
-              type="email"
-              ref={(email) => { this.email = email; }}
-              value={this.state.email}
-              placeholder="No email"
-              readOnly={!this.state.editable}
-              onChange={this.inputChanged}
-              className={!this.state.editable ? 'clear-defaults' : ''}
-            />
+          <li>Email : { this.getInput('email', (email) => { this.email = email; }, this.props.email) }
+
           </li>
           {this.state.editable && this.state.edited ?
             <li>
@@ -112,6 +107,7 @@ UserCabinet.propTypes = {
   name: PropTypes.string,
   email: PropTypes.string,
   avatar: PropTypes.string,
+  dataLoaded: PropTypes.bool,
 };
 
 const UserCabinetContainer = createContainer(({ id }) => {
@@ -122,12 +118,14 @@ const UserCabinetContainer = createContainer(({ id }) => {
     name: '',
     email: '',
     avatar: '',
+    dataLoaded: false,
   };
 
   if (user) {
-    userData.name = user.username;
+    userData.name = user.profile ? user.profile.name : '';
     userData.email = user.emails.length ? user.emails[0].address : '';
     userData.avatar = user.avatar;
+    userData.dataLoaded = true;
   }
 
   return {

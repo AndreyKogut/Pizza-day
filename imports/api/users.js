@@ -16,16 +16,21 @@ Meteor.methods({
     Accounts.createUser({
       email,
       password,
-      username,
     });
+
+    Accounts.onCreateUser = (user) => {
+      console.log(user);
+      Meteor.users.upsert(user.id, { $set: { 'profile.name': username } });
+    };
   },
-  'user.update': function update({ id, ...data }) {
+  'user.update': function update({ id, name, ...data }) {
     check(id, String);
 
-    if (!data.isEmpty) {
+    const userData = !name ? data : { 'profile.name': name, ...data };
+    if (!userData.isEmpty) {
       Meteor.users.upsert(id, {
         $set: {
-          ...data,
+          ...userData,
         },
       });
     }

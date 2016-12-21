@@ -20,7 +20,7 @@ class Header extends Component {
               <a
                 className="header__link"
                 href={FlowRouter.path('/user/:id', { id: this.props.id })}
-              >{ this.props.name }</a>
+              >Cabinet</a>
               <button
                 onClick={this.logout}
                 className="header__link header__link_logout clear-defaults"
@@ -40,16 +40,13 @@ class Header extends Component {
 
 Header.propTypes = {
   id: PropTypes.string,
-  name: PropTypes.string,
 };
 
 const HeaderContainer = createContainer(() => {
   const id = Meteor.userId();
-  const { username: name = 'No name' } = Meteor.user() || {};
 
   return {
     id,
-    name,
   };
 }, Header);
 
