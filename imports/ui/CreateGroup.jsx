@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
-import Avatars from '../api/avatars';
+import Avatars from '../api/avatarsCollection';
+
+/*
+ *
+ *  Create unmounting function to delete photos if group was not created
+ *
+ * */
 
 class GroupCreate extends Component {
   constructor(props) {
@@ -21,28 +27,55 @@ class GroupCreate extends Component {
     const creator = Meteor.userId();
     const avatar = this.state.image;
 
-    Meteor.call('group.insert', { name, creator, description, avatar });
+    Meteor.call(
+      'group.insert',
+      { name, creator, description, avatar },
+      this.handleMethodsCallbacks,
+    );
   }
+
+  handleMethodsCallbacks =
+    handledFunction =>
+      (err) => {
+        if (err) {
+          switch (err) {
+            case 500: {
+              console.log('Service unavailable');
+              break;
+            }
+            default: {
+              console.log('Something going wrong');
+            }
+          }
+        }
+
+        if (handledFunction) handledFunction();
+      };
+
+  imageDeletedCallback = () => {
+    this.setState({
+      imageId: null,
+    });
+  };
 
   loadFile(event) {
     event.preventDefault();
+
     if (this.state.imageId) {
-      Avatars.remove({ _id: this.state.imageId }, (err) => {
-        if (!err) {
-          this.setState({
-            imageId: null,
-          });
-        }
-      });
+      Avatars.remove(
+        { _id: this.state.imageId },
+        this.handleMethodsCallbacks(this.imageDeletedCallback),
+      );
     }
 
     const file = this.image.files[0];
+
     if (file) {
       Avatars.insert(file, (err, fileObj) => {
         if (err) {
           throw new Error(err.reason);
         } else {
-          fileObj.on('uploaded', () => {
+          fileObj.once('uploaded', () => {
             this.setState({
               imageId: fileObj._id,
               image: `/cfs/files/avatars/${fileObj._id}`,
@@ -51,6 +84,7 @@ class GroupCreate extends Component {
         }
       });
     }
+
     return false;
   }
 

@@ -7,29 +7,62 @@ class Login extends Component {
     this.login = this.login.bind(this);
   }
 
-  loginWithGoogle = () => {
+  handleMethodsCallbacks =
+    handledFunction =>
+      (err) => {
+        if (err) {
+          switch (err.error) {
+            case 500: {
+              console.log('Service unavailable');
+              break;
+            }
+            case 403: {
+              console.log('No such password/login combination');
+              break;
+            }
+            case 400: {
+              console.log('No ...');
+              break;
+            }
+            default: {
+              console.log('Something going wrong');
+            }
+          }
+        }
+
+        if (handledFunction) handledFunction();
+      };
+
+  // Callbacks in progress
+
+  googleLoginCallback = () => {
+    console.log('loggined with google plus');
+  };
+
+  passwordLoginCallback = () => {
+    console.log('logined with pass');
+  };
+
+  loginWithGoogle = (event) => {
+    event.preventDefault();
+
     Meteor.loginWithGoogle({
       requestPermissions: ['email', 'profile'],
       loginStyle: 'popup',
-    }, (err) => {
-      if (err) {
-        throw new Error(err);
-      }
-    });
+    }, this.handleMethodsCallbacks(this.googleLoginCallback));
   };
 
   login(event) {
     event.preventDefault();
+
     const email = this.email.value.trim();
     const password = this.password.value.trim();
 
-    Meteor.loginWithPassword(email, password, (err) => {
-      if (err) {
-        throw new Error(err);
-      }
-    });
-
-    return false;
+    Meteor.loginWithPassword(
+      email,
+      password,
+      this.handleMethodsCallbacks(this.passwordLoginCallback),
+    );
   }
 
   render() {

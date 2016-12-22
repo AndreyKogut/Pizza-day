@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import Avatars from '../api/avatars';
+import Avatars from '../api/avatarsCollection';
 
 class UserCabinet extends Component {
   constructor(props) {
@@ -38,6 +38,44 @@ class UserCabinet extends Component {
     });
   }
 
+  imageDeletedCallback = () => {
+    this.setState({
+      imageId: null,
+    });
+  };
+
+  dataChangeCallback = () => {
+    this.setState({
+      edited: false,
+    });
+  };
+
+  handleMethodsCallbacks =
+    handledFunction =>
+      (err) => {
+        if (err) {
+          switch (err.error) {
+            case 500: {
+              console.log('Service unavailable');
+              break;
+            }
+            case 403: {
+              console.log('No such password/login combination');
+              break;
+            }
+            case 400: {
+              console.log('No ...');
+              break;
+            }
+            default: {
+              console.log('Something going wrong');
+            }
+          }
+        }
+
+        if (handledFunction) handledFunction();
+      };
+
   // Must be changed to image picker
   loadFile(event) {
     event.preventDefault();
@@ -45,20 +83,17 @@ class UserCabinet extends Component {
     const file = this.image.files[0];
     if (file) {
       if (this.state.imageId) {
-        Avatars.remove({ _id: this.state.imageId }, (err) => {
-          if (!err) {
-            this.setState({
-              imageId: null,
-            });
-          }
-        });
+        Avatars.remove(
+          { _id: this.state.imageId },
+          this.handleMethodsCallbacks(this.imageDeletedCallback),
+        );
       }
 
       Avatars.insert(file, (err, fileObj) => {
         if (err) {
           throw new Error(err.reason);
         } else {
-          fileObj.on('uploaded', () => {
+          fileObj.once('uploaded', () => {
             Meteor.call('user.update',
               { id: this.props.id, avatar: `/cfs/files/avatars/${fileObj._id}` });
             this.setState({
@@ -78,15 +113,11 @@ class UserCabinet extends Component {
       name: this.name.value.trim(),
     };
 
-    Meteor.call('user.update', { id: this.props.id, ...userData }, (err) => {
-      if (!err) {
-        this.setState({
-          edited: false,
-        });
-      }
-    });
-
-    return false;
+    Meteor.call(
+      'user.update',
+      { id: this.props.id, ...userData },
+      this.handleMethodsCallbacks(this.dataChangeCallback),
+    );
   }
 
   render() {

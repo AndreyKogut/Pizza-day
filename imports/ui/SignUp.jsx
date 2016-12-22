@@ -9,6 +9,7 @@ class SignUp extends Component {
 
   signUp(event) {
     event.preventDefault();
+
     const email = this.email.value.trim();
     const password = this.password.value.trim();
     const confirmPassword = this.confirmPassword.value.trim();
@@ -27,8 +28,6 @@ class SignUp extends Component {
     } else {
       // Inform user that passwords not equal
     }
-
-    return false;
   }
 
   render() {

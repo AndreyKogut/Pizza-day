@@ -1,8 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import { check } from 'meteor/check';
-
-const Groups = new Mongo.Collection('groups');
+import Groups from './groupsCollection';
 
 Meteor.methods({
   'group.insert': function insert({ name, description = '', avatar, creator, members = [], events = [] }) {
@@ -26,4 +24,12 @@ Meteor.methods({
   },
 });
 
-export default Groups;
+Meteor.publish('Groups', function getGroups() {
+  check(this.userId, String);
+  return Groups.find({ creator: this.userId });
+});
+
+Meteor.publish('Group', (id) => {
+  check(id, String);
+  return Groups.find(id);
+});

@@ -2,6 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 
+Meteor.publish('user', (id) => {
+  check(id, String);
+  return Meteor.users.find(id);
+});
+
 Meteor.methods({
   'user.insert': function insert({ email, password }) {
     check(email, String);
