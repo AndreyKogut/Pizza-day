@@ -12,6 +12,7 @@ class UserCabinet extends Component {
     this.state = {
       editable: this.props.id === Meteor.userId(),
       edited: false,
+      imageId: null,
     };
   }
   getInput(type, ref, defaultValue) {
@@ -22,6 +23,7 @@ class UserCabinet extends Component {
         defaultValue={defaultValue}
         placeholder="No name"
         readOnly={!this.state.editable}
+        id={defaultValue}
         onChange={this.inputChanged}
         className={!this.state.editable ? 'clear-defaults' : ''}
       />);
@@ -32,8 +34,6 @@ class UserCabinet extends Component {
 
   inputChanged() {
     this.setState({
-      name: this.name.value.trim(),
-      email: this.email.value.trim(),
       edited: true,
     });
   }
@@ -41,40 +41,59 @@ class UserCabinet extends Component {
   // Must be changed to image picker
   loadFile(event) {
     event.preventDefault();
+
     const file = this.image.files[0];
     if (file) {
+      if (this.state.imageId) {
+        Avatars.remove({ _id: this.state.imageId }, (err) => {
+          if (!err) {
+            this.setState({
+              imageId: null,
+            });
+          }
+        });
+      }
+
       Avatars.insert(file, (err, fileObj) => {
         if (err) {
           throw new Error(err.reason);
         } else {
-          fileObj.once('uploaded', () => {
+          fileObj.on('uploaded', () => {
             Meteor.call('user.update',
               { id: this.props.id, avatar: `/cfs/files/avatars/${fileObj._id}` });
+            this.setState({
+              imageId: fileObj._id,
+            });
           });
         }
       });
     }
-    return false;
   }
 
   updateUserData(event) {
     event.preventDefault();
 
     const userData = {
-      emails: [{ address: this.email.value.trim() }],
+      email: this.email.value.trim(),
       name: this.name.value.trim(),
     };
 
-    Meteor.call('user.update', { id: this.props.id, ...userData });
+    Meteor.call('user.update', { id: this.props.id, ...userData }, (err) => {
+      if (!err) {
+        this.setState({
+          edited: false,
+        });
+      }
+    });
 
     return false;
   }
 
   render() {
-    return (<div className="user-cabinet">
+    return (<div className="form user-cabinet">
       <form onSubmit={this.updateUserData}>
-        <ul className="list">
-          <li>
+        <ul className="form__list">
+          <li className="form__item">
             <figure>
               <img src={this.props.avatar} className="avatar" alt="" />
               { this.state.editable ?
@@ -87,8 +106,10 @@ class UserCabinet extends Component {
             </figure>
           </li>
 
-          <li>Name : { this.getInput('text', (name) => { this.name = name; }, this.props.name) }</li>
-
+          <li>
+            <label htmlFor={this.props.name}>Name : </label>
+            { this.getInput('text', (name) => { this.name = name; }, this.props.name) }
+          </li>
           <li>Email : { this.getInput('email', (email) => { this.email = email; }, this.props.email) }
 
           </li>
@@ -124,7 +145,7 @@ const UserCabinetContainer = createContainer(({ id }) => {
   if (user) {
     userData.name = user.profile ? user.profile.name : '';
     userData.email = user.emails.length ? user.emails[0].address : '';
-    userData.avatar = user.avatar;
+    userData.avatar = user.profile ? user.profile.avatar : '';
     userData.dataLoaded = true;
   }
 

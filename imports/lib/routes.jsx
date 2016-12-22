@@ -5,6 +5,9 @@ import { mount } from 'react-mounter';
 import UserCabinetContainer from '../ui/UserCabinet';
 import SignUp from '../ui/SignUp';
 import Login from '../ui/Login';
+import GroupsPageContainer from '../ui/Groups';
+import GroupPageContainer from '../ui/Group';
+import GroupCreate from '../ui/CreateGroup';
 import App from '../ui/App';
 
 Accounts.onLogin(() => {
@@ -35,6 +38,33 @@ app.route('/user/:id', {
   action({ id }) {
     mount(App, {
       content: () => (<UserCabinetContainer id={id} />),
+    });
+  },
+});
+
+app.route('/groups', {
+  name: 'Groups',
+  action() {
+    mount(App, {
+      content: () => (<GroupsPageContainer />),
+    });
+  },
+});
+
+app.route('/groups/:id', {
+  name: 'Group',
+  action({ id }) {
+    mount(App, {
+      content: () => (<GroupPageContainer id={id} />),
+    });
+  },
+});
+
+app.route('/create-group', {
+  name: 'CreateGroup',
+  action() {
+    mount(App, {
+      content: () => (<GroupCreate />),
     });
   },
 });

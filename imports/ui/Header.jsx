@@ -15,6 +15,12 @@ class Header extends Component {
           <li className="header__item">
             <a href="/" className="header__link">Home</a>
           </li>
+          <li className="header__item">
+            <a href="/create-group" className="header__link">Create group</a>
+          </li>
+          <li className="header__item">
+            <a href="/groups" className="header__link">Groups</a>
+          </li>
           { this.props.id ?
             <li className="header__item header__item_login">
               <a
