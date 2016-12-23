@@ -25,7 +25,7 @@ GroupsPage.propTypes = {
 
 const GroupsPageContainer = createContainer(() => {
   Meteor.subscribe('Groups');
-  const groups = Groups.find({ creator: Meteor.userId() }).fetch();
+  const groups = Groups.find().fetch();
 
   return {
     groups,

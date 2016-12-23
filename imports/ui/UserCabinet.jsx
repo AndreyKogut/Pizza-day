@@ -15,6 +15,7 @@ class UserCabinet extends Component {
       imageId: null,
     };
   }
+
   getInput(type, ref, defaultValue) {
     if (this.props.dataLoaded) {
       return (<input
@@ -38,6 +39,16 @@ class UserCabinet extends Component {
     });
   }
 
+  imageLoadedCallback = (fileObj) => {
+    fileObj.once('uploaded', () => {
+      Meteor.call('user.update',
+        { id: this.props.id, avatar: `/cfs/files/avatars/${fileObj._id}` });
+      this.setState({
+        imageId: fileObj._id,
+      });
+    });
+  };
+
   imageDeletedCallback = () => {
     this.setState({
       imageId: null,
@@ -51,8 +62,8 @@ class UserCabinet extends Component {
   };
 
   handleMethodsCallbacks =
-    handledFunction =>
-      (err) => {
+    (handledFunction = () => {}) =>
+      (err, res) => {
         if (err) {
           switch (err.error) {
             case 500: {
@@ -71,9 +82,9 @@ class UserCabinet extends Component {
               console.log('Something going wrong');
             }
           }
+        } else {
+          handledFunction(res);
         }
-
-        if (handledFunction) handledFunction();
       };
 
   // Must be changed to image picker
@@ -89,19 +100,7 @@ class UserCabinet extends Component {
         );
       }
 
-      Avatars.insert(file, (err, fileObj) => {
-        if (err) {
-          throw new Error(err.reason);
-        } else {
-          fileObj.once('uploaded', () => {
-            Meteor.call('user.update',
-              { id: this.props.id, avatar: `/cfs/files/avatars/${fileObj._id}` });
-            this.setState({
-              imageId: fileObj._id,
-            });
-          });
-        }
-      });
+      Avatars.insert(file, this.handleMethodsCallbacks(this.imageLoadedCallback));
     }
   }
 

@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import Groups from './groupsCollection';
 
 Meteor.methods({
-  'group.insert': function insert({ name, description = '', avatar, creator, members = [], events = [] }) {
+  'group.insert': function insert({ name, description = '', avatar = '', creator, members = [], events = [] }) {
     check(name, String);
     check(description, String);
     check(creator, String);
@@ -11,8 +11,11 @@ Meteor.methods({
     check(events, Array);
     check(avatar, String);
 
+    members.push(creator);
+    const id = new Meteor.Collection.ObjectID().valueOf();
+
     Groups.insert({
-      _id: new Meteor.Collection.ObjectID().valueOf(),
+      _id: id,
       name,
       description,
       creator,
@@ -21,12 +24,14 @@ Meteor.methods({
       events,
       createdAt: new Date(),
     });
+
+    return id;
   },
 });
 
 Meteor.publish('Groups', function getGroups() {
   check(this.userId, String);
-  return Groups.find({ creator: this.userId });
+  return Groups.find({ members: this.userId });
 });
 
 Meteor.publish('Group', (id) => {

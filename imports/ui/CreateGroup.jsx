@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import Avatars from '../api/avatarsCollection';
 
 /*
@@ -15,7 +16,7 @@ class GroupCreate extends Component {
     this.loadFile = this.loadFile.bind(this);
     this.state = {
       imageId: null,
-      image: null,
+      image: '',
     };
   }
 
@@ -30,13 +31,17 @@ class GroupCreate extends Component {
     Meteor.call(
       'group.insert',
       { name, creator, description, avatar },
-      this.handleMethodsCallbacks,
+      this.handleMethodsCallbacks(this.successLoginCallback),
     );
   }
 
+  successLoginCallback = (id) => {
+    FlowRouter.go('/groups/:id', { id });
+  };
+
   handleMethodsCallbacks =
-    handledFunction =>
-      (err) => {
+    (handledFunction = () => {}) =>
+      (err, res) => {
         if (err) {
           switch (err) {
             case 500: {
@@ -47,10 +52,19 @@ class GroupCreate extends Component {
               console.log('Something going wrong');
             }
           }
+        } else {
+          handledFunction(res);
         }
-
-        if (handledFunction) handledFunction();
       };
+
+  imageLoadedCallback = (fileObj) => {
+    fileObj.once('uploaded', () => {
+      this.setState({
+        imageId: fileObj._id,
+        image: `/cfs/files/avatars/${fileObj._id}`,
+      });
+    });
+  };
 
   imageDeletedCallback = () => {
     this.setState({
@@ -71,18 +85,7 @@ class GroupCreate extends Component {
     const file = this.image.files[0];
 
     if (file) {
-      Avatars.insert(file, (err, fileObj) => {
-        if (err) {
-          throw new Error(err.reason);
-        } else {
-          fileObj.once('uploaded', () => {
-            this.setState({
-              imageId: fileObj._id,
-              image: `/cfs/files/avatars/${fileObj._id}`,
-            });
-          });
-        }
-      });
+      Avatars.insert(file, this.handleMethodsCallbacks(this.imageLoadedCallback));
     }
 
     return false;

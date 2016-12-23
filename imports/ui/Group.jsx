@@ -23,7 +23,7 @@ GroupPage.propTypes = {
 
 const GroupPageContainer = createContainer(({ id }) => {
   Meteor.subscribe('Group', id);
-  const { name, avatar, description } = Groups.findOne(id) || {};
+  const { name, avatar, description } = Groups.find().fetch()[0] || {};
 
   return {
     name,

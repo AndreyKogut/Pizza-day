@@ -8,8 +8,8 @@ class Login extends Component {
   }
 
   handleMethodsCallbacks =
-    handledFunction =>
-      (err) => {
+    (handledFunction = () => {}) =>
+      (err, res) => {
         if (err) {
           switch (err.error) {
             case 500: {
@@ -28,9 +28,9 @@ class Login extends Component {
               console.log('Something going wrong');
             }
           }
+        } else {
+          handledFunction(res);
         }
-
-        if (handledFunction) handledFunction();
       };
 
   // Callbacks in progress
