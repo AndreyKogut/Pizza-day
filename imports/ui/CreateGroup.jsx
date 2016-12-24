@@ -25,12 +25,11 @@ class GroupCreate extends Component {
 
     const name = this.name.value.trim();
     const description = this.description.value.trim();
-    const creator = Meteor.userId();
     const avatar = this.state.image;
 
     Meteor.call(
       'group.insert',
-      { name, creator, description, avatar },
+      { name, description, avatar },
       this.handleMethodsCallbacks(this.successLoginCallback),
     );
   }
