@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import Events from './eventsCollection';
-import Groups from './groupsCollection';
+import Events from './collections/eventsCollection';
+import Groups from './collections/groupsCollection';
 
 Meteor.methods({
   'events.insert': function insert({ name, date, groupId, title = '' }) {

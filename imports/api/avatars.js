@@ -1,4 +1,4 @@
-import Avatars from './avatarsCollection';
+import Avatars from './collections/avatarsCollection';
 
 Avatars.allow({
   insert() {

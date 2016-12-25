@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import Groups from '../api/groupsCollection';
+import Groups from '../api/collections/groupsCollection';
 
 class GroupsPage extends Component {
 

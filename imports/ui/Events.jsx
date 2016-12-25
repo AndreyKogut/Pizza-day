@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import Events from '../api/eventsCollection';
+import Events from '../api/collections/eventsCollection';
 
 class EventsList extends Component {
 

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import Avatars from '../api/avatarsCollection';
+import Avatars from '../api/collections/avatarsCollection';
+import MenuListContainer from '../ui/Menu';
 
 /*
  *
@@ -26,10 +27,11 @@ class CreateGroup extends Component {
     const name = this.name.value.trim();
     const description = this.description.value.trim();
     const avatar = this.state.image;
+    const menu = this.menu;
 
     Meteor.call(
       'group.insert',
-      { name, description, avatar },
+      { name, description, avatar, menu },
       this.handleMethodsCallbacks(this.successLoginCallback),
     );
   }
@@ -92,11 +94,10 @@ class CreateGroup extends Component {
 
   render() {
     return (<form onSubmit={this.createGroup} className="form group-create">
-      <ul className="group-create__list">
+      <ul className="group-create__info">
         <li className="group-create__item">
           <figure>
             <img src={this.state.image} onError={this.loadFile} className="avatar" alt="" />
-
             <figcaption>
               <input type="file" ref={(image) => { this.image = image; }} onChange={this.loadFile} />
             </figcaption>
@@ -104,7 +105,7 @@ class CreateGroup extends Component {
         </li>
         <li className="group-create__item">
           <label className="form__label" htmlFor="name">
-           Name:
+          Name:
           </label>
           <input
             type="text"
@@ -115,7 +116,7 @@ class CreateGroup extends Component {
         </li>
         <li className="group-create__item">
           <label className="form__label" htmlFor="description">
-            Description:
+          Description:
           </label>
           <textarea
             ref={(description) => { this.description = description; }}
@@ -127,6 +128,9 @@ class CreateGroup extends Component {
           <input type="submit" value="Create group" />
         </li>
       </ul>
+      <div className="group-create__menu">
+        <MenuListContainer getMenuList={(data) => { this.menu = [...data]; }} />
+      </div>
     </form>);
   }
 }

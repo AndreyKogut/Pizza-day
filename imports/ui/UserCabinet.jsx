@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import Avatars from '../api/avatarsCollection';
+import Avatars from '../api/collections/avatarsCollection';
 
 class UserCabinet extends Component {
   constructor(props) {
@@ -135,13 +135,12 @@ class UserCabinet extends Component {
                 </figcaption> : ''}
             </figure>
           </li>
-
           <li>
             <label htmlFor={this.props.name}>Name : </label>
             { this.getInput('text', (name) => { this.name = name; }, this.props.name) }
           </li>
           <li>Email : { this.getInput('email', (email) => { this.email = email; }, this.props.email) }
-
+            { this.state.editable ? <a href="/create-group">Create group</a> : '' }
           </li>
           {this.state.editable && this.state.edited ?
             <li>

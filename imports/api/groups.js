@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import Groups from './groupsCollection';
+import Groups from './collections/groupsCollection';
 
 Meteor.methods({
-  'group.insert': function insert({ name, description = '', avatar = '', members = [], events = [] }) {
+  'group.insert': function insert({ name, description = '', avatar = '', members = [], events = [], menu }) {
     check(name, String);
     check(description, String);
     check(members, Array);
@@ -21,6 +21,7 @@ Meteor.methods({
       avatar,
       members,
       events,
+      menu,
       createdAt: new Date(),
     });
 

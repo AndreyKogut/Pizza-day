@@ -1,23 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-import Events from '../api/eventsCollection';
+import Events from '../api/collections/eventsCollection';
 
 class Event extends Component {
-  getMenuPicker() {
-    // Need menu collection
-    return '';
-  }
-
   render() {
     return (<div className="event-page">
       <ul>
         <li>Name: { this.props.name }({ this.props.status })</li>
         <li>Title: { this.props.title }</li>
         <li>Date: { this.props.date }</li>
-        <li>
-          { this.getMenuPicker() }
-        </li>
       </ul>
     </div>);
   }
