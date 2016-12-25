@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import Events from './eventsCollection';
+import Groups from './groupsCollection';
 
 Meteor.methods({
   'events.insert': function insert({ name, date, groupId, title = '' }) {
@@ -9,7 +10,13 @@ Meteor.methods({
     check(date, String);
     check(groupId, String);
 
-    const id = new Meteor.Collection.ObjectID.valueOf();
+    const groupCreatorId = Groups.findOne({ _id: groupId }).creator;
+
+    if (groupCreatorId !== this.userId) {
+      throw new Meteor.Error(403, 'Access denied');
+    }
+
+    const id = new Meteor.Collection.ObjectID().valueOf();
 
     Events.insert({
       _id: id,
@@ -17,22 +24,40 @@ Meteor.methods({
       title,
       date,
       groupId,
+      participants: [],
+      status: 'ordering',
       creator: this.userId,
       createdAt: new Date(),
     });
 
     return id;
   },
+  'events.joinEvent': function addParticipant({ eventId }) {
+    check(eventId, String);
+
+    Events.upsert({ _id: eventId }, { $push: { _id: this.userId, ordered: false } });
+  },
+  'events.leave': function deleteParticipant({ eventId }) {
+    check(eventId, String);
+
+    Events.update({ _id: eventId }, { $pull: { _id: this.userId } });
+  },
 });
 
 Meteor.publish('GroupEvents', (id) => {
   check(id, String);
+
   return Events.find({ groupId: id });
 });
 
 Meteor.publish('Events', function getEvents() {
   check(this.userId, String);
-  const groups = Meteor.find({ _id: this.userId }).fetch().groups;
 
-  return Events.find({ groupId: { $in: groups } });
+  return Events.find({ 'participants._id': this.userId });
+});
+
+Meteor.publish('Event', ({ id }) => {
+  check(id, String);
+
+  return Events.find({ _id: id });
 });

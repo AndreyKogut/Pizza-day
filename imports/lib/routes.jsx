@@ -7,7 +7,9 @@ import SignUp from '../ui/SignUp';
 import Login from '../ui/Login';
 import GroupsPageContainer from '../ui/Groups';
 import GroupPageContainer from '../ui/Group';
-import GroupCreate from '../ui/CreateGroup';
+import EventContainer from '../ui/Event';
+import CreateGroup from '../ui/CreateGroup';
+import CreateEvent from '../ui/CreateEvent';
 import App from '../ui/App';
 
 Accounts.onLogin(() => {
@@ -60,11 +62,29 @@ app.route('/groups/:id', {
   },
 });
 
+app.route('/groups/:id/create-event', {
+  name: 'CreateEvent',
+  action({ id }) {
+    mount(App, {
+      content: () => (<CreateEvent id={id} />),
+    });
+  },
+});
+
+app.route('/groups/:id/events/:eventId', {
+  name: 'CreateEvent',
+  action({ id, eventId }) {
+    mount(App, {
+      content: () => (<EventContainer id={id} eventId={eventId} />),
+    });
+  },
+});
+
 app.route('/create-group', {
   name: 'CreateGroup',
   action() {
     mount(App, {
-      content: () => (<GroupCreate />),
+      content: () => (<CreateGroup />),
     });
   },
 });

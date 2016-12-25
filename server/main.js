@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import '../imports/api/googleOauth';
 import '../imports/api/avatars';
 import '../imports/api/users';
+import '../imports/api/events';
 import '../imports/api/groups';
 
 Meteor.startup(() => {

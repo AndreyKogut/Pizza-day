@@ -9,7 +9,7 @@ import Avatars from '../api/avatarsCollection';
  *
  * */
 
-class GroupCreate extends Component {
+class CreateGroup extends Component {
   constructor(props) {
     super(props);
     this.createGroup = this.createGroup.bind(this);
@@ -131,4 +131,4 @@ class GroupCreate extends Component {
   }
 }
 
-export default GroupCreate;
+export default CreateGroup;
