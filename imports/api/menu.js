@@ -27,5 +27,5 @@ Meteor.publish('GroupMenu', (id) => {
 
   const groupMenu = Groups.findOne({ _id: id }).menu || [];
 
-  return Menu.find({ _id: groupMenu });
+  return Menu.find({ _id: { $in: [...groupMenu] } });
 });

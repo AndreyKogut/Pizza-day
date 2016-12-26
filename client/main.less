@@ -100,6 +100,21 @@
   line-height: 1;
 }
 
+.group {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  &__menu {
+    overflow-y: scroll;
+    padding-left: 20px;
+  }
+  &__menu-header {
+    font-size: 20px;
+    text-align: right;
+    margin-right: 15px;
+  }
+}
+
 .groups {
   &__item {
     font-size: 16px;
@@ -110,9 +125,19 @@
 .group-create {
   display: flex;
   width: 100%;
+  justify-content: space-between;
   &__menu {
     overflow-y: scroll;
-    flex: 1;
+    padding-left: 20px;
+  }
+}
+
+.event-create {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  &__menu {
+    overflow-y: scroll;
     padding-left: 20px;
   }
 }

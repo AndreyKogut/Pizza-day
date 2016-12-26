@@ -4,8 +4,9 @@ import Events from './collections/eventsCollection';
 import Groups from './collections/groupsCollection';
 
 Meteor.methods({
-  'events.insert': function insert({ name, date, groupId, title = '' }) {
+  'events.insert': function insert({ name, date, groupId, menu, title = '' }) {
     check(name, String);
+    check(menu, Array);
     check(title, String);
     check(date, String);
     check(groupId, String);
@@ -24,6 +25,7 @@ Meteor.methods({
       title,
       date,
       groupId,
+      menu,
       participants: [],
       status: 'ordering',
       creator: this.userId,

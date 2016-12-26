@@ -140,12 +140,14 @@ class UserCabinet extends Component {
             { this.getInput('text', (name) => { this.name = name; }, this.props.name) }
           </li>
           <li>Email : { this.getInput('email', (email) => { this.email = email; }, this.props.email) }
-            { this.state.editable ? <a href="/create-group">Create group</a> : '' }
           </li>
           {this.state.editable && this.state.edited ?
             <li>
               <input type="submit" value="Update user data" />
             </li> : ''}
+          <li>
+            { this.state.editable ? <a href="/create-group">Create group</a> : '' }
+          </li>
         </ul>
       </form>
     </div>);

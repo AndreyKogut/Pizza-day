@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import Avatars from '../api/collections/avatarsCollection';
-import MenuListContainer from '../ui/Menu';
+import MenuPickerContainer from './MenuPicker';
 
 /*
  *
@@ -129,7 +129,7 @@ class CreateGroup extends Component {
         </li>
       </ul>
       <div className="group-create__menu">
-        <MenuListContainer getMenuList={(data) => { this.menu = [...data]; }} />
+        <MenuPickerContainer getMenuList={(data) => { this.menu = [...data]; }} />
       </div>
     </form>);
   }

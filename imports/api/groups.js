@@ -31,7 +31,7 @@ Meteor.methods({
 
 Meteor.publish('Groups', function getGroups() {
   check(this.userId, String);
-  return Groups.find({ members: this.userId });
+  return Groups.find({ members: this.userId }, { sort: { createdAt: -1 } });
 });
 
 Meteor.publish('Group', (id) => {

@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import Groups from '../api/collections/groupsCollection';
 import Menu from '../api/collections/menuCollection';
-import MenuListContainer from '../ui/Menu';
+import MenuList from './Menu';
 import EventsListContainer from './Events';
 
 class GroupPage extends Component {
@@ -28,7 +28,10 @@ class GroupPage extends Component {
           <a href={FlowRouter.path('/groups/:id/create-event', { id: this.props.id })}>Create</a>
         </li> : '' }
       </ul>
-      <MenuListContainer menu={this.props.menu} />
+      <div className="group__menu">
+        <h1 className="group__menu-header">Menu</h1>
+        <MenuList items={this.props.menu} />
+      </div>
     </div>);
   }
 }
@@ -48,15 +51,13 @@ const GroupPageContainer = createContainer(({ id }) => {
 
   const { name, avatar, description, creator } = Groups.findOne() || {};
 
-  const menu = Menu.find().fetch();
-
   return {
     id,
     name,
     description,
     avatar,
     creator,
-    menu,
+    menu: Menu.find().fetch(),
   };
 }, GroupPage);
 

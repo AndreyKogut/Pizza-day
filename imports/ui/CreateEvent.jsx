@@ -1,11 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import MenuPickerContainer from './MenuPicker';
 
 class CreateEvent extends Component {
   constructor(props) {
     super(props);
     this.createEvent = this.createEvent.bind(this);
+    this.menu = [];
   }
 
   createEvent(event) {
@@ -15,10 +17,11 @@ class CreateEvent extends Component {
     const title = this.title.value.trim();
     const date = this.date.value;
     const groupId = this.props.id;
+    const menu = this.menu;
 
     Meteor.call(
       'events.insert',
-      { name, title, date, groupId },
+      { name, title, date, groupId, menu },
       this.handleMethodsCallbacks(this.successLoginCallback),
     );
   }
@@ -83,6 +86,12 @@ class CreateEvent extends Component {
           <input type="submit" value="Create event" />
         </li>
       </ul>
+      <div className="event-create__menu">
+        <MenuPickerContainer
+          groupId={this.props.id}
+          getMenuList={(data) => { this.menu = [...data]; }}
+        />
+      </div>
     </form>);
   }
 }
