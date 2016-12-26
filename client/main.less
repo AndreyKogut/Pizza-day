@@ -100,7 +100,17 @@
   line-height: 1;
 }
 
-.group {
+.groups {
+  &__item {
+    font-size: 16px;
+    line-height: 1;
+  }
+}
+
+.group,
+.event-create,
+.group-create,
+.event-page {
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -112,33 +122,6 @@
     font-size: 20px;
     text-align: right;
     margin-right: 15px;
-  }
-}
-
-.groups {
-  &__item {
-    font-size: 16px;
-    line-height: 1;
-  }
-}
-
-.group-create {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  &__menu {
-    overflow-y: scroll;
-    padding-left: 20px;
-  }
-}
-
-.event-create {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  &__menu {
-    overflow-y: scroll;
-    padding-left: 20px;
   }
 }
 

@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import Groups from '../api/collections/groupsCollection';
 import Menu from '../api/collections/menuCollection';
-import MenuList from './Menu';
+import MenuList from './MenuList';
 import EventsListContainer from './Events';
 
 class GroupPage extends Component {

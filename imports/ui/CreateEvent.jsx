@@ -1,7 +1,9 @@
 import React, { Component, PropTypes } from 'react';
+import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import MenuPickerContainer from './MenuPicker';
+import Menu from '../api/collections/menuCollection';
 
 class CreateEvent extends Component {
   constructor(props) {
@@ -17,7 +19,7 @@ class CreateEvent extends Component {
     const title = this.title.value.trim();
     const date = this.date.value;
     const groupId = this.props.id;
-    const menu = this.menu;
+    const menu = [...this.menu];
 
     Meteor.call(
       'events.insert',
@@ -88,7 +90,7 @@ class CreateEvent extends Component {
       </ul>
       <div className="event-create__menu">
         <MenuPickerContainer
-          groupId={this.props.id}
+          items={this.props.menu}
           getMenuList={(data) => { this.menu = [...data]; }}
         />
       </div>
@@ -98,7 +100,18 @@ class CreateEvent extends Component {
 
 CreateEvent.propTypes = {
   id: PropTypes.string,
+  menu: PropTypes.arrayOf(Object),
 };
 
-export default CreateEvent;
+const CreateEventContainer = createContainer(({ id }) => {
+  Meteor.subscribe('GroupMenu', id);
+
+  const menu = Menu.find().fetch();
+
+  return {
+    menu,
+  };
+}, CreateEvent);
+
+export default CreateEventContainer;
 

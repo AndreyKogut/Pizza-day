@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import Groups from './collections/groupsCollection';
 import Menu from './collections/menuCollection';
+import Event from './collections/eventsCollection';
 
 Meteor.methods({
   'menu.insert': function insert({ name, description, mass, price }) {
@@ -28,4 +29,12 @@ Meteor.publish('GroupMenu', (id) => {
   const groupMenu = Groups.findOne({ _id: id }).menu || [];
 
   return Menu.find({ _id: { $in: [...groupMenu] } });
+});
+
+Meteor.publish('EventMenu', (id) => {
+  check(id, String);
+
+  const eventMenu = Event.findOne({ _id: id }).menu || [];
+
+  return Menu.find({ _id: { $in: [...eventMenu] } });
 });

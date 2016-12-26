@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
+import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import Avatars from '../api/collections/avatarsCollection';
-import MenuPickerContainer from './MenuPicker';
+import MenuPicker from './MenuPicker';
+import Menu from '../api/collections/menuCollection';
 
 /*
  *
@@ -129,10 +131,27 @@ class CreateGroup extends Component {
         </li>
       </ul>
       <div className="group-create__menu">
-        <MenuPickerContainer getMenuList={(data) => { this.menu = [...data]; }} />
+        <MenuPicker
+          items={this.props.menu}
+          getMenuList={(data) => { this.menu = [...data]; }}
+        />
       </div>
     </form>);
   }
 }
 
-export default CreateGroup;
+CreateGroup.propTypes = {
+  menu: PropTypes.arrayOf(Object),
+};
+
+const CreateGroupContainer = createContainer(() => {
+  Meteor.subscribe('Menu');
+
+  const menu = Menu.find().fetch();
+
+  return {
+    menu,
+  };
+}, CreateGroup);
+
+export default CreateGroupContainer;

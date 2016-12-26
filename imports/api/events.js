@@ -34,12 +34,12 @@ Meteor.methods({
 
     return id;
   },
-  'events.joinEvent': function addParticipant({ eventId }) {
+  'events.joinEvent': function addParticipant(eventId) {
     check(eventId, String);
 
     Events.upsert({ _id: eventId }, { $push: { _id: this.userId, ordered: false } });
   },
-  'events.leave': function deleteParticipant({ eventId }) {
+  'events.leave': function deleteParticipant(eventId) {
     check(eventId, String);
 
     Events.update({ _id: eventId }, { $pull: { _id: this.userId } });
@@ -58,7 +58,7 @@ Meteor.publish('Events', function getEvents() {
   return Events.find({ 'participants._id': this.userId });
 });
 
-Meteor.publish('Event', ({ id }) => {
+Meteor.publish('Event', (id) => {
   check(id, String);
 
   return Events.find({ _id: id });

@@ -2,9 +2,9 @@ import React, { PropTypes } from 'react';
 
 const MenuList = ({ items }) => {
   const getList = () =>
-    items.map(item => (
-      <li className="menu__item" key={item._id}>
-        { item.name } || { item.description } || { item.price } || { item.mass }
+    items.map(({ _id: id, name, description, price, mass }) => (
+      <li className="menu__item" key={id}>
+        { name } || { description } || { price } || { mass }
       </li>
     ));
 

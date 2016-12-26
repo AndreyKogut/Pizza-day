@@ -8,7 +8,7 @@ import Login from '../ui/Login';
 import GroupsPageContainer from '../ui/Groups';
 import GroupPageContainer from '../ui/Group';
 import EventContainer from '../ui/Event';
-import CreateGroup from '../ui/CreateGroup';
+import CreateGroupContainer from '../ui/CreateGroup';
 import CreateEvent from '../ui/CreateEvent';
 import App from '../ui/App';
 
@@ -84,7 +84,7 @@ app.route('/create-group', {
   name: 'CreateGroup',
   action() {
     mount(App, {
-      content: () => (<CreateGroup />),
+      content: () => (<CreateGroupContainer />),
     });
   },
 });
