@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import Groups from './collections/groupsCollection';
+import Groups from './collection';
 
 Meteor.methods({
   'group.insert': function insert({ name, description = '', avatar = '', members = [], events = [], menu }) {

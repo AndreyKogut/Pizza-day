@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import Groups from './collections/groupsCollection';
-import Menu from './collections/menuCollection';
-import Event from './collections/eventsCollection';
+import Groups from '../groups/collection';
+import Menu from './collection';
+import Event from '../events/collection';
 
 Meteor.methods({
   'menu.insert': function insert({ name, description, mass, price }) {

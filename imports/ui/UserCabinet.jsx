@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import Avatars from '../api/collections/avatarsCollection';
+import Avatars from '../api/avatars/avatarsCollection';
 
 class UserCabinet extends Component {
   constructor(props) {

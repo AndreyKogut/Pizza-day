@@ -2,9 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import Avatars from '../api/collections/avatarsCollection';
+import Avatars from '../api/avatars/avatarsCollection';
 import MenuPicker from './MenuPicker';
-import Menu from '../api/collections/menuCollection';
+import Menu from '../api/menu/collection';
 
 /*
  *

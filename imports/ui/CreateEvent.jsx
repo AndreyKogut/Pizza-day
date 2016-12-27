@@ -3,7 +3,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import MenuPickerContainer from './MenuPicker';
-import Menu from '../api/collections/menuCollection';
+import Menu from '../api/menu/collection';
 
 class CreateEvent extends Component {
   constructor(props) {
@@ -28,8 +28,8 @@ class CreateEvent extends Component {
     );
   }
 
-  successLoginCallback = (id) => {
-    FlowRouter.go('/groups/:id/events/:eventId', { id, eventId: this.props.id });
+  successLoginCallback = (eventId) => {
+    FlowRouter.go('/groups/:id/events/:eventId', { id: this.props.id, eventId });
   };
 
   handleMethodsCallbacks =

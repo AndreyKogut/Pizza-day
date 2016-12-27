@@ -2,8 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import MenuPicker from './MenuPicker';
-import Events from '../api/collections/eventsCollection';
-import Menu from '../api/collections/menuCollection';
+import Events from '../api/events/collection';
+import Menu from '../api/menu/collection';
 
 class Event extends Component {
   constructor(props) {
