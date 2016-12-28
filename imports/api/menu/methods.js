@@ -1,22 +1,27 @@
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import { check, Match } from 'meteor/check';
 import Groups from '../groups/collection';
 import Menu from './collection';
 import Event from '../events/collection';
+import checkData from '../checkData';
 
 Meteor.methods({
-  'menu.insert': function insert({ name, description, mass, price }) {
-    check(name, String);
-    check(description, String);
-    check(mass, String);
-    check(price, String);
+  'menu.insert': function insert(requestData) {
+    const requestDataStructure = {
+      name: String,
+      description: String,
+      mass: String,
+      price: Number,
+    };
+
+    check(requestData, requestDataStructure);
+    check(requestData.name, Match.Where(checkData.notEmpty));
+    check(requestData.description, Match.Where(checkData.notEmpty));
+    check(requestData.mass, Match.Where(checkData.notEmpty));
 
     Menu.insert({
       _id: new Meteor.Collection.ObjectID().valueOf(),
-      name,
-      description,
-      mass,
-      price,
+      ...requestData,
     });
   },
 });
@@ -24,17 +29,17 @@ Meteor.methods({
 Meteor.publish('Menu', () => Menu.find());
 
 Meteor.publish('GroupMenu', (id) => {
-  check(id, String);
+  check(id, Match.Where(checkData.notEmpty));
 
   const groupMenu = Groups.findOne({ _id: id }).menu || [];
 
-  return Menu.find({ _id: { $in: [...groupMenu] } });
+  return Menu.find({ _id: { $in: groupMenu } });
 });
 
 Meteor.publish('EventMenu', (id) => {
-  check(id, String);
+  check(id, Match.Where(checkData.notEmpty));
 
   const eventMenu = Event.findOne({ _id: id }).menu || [];
 
-  return Menu.find({ _id: { $in: [...eventMenu] } });
+  return Menu.find({ _id: { $in: eventMenu } });
 });

@@ -1,43 +1,54 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { check } from 'meteor/check';
+import { check, Match } from 'meteor/check';
+import checkData from '../checkData';
 
 Meteor.publish('user', (id) => {
-  check(id, String);
+  check(id, Match.Where(checkData.notEmpty));
+
   return Meteor.users.find(id);
 });
 
 Meteor.methods({
-  'user.insert': function insert({ email, password }) {
-    check(email, String);
-    check(password, String);
+  'user.insert': function insert(requestData) {
+    const requestDataFormat = {
+      email: String,
+      password: String,
+    };
 
-    Accounts.createUser({
-      email,
-      password,
-    });
+    check(requestData, requestDataFormat);
+    check(requestData.email, String);
+    check(requestData.password, String);
+
+    Accounts.createUser(requestData);
   },
-  'user.update': function update({ id, name = '', avatar = '', email = '' }) {
-    check(id, String);
-    check(avatar, String);
-    check(email, String);
+
+  'user.update': function update(requestData) {
+    const requestDataFormat = {
+      name: Match.Maybe(String),
+      avatar: Match.Maybe(String),
+      email: Match.Maybe(String),
+    };
+
+    check(this.userId, Match.Where(checkData.notEmpty));
+    check(requestData, requestDataFormat);
 
     const userData = {};
 
-    if (name) {
-      userData['profile.name'] = name;
+    if (requestData.name) {
+      userData['profile.name'] = requestData.name;
     }
 
-    if (avatar) {
-      userData['profile.avatar'] = avatar;
+    if (requestData.avatar) {
+      userData['profile.avatar'] = requestData.avatar;
     }
 
-    if (email) {
-      userData.emails = [{ address: email, verified: false }];
+    if (requestData.email) {
+      userData.emails = [{ address: requestData.email, verified: false }];
     }
 
     if (!userData.isEmpty) {
-      Meteor.users.upsert(id, {
+      Meteor.users.upsert(this.userId, {
         $set: {
           ...userData,
         },

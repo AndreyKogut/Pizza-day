@@ -114,7 +114,7 @@ class UserCabinet extends Component {
 
     Meteor.call(
       'user.update',
-      { id: this.props.id, ...userData },
+      { ...userData },
       this.handleMethodsCallbacks(this.dataChangeCallback),
     );
   }

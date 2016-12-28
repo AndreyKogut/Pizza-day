@@ -1,27 +1,32 @@
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import { check, Match } from 'meteor/check';
 import Groups from './collection';
+import checkData from '../checkData';
 
 Meteor.methods({
-  'group.insert': function insert({ name, description = '', avatar = '', members = [], events = [], menu }) {
-    check(name, String);
-    check(description, String);
-    check(members, Array);
-    check(events, Array);
-    check(avatar, String);
+  'groups.insert': function insert(requestData) {
+    const requestDateStructure = {
+      name: String,
+      description: Match.Maybe(String),
+      avatar: Match.Maybe(String),
+      members: Match.Maybe([String]),
+      menu: [String],
+    };
 
-    members.push(this.userId);
+    check(requestData, requestDateStructure);
+    check(requestData.name, Match.Where(checkData.notEmpty));
+    check(requestData.menu, Match.Where(checkData.stringList));
+
     const id = new Meteor.Collection.ObjectID().valueOf();
+    const { members: membersToInsert = [], ...fieldsToInsert } = requestData;
+
+    membersToInsert.unshift(this.userId);
 
     Groups.insert({
       _id: id,
-      name,
-      description,
-      creator: this.userId,
-      avatar,
-      members,
-      events,
-      menu,
+      ...fieldsToInsert,
+      events: [],
+      membersToInsert,
       createdAt: new Date(),
     });
 
@@ -30,7 +35,7 @@ Meteor.methods({
 });
 
 Meteor.publish('Groups', function getGroups() {
-  check(this.userId, String);
+  check(this.userId, Match.Where(checkData.notEmpty));
   return Groups.find({ members: this.userId }, { sort: { createdAt: -1 } });
 });
 

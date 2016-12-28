@@ -1,17 +1,17 @@
 import { check } from 'meteor/check';
 
-function checkDataTypesMethods() {
-  const checkIfNotEmpty =
+function checkData() {
+  const notEmpty =
     (string) => {
       check(string, String);
 
       return string.length > 0;
     };
-  const checkIfDateIsValid =
+  const dateIsValid =
     date => !isNaN((new Date(date)).getTime());
-  const checkIfDateNotPass =
+  const dateNotPass =
     (date) => {
-      if (checkIfDateIsValid(date)) {
+      if (dateIsValid(date)) {
         const requestDate = new Date(date);
         const currentDate = new Date();
 
@@ -20,10 +20,10 @@ function checkDataTypesMethods() {
 
       return false;
     };
-  const checkStringList =
+  const stringList =
     (list) => {
       for (let i = 0; i < list.length; i += 1) {
-        if (!checkIfNotEmpty(list[i])) {
+        if (!notEmpty(list[i])) {
           return false;
         }
       }
@@ -32,11 +32,11 @@ function checkDataTypesMethods() {
     };
 
   return {
-    checkIfNotEmpty,
-    checkIfDateIsValid,
-    checkIfDateNotPass,
-    checkStringList,
+    notEmpty,
+    dateIsValid,
+    dateNotPass,
+    stringList,
   };
 }
 
-export default checkDataTypesMethods();
+export default checkData();

@@ -32,7 +32,7 @@ class CreateGroup extends Component {
     const menu = this.menu;
 
     Meteor.call(
-      'group.insert',
+      'groups.insert',
       { name, description, avatar, menu },
       this.handleMethodsCallbacks(this.successLoginCallback),
     );
