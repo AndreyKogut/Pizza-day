@@ -1,39 +1,12 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
+import handleMethodsCallbacks from '../helpers/methods';
 
 class Login extends Component {
   constructor(props) {
     super(props);
     this.login = this.login.bind(this);
   }
-
-  handleMethodsCallbacks =
-    (handledFunction = () => {}) =>
-      (err, res) => {
-        if (err) {
-          switch (err.error) {
-            case 500: {
-              console.log('Service unavailable');
-              break;
-            }
-            case 403: {
-              console.log('No such password/login combination');
-              break;
-            }
-            case 400: {
-              console.log('No ...');
-              break;
-            }
-            default: {
-              console.log('Something going wrong');
-            }
-          }
-        } else {
-          handledFunction(res);
-        }
-      };
-
-  // Callbacks in progress
 
   googleLoginCallback = () => {
     console.log('loggined with google plus');
@@ -49,7 +22,7 @@ class Login extends Component {
     Meteor.loginWithGoogle({
       requestPermissions: ['email', 'profile'],
       loginStyle: 'popup',
-    }, this.handleMethodsCallbacks(this.googleLoginCallback));
+    }, handleMethodsCallbacks(this.googleLoginCallback));
   };
 
   login(event) {
@@ -61,7 +34,7 @@ class Login extends Component {
     Meteor.loginWithPassword(
       email,
       password,
-      this.handleMethodsCallbacks(this.passwordLoginCallback),
+      handleMethodsCallbacks(this.passwordLoginCallback),
     );
   }
 
@@ -69,7 +42,7 @@ class Login extends Component {
     return (<div>
       <h1>Authorization</h1>
       <form onSubmit={this.login}>
-        <button onClick={this.loginWithGoogle}>Google</button>
+        <button onClick={this.loginWithGoogle} role="button">Google</button>
         <input type="email" ref={(email) => { this.email = email; }} required placeholder="email" />
         <input type="password" ref={(password) => { this.password = password; }} required placeholder="pass" />
         <input type="submit" value="Login" />

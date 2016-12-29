@@ -1,6 +1,17 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
+const propTypes = {
+  items: PropTypes.arrayOf(Object),
+  getMenuList: PropTypes.func,
+  withCounters: PropTypes.bool,
+  selectedItems: PropTypes.arrayOf(Object),
+};
+
+const defaultProps = {
+  selectedItems: [],
+};
+
 class MenuPicker extends Component {
   constructor(props) {
     super(props);
@@ -80,23 +91,20 @@ class MenuPicker extends Component {
   }
 }
 
-MenuPicker.propTypes = {
-  items: PropTypes.arrayOf(Object),
-  getMenuList: PropTypes.func,
-  withCounters: PropTypes.bool,
-  selectedItems: PropTypes.arrayOf(PropTypes.any),
-};
+MenuPicker.propTypes = propTypes;
+MenuPicker.defaultProps = defaultProps;
 
-const MenuPickerContainer = createContainer(({ defaultValue, ...props }) => {
+const MenuPickerContainer = createContainer(({ /* defaultValue, */ ...props }) => {
+  /* TODO: default values
   const itemsMap = new Map();
   if (defaultValue && defaultValue.typeof(Array)) {
     defaultValue.forEach((value) => {
       itemsMap.set(value._id || value, value.count || 1);
     });
-  }
+  }*/
 
   return {
-    selectedItems: [...itemsMap],
+    /* selectedItems: [...itemsMap], */
     ...props,
   };
 }, MenuPicker);

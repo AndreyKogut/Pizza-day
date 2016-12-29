@@ -30,7 +30,10 @@ Meteor.methods({
       email: Match.Maybe(String),
     };
 
-    check(this.userId, Match.Where(checkData.notEmpty));
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Access denied');
+    }
+
     check(requestData, requestDataFormat);
 
     const userData = {};

@@ -5,9 +5,9 @@ import { mount } from 'react-mounter';
 import UserCabinetContainer from '../ui/UserCabinet';
 import SignUp from '../ui/SignUp';
 import Login from '../ui/Login';
-import GroupsPageContainer from '../ui/Groups';
-import GroupPageContainer from '../ui/Group';
-import EventContainer from '../ui/Event';
+import GroupsPageContainer from '../ui/GroupsPage';
+import GroupPageContainer from '../ui/GroupPage';
+import EventPageContainer from '../ui/EventPage';
 import CreateGroupContainer from '../ui/CreateGroup';
 import CreateEvent from '../ui/CreateEvent';
 import App from '../ui/App';
@@ -75,7 +75,7 @@ app.route('/groups/:id/events/:eventId', {
   name: 'CreateEvent',
   action({ id, eventId }) {
     mount(App, {
-      content: () => (<EventContainer id={id} eventId={eventId} />),
+      content: () => (<EventPageContainer id={id} eventId={eventId} />),
     });
   },
 });

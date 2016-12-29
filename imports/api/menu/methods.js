@@ -14,6 +14,10 @@ Meteor.methods({
       price: Number,
     };
 
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Access denied');
+    }
+
     check(requestData, requestDataStructure);
     check(requestData.name, Match.Where(checkData.notEmpty));
     check(requestData.description, Match.Where(checkData.notEmpty));
@@ -31,15 +35,23 @@ Meteor.publish('Menu', () => Menu.find());
 Meteor.publish('GroupMenu', (id) => {
   check(id, Match.Where(checkData.notEmpty));
 
+  if (!this.userId) {
+    return this.error(new Meteor.Error(403, 'Access denied'));
+  }
+
   const groupMenu = Groups.findOne({ _id: id }).menu || [];
 
-  return Menu.find({ _id: { $in: groupMenu } });
+  return Menu.find({ _id: { $in: [...groupMenu] } });
 });
 
 Meteor.publish('EventMenu', (id) => {
   check(id, Match.Where(checkData.notEmpty));
 
+  if (!this.userId) {
+    return this.error(new Meteor.Error(403, 'Access denied'));
+  }
+
   const eventMenu = Event.findOne({ _id: id }).menu || [];
 
-  return Menu.find({ _id: { $in: eventMenu } });
+  return Menu.find({ _id: { $in: [...eventMenu] } });
 });

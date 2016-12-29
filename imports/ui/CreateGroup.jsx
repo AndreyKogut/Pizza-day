@@ -2,15 +2,15 @@ import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import handleMethodsCallbacks from '../helpers/methods';
 import Avatars from '../api/avatars/avatarsCollection';
 import MenuPicker from './MenuPicker';
 import Menu from '../api/menu/collection';
 
-/*
- *
- *  Create unmounting function to delete photos if group was not created
- *
- * */
+const propTypes = {
+  menu: PropTypes.arrayOf(Object),
+  handleMenu: PropTypes.bool,
+};
 
 class CreateGroup extends Component {
   constructor(props) {
@@ -34,31 +34,13 @@ class CreateGroup extends Component {
     Meteor.call(
       'groups.insert',
       { name, description, avatar, menu },
-      this.handleMethodsCallbacks(this.successLoginCallback),
+      handleMethodsCallbacks(this.successLoginCallback),
     );
   }
 
   successLoginCallback = (id) => {
     FlowRouter.go('/groups/:id', { id });
   };
-
-  handleMethodsCallbacks =
-    (handledFunction = () => {}) =>
-      (err, res) => {
-        if (err) {
-          switch (err) {
-            case 500: {
-              console.log('Service unavailable');
-              break;
-            }
-            default: {
-              console.log('Something going wrong');
-            }
-          }
-        } else {
-          handledFunction(res);
-        }
-      };
 
   imageLoadedCallback = (fileObj) => {
     fileObj.once('uploaded', () => {
@@ -81,20 +63,24 @@ class CreateGroup extends Component {
     if (this.state.imageId) {
       Avatars.remove(
         { _id: this.state.imageId },
-        this.handleMethodsCallbacks(this.imageDeletedCallback),
+        handleMethodsCallbacks(this.imageDeletedCallback),
       );
     }
 
     const file = this.image.files[0];
 
     if (file) {
-      Avatars.insert(file, this.handleMethodsCallbacks(this.imageLoadedCallback));
+      Avatars.insert(file, handleMethodsCallbacks(this.imageLoadedCallback));
     }
 
     return false;
   }
 
   render() {
+    if (this.props.handleMenu) {
+      return <div>Loading</div>;
+    }
+
     return (<form onSubmit={this.createGroup} className="form group-create">
       <ul className="group-create__info">
         <li className="group-create__item">
@@ -140,16 +126,15 @@ class CreateGroup extends Component {
   }
 }
 
-CreateGroup.propTypes = {
-  menu: PropTypes.arrayOf(Object),
-};
+CreateGroup.propTypes = propTypes;
 
 const CreateGroupContainer = createContainer(() => {
-  Meteor.subscribe('Menu');
+  const handleMenu = Meteor.subscribe('Menu');
 
   const menu = Menu.find().fetch();
 
   return {
+    menuLoading: !handleMenu.ready(),
     menu,
   };
 }, CreateGroup);

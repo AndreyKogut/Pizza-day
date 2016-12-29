@@ -4,6 +4,13 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import MenuPickerContainer from './MenuPicker';
 import Menu from '../api/menu/collection';
+import handleMethodsCallbacks from '../helpers/methods';
+
+const propTypes = {
+  id: PropTypes.string,
+  menu: PropTypes.arrayOf(Object),
+  menuLoading: PropTypes.bool,
+};
 
 class CreateEvent extends Component {
   constructor(props) {
@@ -24,33 +31,19 @@ class CreateEvent extends Component {
     Meteor.call(
       'events.insert',
       { name, title, date, groupId, menu },
-      this.handleMethodsCallbacks(this.successLoginCallback),
+      handleMethodsCallbacks(this.successCreateCallback),
     );
   }
 
-  successLoginCallback = (eventId) => {
+  successCreateCallback = (eventId) => {
     FlowRouter.go('/groups/:id/events/:eventId', { id: this.props.id, eventId });
   };
 
-  handleMethodsCallbacks =
-    (handledFunction = () => {}) =>
-      (err, res) => {
-        if (err) {
-          switch (err.error) {
-            case 500: {
-              console.log('Service unavailable');
-              break;
-            }
-            default: {
-              console.log(err);
-            }
-          }
-        } else {
-          handledFunction(res);
-        }
-      };
-
   render() {
+    if (this.props.menuLoading) {
+      return <div>Loading...</div>;
+    }
+
     return (<form onSubmit={this.createEvent} className="form event-create">
       <ul className="event-create__list">
         <li className="event-create__item">
@@ -98,18 +91,17 @@ class CreateEvent extends Component {
   }
 }
 
-CreateEvent.propTypes = {
-  id: PropTypes.string,
-  menu: PropTypes.arrayOf(Object),
-};
+CreateEvent.propTypes = propTypes;
 
 const CreateEventContainer = createContainer(({ id }) => {
-  Meteor.subscribe('GroupMenu', id);
+  const handleMenu = Meteor.subscribe('GroupMenu', id);
 
   const menu = Menu.find().fetch();
 
   return {
     menu,
+    id,
+    menuLoading: !handleMenu.ready(),
   };
 }, CreateEvent);
 

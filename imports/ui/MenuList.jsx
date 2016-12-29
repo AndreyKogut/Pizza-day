@@ -1,6 +1,10 @@
 import React, { PropTypes } from 'react';
 
-const MenuList = ({ items }) => {
+const propTypes = {
+  items: PropTypes.arrayOf(Object),
+};
+
+function MenuList({ items }) {
   const getList = () =>
     items.map(({ _id: id, name, description, price, mass }) => (
       <li className="menu__item" key={id}>
@@ -11,10 +15,8 @@ const MenuList = ({ items }) => {
   return (<ul className="menu">
     { getList() }
   </ul>);
-};
+}
 
-MenuList.propTypes = {
-  items: PropTypes.arrayOf(Object),
-};
+MenuList.propTypes = propTypes;
 
 export default MenuList;

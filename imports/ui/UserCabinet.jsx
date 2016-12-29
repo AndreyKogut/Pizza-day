@@ -1,7 +1,22 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
+import handleMethodsCallbacks from '../helpers/methods';
 import Avatars from '../api/avatars/avatarsCollection';
+
+const propTypes = {
+  id: PropTypes.string,
+  name: PropTypes.string,
+  email: PropTypes.string,
+  avatar: PropTypes.string,
+  userDataLoading: PropTypes.bool,
+};
+
+const defaultProps = {
+  name: '',
+  email: '',
+  avatar: '',
+};
 
 class UserCabinet extends Component {
   constructor(props) {
@@ -17,20 +32,16 @@ class UserCabinet extends Component {
   }
 
   getInput(type, ref, defaultValue) {
-    if (this.props.dataLoaded) {
-      return (<input
-        type={type}
-        ref={ref}
-        defaultValue={defaultValue}
-        placeholder="No name"
-        readOnly={!this.state.editable}
-        id={defaultValue}
-        onChange={this.inputChanged}
-        className={!this.state.editable ? 'clear-defaults' : ''}
-      />);
-    }
-
-    return '';
+    return (<input
+      type={type}
+      ref={ref}
+      defaultValue={defaultValue}
+      placeholder="No name"
+      readOnly={!this.state.editable}
+      id={defaultValue}
+      onChange={this.inputChanged}
+      className={!this.state.editable ? 'clear-defaults' : ''}
+    />);
   }
 
   inputChanged() {
@@ -42,7 +53,7 @@ class UserCabinet extends Component {
   imageLoadedCallback = (fileObj) => {
     fileObj.once('uploaded', () => {
       Meteor.call('user.update',
-        { id: this.props.id, avatar: `/cfs/files/avatars/${fileObj._id}` });
+        { avatar: `/cfs/files/avatars/${fileObj._id}` });
       this.setState({
         imageId: fileObj._id,
       });
@@ -61,33 +72,7 @@ class UserCabinet extends Component {
     });
   };
 
-  handleMethodsCallbacks =
-    (handledFunction = () => {}) =>
-      (err, res) => {
-        if (err) {
-          switch (err.error) {
-            case 500: {
-              console.log('Service unavailable');
-              break;
-            }
-            case 403: {
-              console.log('No such password/login combination');
-              break;
-            }
-            case 400: {
-              console.log('No ...');
-              break;
-            }
-            default: {
-              console.log('Something going wrong');
-            }
-          }
-        } else {
-          handledFunction(res);
-        }
-      };
-
-  // Must be changed to image picker
+  // TODO: Change to image picker
   loadFile(event) {
     event.preventDefault();
 
@@ -96,11 +81,11 @@ class UserCabinet extends Component {
       if (this.state.imageId) {
         Avatars.remove(
           { _id: this.state.imageId },
-          this.handleMethodsCallbacks(this.imageDeletedCallback),
+          handleMethodsCallbacks(this.imageDeletedCallback),
         );
       }
 
-      Avatars.insert(file, this.handleMethodsCallbacks(this.imageLoadedCallback));
+      Avatars.insert(file, handleMethodsCallbacks(this.imageLoadedCallback));
     }
   }
 
@@ -115,11 +100,15 @@ class UserCabinet extends Component {
     Meteor.call(
       'user.update',
       { ...userData },
-      this.handleMethodsCallbacks(this.dataChangeCallback),
+      handleMethodsCallbacks(this.dataChangeCallback),
     );
   }
 
   render() {
+    if (this.props.userDataLoading) {
+      return (<div>Loading..</div>);
+    }
+
     return (<div className="form user-cabinet">
       <form onSubmit={this.updateUserData}>
         <ul className="form__list">
@@ -154,35 +143,31 @@ class UserCabinet extends Component {
   }
 }
 
-UserCabinet.propTypes = {
-  id: PropTypes.string,
-  name: PropTypes.string,
-  email: PropTypes.string,
-  avatar: PropTypes.string,
-  dataLoaded: PropTypes.bool,
-};
+UserCabinet.propTypes = propTypes;
+
+UserCabinet.defaultProps = defaultProps;
 
 const UserCabinetContainer = createContainer(({ id }) => {
-  Meteor.subscribe('user', id);
+  const handleUser = Meteor.subscribe('user', id);
 
-  const user = Meteor.users.findOne(id);
-  const userData = {
-    name: '',
-    email: '',
-    avatar: '',
-    dataLoaded: false,
-  };
+  const user = Meteor.users.findOne(id) || {};
 
-  if (user) {
-    userData.name = user.profile ? user.profile.name : '';
-    userData.email = user.emails.length ? user.emails[0].address : '';
-    userData.avatar = user.profile ? user.profile.avatar : '';
-    userData.dataLoaded = true;
-  }
+  _.defaults(user, {
+    profile: {
+      name: '',
+      avatar: '',
+    },
+    emails: [{
+      address: '',
+    }],
+  });
 
   return {
     id,
-    ...userData,
+    name: user.profile.name,
+    email: user.emails[0].address,
+    avatar: user.profile.avatar,
+    userDataLoading: !handleUser.ready(),
   };
 }, UserCabinet);
 

@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
+import handleMethodsCallbacks from '../helpers/methods';
 
 class SignUp extends Component {
   constructor(props) {
     super(props);
     this.signUp = this.signUp.bind(this);
   }
+
+  signUpCallback = (email, password) => {
+    Meteor.loginWithPassword(email, password);
+  };
 
   signUp(event) {
     event.preventDefault();
@@ -18,15 +23,9 @@ class SignUp extends Component {
       Meteor.call('user.insert', {
         email,
         password,
-      }, (err) => {
-        if (err) {
-          throw new Error(err);
-        } else {
-          Meteor.loginWithPassword(email, password);
-        }
-      });
+      }, handleMethodsCallbacks(this.signUpCallback.bind(null, email, password)));
     } else {
-      // Inform user that passwords not equal
+      // TODO: Inform user that passwords not equal
     }
   }
 

@@ -13,20 +13,25 @@ Meteor.methods({
       menu: [String],
     };
 
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'You mast be logged in');
+    }
+
     check(requestData, requestDateStructure);
     check(requestData.name, Match.Where(checkData.notEmpty));
     check(requestData.menu, Match.Where(checkData.stringList));
 
     const id = new Meteor.Collection.ObjectID().valueOf();
-    const { members: membersToInsert = [], ...fieldsToInsert } = requestData;
+    const { members = [], ...fieldsToInsert } = requestData;
 
-    membersToInsert.unshift(this.userId);
+    members.unshift(this.userId);
 
     Groups.insert({
       _id: id,
       ...fieldsToInsert,
       events: [],
-      membersToInsert,
+      members,
+      creator: this.userId,
       createdAt: new Date(),
     });
 
@@ -40,6 +45,10 @@ Meteor.publish('Groups', function getGroups() {
 });
 
 Meteor.publish('Group', (id) => {
-  check(id, String);
+  check(id, Match.Where(checkData.notEmpty));
+  if (!this.userId) {
+    return this.error(new Meteor.Error(403, 'Access denied'));
+  }
+
   return Groups.find(id);
 });
