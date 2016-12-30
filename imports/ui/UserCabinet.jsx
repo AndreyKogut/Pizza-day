@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import handleMethodsCallbacks from '../helpers/methods';
-import Avatars from '../api/avatars/avatarsCollection';
+import handleMethodsCallbacks from '../helpers/handleMethodsCallbacks';
+import ImagePicker from '../ui/ImagePicker';
 
 const propTypes = {
   id: PropTypes.string,
@@ -21,7 +21,6 @@ const defaultProps = {
 class UserCabinet extends Component {
   constructor(props) {
     super(props);
-    this.loadFile = this.loadFile.bind(this);
     this.updateUserData = this.updateUserData.bind(this);
     this.inputChanged = this.inputChanged.bind(this);
     this.state = {
@@ -50,57 +49,23 @@ class UserCabinet extends Component {
     });
   }
 
-  imageLoadedCallback = (fileObj) => {
-    fileObj.once('uploaded', () => {
-      Meteor.call('user.update',
-        { avatar: `/cfs/files/avatars/${fileObj._id}` });
-      this.setState({
-        imageId: fileObj._id,
-      });
-    });
-  };
-
-  imageDeletedCallback = () => {
-    this.setState({
-      imageId: null,
-    });
-  };
-
-  dataChangeCallback = () => {
+  dataChangedCallback = () => {
     this.setState({
       edited: false,
     });
   };
 
-  // TODO: Change to image picker
-  loadFile(event) {
-    event.preventDefault();
-
-    const file = this.image.files[0];
-    if (file) {
-      if (this.state.imageId) {
-        Avatars.remove(
-          { _id: this.state.imageId },
-          handleMethodsCallbacks(this.imageDeletedCallback),
-        );
-      }
-
-      Avatars.insert(file, handleMethodsCallbacks(this.imageLoadedCallback));
-    }
-  }
-
   updateUserData(event) {
     event.preventDefault();
 
-    const userData = {
-      email: this.email.value.trim(),
-      name: this.name.value.trim(),
-    };
+    const email = this.email.value.trim();
+    const name = this.name.value.trim();
+    const avatar = this.avatar;
 
     Meteor.call(
       'user.update',
-      { ...userData },
-      handleMethodsCallbacks(this.dataChangeCallback),
+      { email, name, avatar },
+      handleMethodsCallbacks(this.dataChangedCallback),
     );
   }
 
@@ -112,17 +77,11 @@ class UserCabinet extends Component {
     return (<div className="form user-cabinet">
       <form onSubmit={this.updateUserData}>
         <ul className="form__list">
-          <li className="form__item">
-            <figure>
-              <img src={this.props.avatar} className="avatar" alt="" />
-              { this.state.editable ?
-                <figcaption>
-                  <input type="file" ref={(image) => { this.image = image; }} />
-                  <button onClick={this.loadFile}>
-                    Change avatar
-                  </button>
-                </figcaption> : ''}
-            </figure>
+          <li>
+            <ImagePicker
+              getImageUrl={(url) => { this.avatar = url; this.inputChanged(); }}
+              currentImageUrl={this.props.avatar}
+            />
           </li>
           <li>
             <label htmlFor={this.props.name}>Name : </label>
@@ -144,7 +103,6 @@ class UserCabinet extends Component {
 }
 
 UserCabinet.propTypes = propTypes;
-
 UserCabinet.defaultProps = defaultProps;
 
 const UserCabinetContainer = createContainer(({ id }) => {

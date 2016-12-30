@@ -14,10 +14,6 @@ Meteor.methods({
       price: Number,
     };
 
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Access denied');
-    }
-
     check(requestData, requestDataStructure);
     check(requestData.name, Match.Where(checkData.notEmpty));
     check(requestData.description, Match.Where(checkData.notEmpty));

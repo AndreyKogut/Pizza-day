@@ -7,6 +7,7 @@ const imageStore = new FS.Store.FileSystem('avatars', {
 const Avatars = new FS.Collection('avatars', {
   stores: [imageStore],
   filter: {
+    maxSize: 1048576, // 1 mb
     allow: {
       contentTypes: ['image/jpeg'],
     },

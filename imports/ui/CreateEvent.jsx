@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import MenuPickerContainer from './MenuPicker';
 import Menu from '../api/menu/collection';
-import handleMethodsCallbacks from '../helpers/methods';
+import handleMethodsCallbacks from '../helpers/handleMethodsCallbacks';
 
 const propTypes = {
   id: PropTypes.string,

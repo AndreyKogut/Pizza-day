@@ -2,10 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import handleMethodsCallbacks from '../helpers/methods';
-import Avatars from '../api/avatars/avatarsCollection';
+import handleMethodsCallbacks from '../helpers/handleMethodsCallbacks';
 import MenuPicker from './MenuPicker';
 import Menu from '../api/menu/collection';
+import ImagePicker from '../ui/ImagePicker';
 
 const propTypes = {
   menu: PropTypes.arrayOf(Object),
@@ -16,7 +16,6 @@ class CreateGroup extends Component {
   constructor(props) {
     super(props);
     this.createGroup = this.createGroup.bind(this);
-    this.loadFile = this.loadFile.bind(this);
     this.state = {
       imageId: null,
       image: '',
@@ -28,53 +27,19 @@ class CreateGroup extends Component {
 
     const name = this.name.value.trim();
     const description = this.description.value.trim();
-    const avatar = this.state.image;
+    const avatar = this.avatar;
     const menu = this.menu;
 
     Meteor.call(
       'groups.insert',
       { name, description, avatar, menu },
-      handleMethodsCallbacks(this.successLoginCallback),
+      handleMethodsCallbacks(this.successCreateCallback),
     );
   }
 
-  successLoginCallback = (id) => {
+  successCreateCallback = (id) => {
     FlowRouter.go('/groups/:id', { id });
   };
-
-  imageLoadedCallback = (fileObj) => {
-    fileObj.once('uploaded', () => {
-      this.setState({
-        imageId: fileObj._id,
-        image: `/cfs/files/avatars/${fileObj._id}`,
-      });
-    });
-  };
-
-  imageDeletedCallback = () => {
-    this.setState({
-      imageId: null,
-    });
-  };
-
-  loadFile(event) {
-    event.preventDefault();
-
-    if (this.state.imageId) {
-      Avatars.remove(
-        { _id: this.state.imageId },
-        handleMethodsCallbacks(this.imageDeletedCallback),
-      );
-    }
-
-    const file = this.image.files[0];
-
-    if (file) {
-      Avatars.insert(file, handleMethodsCallbacks(this.imageLoadedCallback));
-    }
-
-    return false;
-  }
 
   render() {
     if (this.props.handleMenu) {
@@ -84,12 +49,10 @@ class CreateGroup extends Component {
     return (<form onSubmit={this.createGroup} className="form group-create">
       <ul className="group-create__info">
         <li className="group-create__item">
-          <figure>
-            <img src={this.state.image} onError={this.loadFile} className="avatar" alt="" />
-            <figcaption>
-              <input type="file" ref={(image) => { this.image = image; }} onChange={this.loadFile} />
-            </figcaption>
-          </figure>
+          <ImagePicker
+            getImageUrl={(url) => { this.avatar = url; }}
+            currentImageUrl={''}
+          />
         </li>
         <li className="group-create__item">
           <label className="form__label" htmlFor="name">
