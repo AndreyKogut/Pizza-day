@@ -40,12 +40,16 @@ Meteor.methods({
 });
 
 Meteor.publish('Groups', function getGroups() {
-  check(this.userId, Match.Where(checkData.notEmpty));
+  if (!this.userId) {
+    return this.error(new Meteor.Error(403, 'Access denied'));
+  }
+
   return Groups.find({ members: this.userId }, { sort: { createdAt: -1 } });
 });
 
-Meteor.publish('Group', (id) => {
+Meteor.publish('Group', function groupPublish(id) {
   check(id, Match.Where(checkData.notEmpty));
+
   if (!this.userId) {
     return this.error(new Meteor.Error(403, 'Access denied'));
   }

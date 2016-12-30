@@ -32,7 +32,7 @@ Meteor.methods({
 
 Meteor.publish('Menu', () => Menu.find());
 
-Meteor.publish('GroupMenu', (id) => {
+Meteor.publish('GroupMenu', function publishGroupMenu(id) {
   check(id, Match.Where(checkData.notEmpty));
 
   if (!this.userId) {
@@ -44,7 +44,7 @@ Meteor.publish('GroupMenu', (id) => {
   return Menu.find({ _id: { $in: [...groupMenu] } });
 });
 
-Meteor.publish('EventMenu', (id) => {
+Meteor.publish('EventMenu', function publishMenu(id) {
   check(id, Match.Where(checkData.notEmpty));
 
   if (!this.userId) {

@@ -1,16 +1,16 @@
 import Avatars from './avatarsCollection';
 
 Avatars.allow({
-  insert(userID) {
-    return !!userID;
+  insert(userId) {
+    return !!userId;
   },
-  update(userID) {
-    return !!userID;
+  update(userId) {
+    return !!userId;
   },
-  remove(userID) {
-    return !!userID;
+  remove(userId) {
+    return !!userId;
   },
-  download(userID) {
-    return !!userID;
+  download() {
+    return true;
   },
 });
