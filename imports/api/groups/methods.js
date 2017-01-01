@@ -9,12 +9,12 @@ Meteor.methods({
       name: String,
       description: Match.Maybe(String),
       avatar: Match.Maybe(String),
-      members: Match.Maybe([String]),
+      members: [String],
       menu: [String],
     };
 
     if (!this.userId) {
-      throw new Meteor.Error(403, 'You mast be logged in');
+      throw new Meteor.Error(401, 'You mast be logged in');
     }
 
     check(requestData, requestDateStructure);
@@ -24,13 +24,21 @@ Meteor.methods({
     const id = new Meteor.Collection.ObjectID().valueOf();
     const { members = [], ...fieldsToInsert } = requestData;
 
-    members.unshift(this.userId);
+    const convertedMembers = [{
+      _id: this.userId,
+      verified: true,
+    }];
+
+    members.map(item => convertedMembers.push({
+      _id: item,
+      verified: false,
+    }));
 
     Groups.insert({
       _id: id,
       ...fieldsToInsert,
       events: [],
-      members,
+      members: convertedMembers,
       creator: this.userId,
       createdAt: new Date(),
     });
@@ -41,17 +49,17 @@ Meteor.methods({
 
 Meteor.publish('Groups', function getGroups() {
   if (!this.userId) {
-    return this.error(new Meteor.Error(403, 'Access denied'));
+    return this.error(new Meteor.Error(401, 'Access denied'));
   }
 
-  return Groups.find({ members: this.userId }, { sort: { createdAt: -1 } });
+  return Groups.find({ 'members._id': this.userId }, { sort: { createdAt: -1 } });
 });
 
 Meteor.publish('Group', function groupPublish(id) {
   check(id, Match.Where(checkData.notEmpty));
 
   if (!this.userId) {
-    return this.error(new Meteor.Error(403, 'Access denied'));
+    return this.error(new Meteor.Error(401, 'Access denied'));
   }
 
   return Groups.find(id);

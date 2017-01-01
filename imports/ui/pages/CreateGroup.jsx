@@ -6,6 +6,7 @@ import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 import MenuPicker from '../components/MenuPicker';
 import Menu from '../../api/menu/collection';
 import ImagePicker from '../components/ImagePicker';
+import UserPicker from '../components/UserPicker';
 
 const propTypes = {
   menu: PropTypes.arrayOf(Object),
@@ -29,10 +30,11 @@ class CreateGroup extends Component {
     const description = this.description.value.trim();
     const avatar = this.avatar;
     const menu = this.menu;
+    const members = this.users;
 
     Meteor.call(
       'groups.insert',
-      { name, description, avatar, menu },
+      { name, description, avatar, menu, members },
       handleMethodsCallbacks(this.successCreateCallback),
     );
   }
@@ -47,14 +49,14 @@ class CreateGroup extends Component {
     }
 
     return (<form onSubmit={this.createGroup} className="form group-create">
-      <ul className="group-create__info">
-        <li className="group-create__item">
+      <div className="group-create__info">
+        <div className="group-create__item">
           <ImagePicker
             getImageUrl={(url) => { this.avatar = url; }}
             currentImageUrl={''}
           />
-        </li>
-        <li className="group-create__item">
+        </div>
+        <p className="group-create__item">
           <label className="form__label" htmlFor="name">
           Name:
           </label>
@@ -64,8 +66,8 @@ class CreateGroup extends Component {
             id="name"
             className="form__input"
           />
-        </li>
-        <li className="group-create__item">
+        </p>
+        <p className="group-create__item">
           <label className="form__label" htmlFor="description">
           Description:
           </label>
@@ -74,11 +76,16 @@ class CreateGroup extends Component {
             id="description"
             className="form__textarea"
           />
-        </li>
-        <li className="group-create__item">
+        </p>
+        <p className="group-create__item">
           <input type="submit" value="Create group" />
-        </li>
-      </ul>
+        </p>
+      </div>
+      <h3 className="group-create__h">Group members</h3>
+      <div className="group-create__user-picker">
+        <UserPicker getUsersList={(users) => { this.users = users; }} />
+      </div>
+      <h3 className="group-create__h">Group menu</h3>
       <div className="group-create__menu">
         <MenuPicker
           items={this.props.menu}

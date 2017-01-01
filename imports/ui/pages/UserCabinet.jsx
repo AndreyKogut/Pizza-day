@@ -78,10 +78,14 @@ class UserCabinet extends Component {
       <form onSubmit={this.updateUserData}>
         <ul className="form__list">
           <li>
-            <ImagePicker
+            { this.state.editable ? <ImagePicker
               getImageUrl={(url) => { this.avatar = url; this.inputChanged(); }}
               currentImageUrl={this.props.avatar}
-            />
+            /> : <img
+              src={this.props.avatar}
+              alt={this.props.name}
+              className="avatar"
+            /> }
           </li>
           <li>
             <label htmlFor={this.props.name}>Name : </label>

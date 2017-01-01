@@ -28,7 +28,7 @@ function Header({ id }) {
           <li className="header__item header__item_login">
             <a
               className="header__link"
-              href={FlowRouter.path('/user/:id', { id })}
+              href={FlowRouter.path('/users/:id', { id })}
             >Cabinet</a>
             <button
               onClick={logout}

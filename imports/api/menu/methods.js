@@ -32,7 +32,7 @@ Meteor.publish('GroupMenu', function publishGroupMenu(id) {
   check(id, Match.Where(checkData.notEmpty));
 
   if (!this.userId) {
-    return this.error(new Meteor.Error(403, 'Access denied'));
+    return this.error(new Meteor.Error(401, 'Access denied'));
   }
 
   const groupMenu = Groups.findOne({ _id: id }).menu || [];
@@ -44,7 +44,7 @@ Meteor.publish('EventMenu', function publishMenu(id) {
   check(id, Match.Where(checkData.notEmpty));
 
   if (!this.userId) {
-    return this.error(new Meteor.Error(403, 'Access denied'));
+    return this.error(new Meteor.Error(401, 'Access denied'));
   }
 
   const eventMenu = Event.findOne({ _id: id }).menu || [];

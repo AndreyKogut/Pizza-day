@@ -92,12 +92,14 @@
 }
 
 .content {
-  padding: 20px 50px;
   box-sizing: border-box;
   display: flex;
   height: 100%;
   font-size: 16px;
   line-height: 1;
+  & > * {
+    padding: 20px 50px;
+  }
 }
 
 .groups {
@@ -111,17 +113,57 @@
 .event-create,
 .group-create,
 .event-page {
-  display: flex;
+  display: block;
   width: 100%;
-  justify-content: space-between;
+  overflow-y: scroll;
   &__menu {
     overflow-y: scroll;
-    padding-left: 20px;
   }
   &__menu-header {
     font-size: 20px;
     text-align: right;
     margin-right: 15px;
+  }
+}
+
+.group-create__menu {
+  max-height: 400px
+}
+
+.user-picker {
+  display: flex;
+  &__all {
+    flex: 1;
+  }
+
+  &__picked {
+    flex: 1;
+  }
+
+  &__item {
+    display: block;
+  }
+}
+
+.users-list {
+  display: block;
+  &__item {
+    display: inline-block;
+    margin: 0 5px;
+    text-align: center;
+  }
+
+  &__link {
+    display: block;
+  }
+
+  &__image {
+    max-width: 70px;
+    display: inline-block;
+  }
+
+  &__description {
+    display: block;
   }
 }
 

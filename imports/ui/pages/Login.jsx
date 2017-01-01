@@ -42,7 +42,7 @@ class Login extends Component {
     return (<div>
       <h1>Authorization</h1>
       <form onSubmit={this.login}>
-        <button onClick={this.loginWithGoogle} role="button">Google</button>
+        <button onClick={this.loginWithGoogle} type="button">Google</button>
         <input type="email" ref={(email) => { this.email = email; }} required placeholder="email" />
         <input type="password" ref={(password) => { this.password = password; }} required placeholder="pass" />
         <input type="submit" value="Login" />

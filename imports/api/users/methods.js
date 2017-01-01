@@ -31,7 +31,7 @@ Meteor.methods({
     };
 
     if (!this.userId) {
-      throw new Meteor.Error(403, 'Access denied');
+      throw new Meteor.Error(401, 'Access denied');
     }
 
     check(requestData, requestDataFormat);
@@ -58,4 +58,21 @@ Meteor.methods({
       });
     }
   },
+});
+
+Meteor.publish('Users', function publishUsers() {
+  if (!this.userId) {
+    return this.error(new Meteor.Error(401, 'Access denied'));
+  }
+
+  // $ne don't work { _id: { $ne: this.userId } }
+  return Meteor.users.find();
+});
+
+Meteor.publish('GroupMembers', function publishGroupMembers() {
+  if (!this.userId) {
+    return this.error(new Meteor.Error(401, 'Access denied'));
+  }
+
+  return Meteor.users.find();
 });

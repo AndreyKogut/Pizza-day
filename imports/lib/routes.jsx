@@ -63,7 +63,7 @@ publicRouts.route('/signup', {
   },
 });
 
-privateRouts.route('/user/:id', {
+privateRouts.route('/users/:id', {
   name: 'Cabinet',
   action({ id }) {
     mount(App, {
