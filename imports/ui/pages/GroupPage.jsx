@@ -2,11 +2,11 @@ import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import Groups from '../api/groups/collection';
-import Menu from '../api/menu/collection';
-import Events from '../api/events/collection';
-import MenuList from './MenuList';
-import EventsList from './EventsList';
+import Groups from '../../api/groups/collection';
+import Menu from '../../api/menu/collection';
+import Events from '../../api/events/collection';
+import MenuList from '../components/MenuList';
+import EventsList from '../components/EventsList';
 
 const propTypes = {
   id: PropTypes.string,

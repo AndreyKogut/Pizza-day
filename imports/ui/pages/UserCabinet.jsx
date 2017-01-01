@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import handleMethodsCallbacks from '../helpers/handleMethodsCallbacks';
-import ImagePicker from '../ui/ImagePicker';
+import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
+import ImagePicker from '../components/ImagePicker';
 
 const propTypes = {
   id: PropTypes.string,

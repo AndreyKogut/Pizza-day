@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { FS } from 'meteor/cfs:base-package';
-import handleMethodsCallbacks from '../helpers/handleMethodsCallbacks';
-import Avatars from '../api/avatars/avatarsCollection';
+import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
+import Avatars from '../../api/avatars/avatarsCollection';
 
 const propTypes = {
   currentImageUrl: PropTypes.string,

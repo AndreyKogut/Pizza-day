@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-import MenuPicker from './MenuPicker';
-import Events from '../api/events/collection';
-import Menu from '../api/menu/collection';
+import MenuPicker from '../components/MenuPicker';
+import Events from '../../api/events/collection';
+import Menu from '../../api/menu/collection';
 
 const propTypes = {
   name: PropTypes.string,

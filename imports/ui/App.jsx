@@ -1,6 +1,6 @@
 import React from 'react';
-import HeaderContainer from '../ui/Header';
-import Footer from '../ui/Footer';
+import HeaderContainer from './components/Header';
+import Footer from './components/Footer';
 
 const propTypes = {
   content: React.PropTypes.func,

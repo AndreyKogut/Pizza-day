@@ -2,10 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import handleMethodsCallbacks from '../helpers/handleMethodsCallbacks';
-import MenuPicker from './MenuPicker';
-import Menu from '../api/menu/collection';
-import ImagePicker from '../ui/ImagePicker';
+import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
+import MenuPicker from '../components/MenuPicker';
+import Menu from '../../api/menu/collection';
+import ImagePicker from '../components/ImagePicker';
 
 const propTypes = {
   menu: PropTypes.arrayOf(Object),

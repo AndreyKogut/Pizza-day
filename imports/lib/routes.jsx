@@ -3,14 +3,15 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { mount } from 'react-mounter';
-import UserCabinetContainer from '../ui/UserCabinet';
-import SignUp from '../ui/SignUp';
-import Login from '../ui/Login';
-import GroupsPageContainer from '../ui/GroupsPage';
-import GroupPageContainer from '../ui/GroupPage';
-import EventPageContainer from '../ui/EventPage';
-import CreateGroupContainer from '../ui/CreateGroup';
-import CreateEvent from '../ui/CreateEvent';
+import UserCabinetContainer from '../ui/pages/UserCabinet';
+import SignUp from '../ui/pages/SignUp';
+import Login from '../ui/pages/Login';
+import GroupsPageContainer from '../ui/pages/GroupsPage';
+import GroupPageContainer from '../ui/pages/GroupPage';
+import EventPageContainer from '../ui/pages/EventPage';
+import CreateGroupContainer from '../ui/pages/CreateGroup';
+import CreateEvent from '../ui/pages/CreateEvent';
+import EventsPageContainver from '../ui/pages/EventsPage';
 import App from '../ui/App';
 
 const privateRouteOnEnter = (context, redirect) => {
@@ -94,6 +95,15 @@ privateRouts.route('/groups/:id/create-event', {
   action({ id }) {
     mount(App, {
       content: () => (<CreateEvent id={id} />),
+    });
+  },
+});
+
+privateRouts.route('/events', {
+  name: 'UserEvents',
+  action() {
+    mount(App, {
+      content: () => (<EventsPageContainver />),
     });
   },
 });

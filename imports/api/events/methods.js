@@ -20,7 +20,8 @@ Meteor.methods({
     check(requestData.date, Match.Where(checkData.dateNotPass));
     check(requestData.menu, Match.Where(checkData.stringList));
 
-    const groupCreatorId = Groups.findOne({ _id: requestData.groupId }).creator;
+    const { groupId, ...eventData } = requestData;
+    const groupCreatorId = Groups.findOne({ _id: groupId }).creator;
 
     if (groupCreatorId !== this.userId) {
       throw new Meteor.Error(403, 'Access denied');
@@ -34,11 +35,11 @@ Meteor.methods({
       status: 'ordering',
       creator: requestData.groupId,
       createdAt: new Date(),
-      ...requestData,
+      ...eventData,
     });
 
     Groups.upsert({
-      _id: requestData.groupId,
+      _id: groupId,
     }, { $push: { events: id } });
 
     return id;

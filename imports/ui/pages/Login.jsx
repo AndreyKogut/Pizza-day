@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
-import handleMethodsCallbacks from '../helpers/handleMethodsCallbacks';
+import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 
 class Login extends Component {
   constructor(props) {

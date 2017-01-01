@@ -21,6 +21,9 @@ function Header({ id }) {
         <li className="header__item">
           <a href="/groups" className="header__link">Groups</a>
         </li>
+        <li className="header__item">
+          <a href="/events" className="header__link">Events</a>
+        </li>
         { id ?
           <li className="header__item header__item_login">
             <a
