@@ -72,7 +72,7 @@ class CreateEvent extends Component {
             Date:
           </label>
           <input
-            type="date"
+            type="datetime-local"
             ref={(date) => { this.date = date; }}
             className="event-create__input"
           />

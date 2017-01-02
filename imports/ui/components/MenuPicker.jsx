@@ -50,7 +50,7 @@ class MenuPicker extends Component {
         const list = [];
 
         this.menu.forEach((value, key) => {
-          list.push({ _id: value, count: key });
+          list.push({ _id: key, count: value });
         });
 
         this.props.getMenuList(list);
@@ -67,20 +67,16 @@ class MenuPicker extends Component {
       this.menu.set(id, this[id] ? this[id].value : null);
     }
 
-    const hasGetMenuListProp = Object.prototype.hasOwnProperty.call(this.props, 'getMenuList');
+    if (this.props.withCounters) {
+      const list = [];
 
-    if (hasGetMenuListProp) {
-      if (this.props.withCounters) {
-        const list = [];
+      this.menu.forEach((value, key) => {
+        list.push({ _id: key, count: Number(value) });
+      });
 
-        this.menu.forEach((value, key) => {
-          list.push({ _id: value, count: key });
-        });
-
-        this.props.getMenuList(list);
-      } else {
-        this.props.getMenuList([...this.menu.keys()]);
-      }
+      this.props.getMenuList(list);
+    } else {
+      this.props.getMenuList([...this.menu.keys()]);
     }
   };
 
