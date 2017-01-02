@@ -76,15 +76,12 @@ Meteor.methods({
     check(eventId, Match.Where(checkData.notEmpty));
     check(menu, menuObjectStructure);
 
-    Events.update({ _id: eventId },
-      {
-        $push: {
-          participants: {
-            _id: this.userId,
-            menu,
-            ordered: true,
-          },
-        },
+    Events.update({ _id: eventId, participants: { $elemMatch: { _id: this.userId } } },
+      { $set: { 'participants.$.ordered': !!menu.length, 'participants.$.menu': menu } },
+      (err) => {
+        if (err) {
+          throw new Meteor.Error(401, 'You must be participant');
+        }
       },
     );
   },

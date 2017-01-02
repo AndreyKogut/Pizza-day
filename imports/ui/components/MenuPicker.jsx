@@ -5,17 +5,18 @@ const propTypes = {
   items: PropTypes.arrayOf(Object),
   getMenuList: PropTypes.func,
   withCounters: PropTypes.bool,
-  selectedItems: PropTypes.arrayOf(Object),
+  selectedItems: PropTypes.instanceOf(Map),
 };
 
 const defaultProps = {
-  selectedItems: [],
+  getMenuList: () => {},
+  selectedItems: new Map(),
 };
 
 class MenuPicker extends Component {
   constructor(props) {
     super(props);
-    this.menu = new Map(...this.props.selectedItems);
+    this.menu = this.props.selectedItems;
   }
 
   getMenuItems() {
@@ -23,7 +24,7 @@ class MenuPicker extends Component {
       ({ _id: id, name, description, price, mass }) => (<li key={id}>
         <input
           type="checkbox"
-          value={this.menu.has(id)}
+          defaultChecked={this.props.selectedItems.has(id)}
           onChange={() => { this.addRemoveItem(id); }}
         />
         { name } | { description } | { price } | { mass }
@@ -31,7 +32,7 @@ class MenuPicker extends Component {
           type="number"
           checked={this[id]}
           ref={(val) => { this[id] = val; }}
-          defaultValue="1"
+          defaultValue={this.props.selectedItems.get(id) || 1}
           min="1"
           onChange={() => { this.changeCounter(id); }}
           max="10"
@@ -44,13 +45,11 @@ class MenuPicker extends Component {
       this.menu.delete(id);
       this.menu.set(id, this[id] ? this[id].value : 1);
 
-      const hasGetMenuListProp = Object.prototype.hasOwnProperty.call(this.props, 'getMenuList');
-
-      if (this.props.withCounters && hasGetMenuListProp) {
+      if (this.props.withCounters) {
         const list = [];
 
         this.menu.forEach((value, key) => {
-          list.push({ _id: key, count: value });
+          list.push({ _id: key, count: Number(value) });
         });
 
         this.props.getMenuList(list);
@@ -64,7 +63,7 @@ class MenuPicker extends Component {
     if (this.menu.has(id)) {
       this.menu.delete(id);
     } else {
-      this.menu.set(id, this[id] ? this[id].value : null);
+      this.menu.set(id, this[id] ? this[id].value : 1);
     }
 
     if (this.props.withCounters) {
@@ -90,17 +89,19 @@ class MenuPicker extends Component {
 MenuPicker.propTypes = propTypes;
 MenuPicker.defaultProps = defaultProps;
 
-const MenuPickerContainer = createContainer(({ /* defaultValue, */ ...props }) => {
-  /* TODO: default values
+const MenuPickerContainer = createContainer(({ defaultValue = [], ...props }) => {
   const itemsMap = new Map();
-  if (defaultValue && defaultValue.typeof(Array)) {
-    defaultValue.forEach((value) => {
-      itemsMap.set(value._id || value, value.count || 1);
-    });
-  }*/
+
+  defaultValue.forEach((value) => {
+    if (_.isObject(value)) {
+      itemsMap.set(..._.values(value));
+    } else {
+      itemsMap.set(value, 1);
+    }
+  });
 
   return {
-    /* selectedItems: [...itemsMap], */
+    selectedItems: itemsMap,
     ...props,
   };
 }, MenuPicker);

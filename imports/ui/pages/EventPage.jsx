@@ -12,10 +12,15 @@ const propTypes = {
   title: PropTypes.string,
   date: PropTypes.string,
   status: PropTypes.string,
+  orderedItems: PropTypes.arrayOf(PropTypes.any),
   isParticipant: PropTypes.bool,
   menu: PropTypes.arrayOf(Object),
   eventLoading: PropTypes.bool,
   menuLoading: PropTypes.bool,
+};
+
+const defaultProps = {
+  orderedItems: [],
 };
 
 class EventPage extends Component {
@@ -30,6 +35,7 @@ class EventPage extends Component {
     }
 
     return (<MenuPicker
+      defaultValue={this.props.orderedItems}
       items={this.props.menu}
       getMenuList={(list) => { this.menu = [...list]; }}
       withCounters
@@ -75,19 +81,20 @@ class EventPage extends Component {
 }
 
 EventPage.propTypes = propTypes;
+EventPage.defaultProps = defaultProps;
 
 const EventPageContainer = createContainer(({ eventId }) => {
   const handleEvent = Meteor.subscribe('Event', eventId);
   const handleMenu = Meteor.subscribe('EventMenu', eventId);
 
   const event = Events.findOne() || {};
-
-  const isParticipant = !!_.findWhere(event.participants, { _id: Meteor.userId() });
+  const participant = _.findWhere(event.participants, { _id: Meteor.userId() });
 
   return {
     eventId,
     ...event,
-    isParticipant,
+    orderedItems: participant ? participant.menu : [],
+    isParticipant: !!participant,
     menu: Menu.find().fetch(),
     eventLoading: !handleEvent.ready(),
     menuLoading: !handleMenu.ready(),
