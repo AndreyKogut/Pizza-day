@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import MenuListItem from '../../ui/components/MenuListItem';
+import MenuPickerFilter from '../../ui/components/MenuPickerFilter';
 
 const propTypes = {
   items: PropTypes.arrayOf(Object),
@@ -18,10 +19,21 @@ class MenuPicker extends Component {
   constructor(props) {
     super(props);
     this.menu = this.props.selectedItems;
+    this.state = {
+      filteredList: null,
+    };
   }
 
-  getMenuItems() {
-    return this.props.items.map(
+  getMenuItems = () => {
+    let filteredData;
+
+    if (!this.state.filteredList) {
+      filteredData = this.props.items;
+    } else {
+      filteredData = this.state.filteredList;
+    }
+
+    return filteredData.map(
       ({ _id: id, ...itemInfo }) => (<li key={id} className="menu__item">
         <input
           type="checkbox"
@@ -45,7 +57,20 @@ class MenuPicker extends Component {
           max="10"
         /> : ''}
       </li>));
-  }
+  };
+
+  filterItems = ({ name = '', gte = 0, lte = Number.POSITIVE_INFINITY }) => {
+    const filteredList = this.props.items.filter(
+      item =>
+        item.name.includes(name) &&
+        item.price >= gte &&
+        item.price <= lte,
+    );
+
+    this.setState({
+      filteredList,
+    });
+  };
 
   changeCounter = (id) => {
     if (this.menu.has(id)) {
@@ -87,9 +112,12 @@ class MenuPicker extends Component {
   };
 
   render() {
-    return (<ul className="menu">
-      { this.getMenuItems() }
-    </ul>);
+    return (<div className="menu">
+      <MenuPickerFilter changeCallback={(filter) => { this.filterItems(filter); }} />
+      <ul className="menu__list">
+        { this.getMenuItems() }
+      </ul>
+    </div>);
   }
 }
 

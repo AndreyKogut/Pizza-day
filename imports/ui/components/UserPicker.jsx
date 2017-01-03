@@ -96,8 +96,9 @@ class UserPicker extends Component {
 
   filterUsers = ({ name = '', email = '' }) => {
     const filteredUsers = this.props.list.filter(
-      user => user.emails[0].address.includes(email)
-      && user.profile.name.includes(name),
+      user =>
+        user.emails[0].address.includes(email) &&
+        user.profile.name.includes(name),
     );
 
     this.setState({
