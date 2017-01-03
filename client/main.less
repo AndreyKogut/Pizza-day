@@ -16,6 +16,7 @@
   appearance: none;
   background: none;
   border: none;
+  outline: none;
   box-shadow: none;
   cursor: auto;
 }
@@ -84,10 +85,16 @@
 .footer {
   padding: 20px 50px;
   box-sizing: border-box;
-  border-top: 1px solid #000;
+  background: #2d2d2d;
+  box-shadow: 0 0 15px #2d2d2d;
   &__link {
     line-height: 1;
     font-size: 16px;
+    color: #fff;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
@@ -125,13 +132,46 @@
     margin-right: 15px;
   }
 }
+.group-create {
+  &__h {
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 30px;
+    border-bottom: 1px solid #cfcfcf;
+    margin-bottom: 15px;
+  }
 
-.group-create__menu {
-  max-height: 400px
+  &__menu {
+    max-height: 400px;
+    margin: 0 -15px;
+  }
 }
 
 .user-picker {
   display: flex;
+  flex-direction: column;
+  &__data {
+    flex: 1;
+    display: flex;
+  }
+
+  &__filter {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+  }
+
+  &__label {
+
+  }
+
+  &__input {
+    flex: 1;
+    border-bottom: 1px solid #cfcfcf;
+  }
+
   &__all {
     flex: 1;
   }
@@ -141,6 +181,26 @@
   }
 
   &__item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+  }
+
+  &__image {
+    width: 60px;
+    max-height: 60px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  &__info {
+    display: inline-block;
+    vertical-align: middle;
+    padding-left: 10px;
+  }
+
+  &__text {
     display: block;
   }
 }
@@ -164,6 +224,37 @@
 
   &__description {
     display: block;
+  }
+}
+
+.menu {
+  padding: 15px;
+  &__checkbox,
+  &__counter {
+    align-self: center;
+  }
+  &__item {
+    display: flex;
+    padding: 20px 10px;
+    box-shadow: -3px 3px 10px #cfcfcf;
+    margin-bottom: 15px;
+    opacity: 0.8;
+    cursor: pointer;
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    & > * {
+      vertical-align: middle;
+    }
+  }
+
+  &__mass,
+  &__price {
+    float: right;
   }
 }
 

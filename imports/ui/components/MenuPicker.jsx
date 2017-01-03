@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
+import MenuListItem from '../../ui/components/MenuListItem';
 
 const propTypes = {
   items: PropTypes.arrayOf(Object),
@@ -21,16 +22,22 @@ class MenuPicker extends Component {
 
   getMenuItems() {
     return this.props.items.map(
-      ({ _id: id, name, description, price, mass }) => (<li key={id}>
+      ({ _id: id, ...itemInfo }) => (<li key={id} className="menu__item">
         <input
           type="checkbox"
+          className="menu__checkbox"
           defaultChecked={this.props.selectedItems.has(id)}
           onChange={() => { this.addRemoveItem(id); }}
         />
-        { name } | { description } | { price } | { mass }
+        <MenuListItem
+          name={itemInfo.name}
+          description={itemInfo.description}
+          mass={itemInfo.mass}
+          price={itemInfo.price}
+        />
         { this.props.withCounters ? <input
           type="number"
-          checked={this[id]}
+          className="menu__counter"
           ref={(val) => { this[id] = val; }}
           defaultValue={this.props.selectedItems.get(id) || 1}
           min="1"

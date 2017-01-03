@@ -78,11 +78,6 @@ Meteor.methods({
 
     Events.update({ _id: eventId, participants: { $elemMatch: { _id: this.userId } } },
       { $set: { 'participants.$.ordered': !!menu.length, 'participants.$.menu': menu } },
-      (err) => {
-        if (err) {
-          throw new Meteor.Error(401, 'You must be participant');
-        }
-      },
     );
   },
 });

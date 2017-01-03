@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { check, Match } from 'meteor/check';
 import checkData from '../checkData';
+import Groups from '../../api/groups/collection';
 
 Meteor.publish('user', (id) => {
   check(id, Match.Where(checkData.notEmpty));
@@ -60,19 +61,24 @@ Meteor.methods({
   },
 });
 
-Meteor.publish('Users', function publishUsers() {
+Meteor.publish('UsersList', function publishUsers() {
   if (!this.userId) {
     return this.error(new Meteor.Error(401, 'Access denied'));
   }
 
-  // $ne don't work { _id: { $ne: this.userId } }
-  return Meteor.users.find();
+  return Meteor.users.find({ _id: { $ne: this.userId } }, { fields: { emails: 1, profile: 1 } });
 });
 
-Meteor.publish('GroupMembers', function publishGroupMembers() {
+Meteor.publish('GroupMembers', function publishGroupMembers(groupId) {
+  check(groupId, Match.Where(checkData.notEmpty));
+
   if (!this.userId) {
     return this.error(new Meteor.Error(401, 'Access denied'));
   }
 
-  return Meteor.users.find();
+  const members = Groups.findOne({ _id: groupId }).members;
+
+  const usersId = _.pluck(members, '_id');
+
+  return Meteor.users.find({ _id: { $in: [...usersId] } }, { fields: { emails: 1, profile: 1 } });
 });

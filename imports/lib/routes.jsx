@@ -21,7 +21,7 @@ const privateRouteOnEnter = (context, redirect) => {
 Accounts.onLogin(() => {
   const current = FlowRouter.current().path;
   if (current === '/signin' || current === '/signup') {
-    FlowRouter.go('/user/:id', { id: Meteor.userId() });
+    FlowRouter.go('/users/:id', { id: Meteor.userId() });
   }
 });
 

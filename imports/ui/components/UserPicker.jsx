@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
+import UserListItem from '../../ui/components/UserListItem';
+import UserPickerFilter from '../../ui/components/UserListFilter';
 
 const propTypes = {
   list: PropTypes.arrayOf(Object),
@@ -15,31 +17,42 @@ const defaultProps = {
 class UserPicker extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       users: new Set(),
     };
   }
 
-  getUsersAllUsers = () =>
-    this.props.list.map((user) => {
-      if (this.state.users.has(user)) return '';
-        _.defaults(user, {
-          profile: {
-            name: 'No name',
-          },
-          emails: [{
-            address: 'No email',
-          }],
-        });
+  getAllUsers = () => {
+    let filteredData;
 
-      return (<button
-        type="button"
-        className="user-picker__item clear-defaults"
-        onClick={() => { this.addUser(user); }} key={user._id}
-      >
-        Name: { user.profile.name }, Email: { user.emails[0].address }
-      </button>);
+    if (!this.state.filteredUsers) {
+      filteredData = this.props.list;
+    } else {
+      filteredData = this.state.filteredUsers;
+    }
+
+    return filteredData.map((user) => {
+      if (this.state.users.has(user)) return '';
+      _.defaults(user, {
+        profile: {
+          name: 'No name',
+          avatar: '/images/user-avatar.png',
+        },
+        emails: [{
+          address: 'No email',
+        }],
+      });
+
+      return (<UserListItem
+        key={user._id}
+        userObject={user}
+        clickCallback={(clickedUser) => {
+          this.addUser(clickedUser);
+        }}
+      />);
     });
+  };
 
   getPickedUsers = () =>
     [...this.state.users].map((user) => {
@@ -52,23 +65,12 @@ class UserPicker extends Component {
         }],
       });
 
-      return (<button
-        type="button"
-        className="user-picker__item clear-defaults"
-        onClick={() => { this.deleteUser(user); }}
+      return (<UserListItem
         key={user._id}
-      >
-        Name: { user.profile.name }, Email: { user.emails[0].address }
-      </button>);
+        userObject={user}
+        clickCallback={(clickedUser) => { this.deleteUser(clickedUser); }}
+      />);
     });
-
-  getArrayOfUsers() {
-    const usersList = [];
-
-    [...this.state.users].map(({ _id: id }) => usersList.push(id));
-
-    return usersList;
-  }
 
   addUser = (user) => {
     const newState = new Set(this.state.users);
@@ -77,7 +79,7 @@ class UserPicker extends Component {
     this.setState({
       users: newState,
     }, () => {
-      this.props.getUsersList(this.getArrayOfUsers());
+      this.props.getUsersList(_.pluck([...this.state.users], '_id'));
     });
   };
 
@@ -88,9 +90,20 @@ class UserPicker extends Component {
     this.setState({
       users: newState,
     }, () => {
-      this.props.getUsersList(this.getArrayOfUsers());
+      this.props.getUsersList(_.pluck([...this.state.users], '_id'));
     });
   }
+
+  filterUsers = ({ name = '', email = '' }) => {
+    const filteredUsers = this.props.list.filter(
+      user => user.emails[0].address.includes(email)
+      && user.profile.name.includes(name),
+    );
+
+    this.setState({
+      filteredUsers,
+    });
+  };
 
   render() {
     if (this.props.usersLoading) {
@@ -98,16 +111,20 @@ class UserPicker extends Component {
     }
 
     return (<div className="user-picker">
-      <div className="user-picker__all">
-        <h3 className="user-picker__h">Users:</h3>
-        <div className="user-picker__list">
-          { this.getUsersAllUsers() }
+      <h3 className="user-picker__h">Filter data</h3>
+      <UserPickerFilter changeCallback={(filter) => { this.filterUsers(filter); }} />
+      <div className="user-picker__data">
+        <div className="user-picker__all">
+          <h3 className="user-picker__h">Users:</h3>
+          <div className="user-picker__list">
+            { this.getAllUsers() }
+          </div>
         </div>
-      </div>
-      <div className="user-picker__picked">
-        <h3 className="user-picker__h">Picked:</h3>
-        <div className="user-picker__list">
-          { this.getPickedUsers() }
+        <div className="user-picker__picked">
+          <h3 className="user-picker__h">Picked:</h3>
+          <div className="user-picker__list">
+            { this.getPickedUsers() }
+          </div>
         </div>
       </div>
     </div>);
@@ -118,7 +135,7 @@ UserPicker.propTypes = propTypes;
 UserPicker.defaultProps = defaultProps;
 
 const UserPickerContainer = createContainer(({ getUsersList }) => {
-  const handleUsers = Meteor.subscribe('Users');
+  const handleUsers = Meteor.subscribe('UsersList');
 
   return {
     getUsersList,
