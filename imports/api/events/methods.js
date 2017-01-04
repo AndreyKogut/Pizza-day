@@ -45,13 +45,53 @@ Meteor.methods({
     return id;
   },
 
+  'events.update': function updateEvent(requestData) {
+    const requestDataStructure = {
+      id: String,
+      name: Match.Maybe(String),
+      date: Match.Maybe(Match.Where(checkData.dateNotPass)),
+      title: Match.Maybe(String),
+      menu: Match.Maybe([String]),
+    };
+
+    check(requestData, requestDataStructure);
+
+    const checkMemberExistInGroup = Groups.find({
+      events: requestData.id,
+      creator: this.userId })
+    .count();
+
+    if (!checkMemberExistInGroup) {
+      throw new Meteor.Error(402, 'You should be group creator');
+    }
+
+    const updateData = _.pick(requestData, value => value);
+
+    Events.update({ _id: requestData.id }, updateData);
+  },
+
+  'events.orderEvent': function orderEvent(id) {
+    check(id, String);
+
+    const checkMemberExistInGroup = Groups.find({
+      events: id,
+      creator: this.userId })
+    .count();
+
+    if (!checkMemberExistInGroup) {
+      throw new Meteor.Error(402, 'You should be group creator');
+    }
+
+    Events.update({ _id: id }, { status: 'ordered' });
+  },
+
   'events.joinEvent': function addParticipant(id) {
     check(id, Match.Where(checkData.notEmpty));
 
     const checkMemberExistInGroup = Groups.find({ events: id, 'members._id': this.userId }).count();
 
     if (!checkMemberExistInGroup) {
-      throw new Meteor.Error(400, 'Access denied');
+      throw new Meteor.Error(402, 'Access denied');
     }
 
     Events.update({ _id: id },

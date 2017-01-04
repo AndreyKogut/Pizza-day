@@ -6,16 +6,8 @@ import ImagePicker from '../components/ImagePicker';
 
 const propTypes = {
   id: PropTypes.string,
-  name: PropTypes.string,
-  email: PropTypes.string,
-  avatar: PropTypes.string,
+  user: PropTypes.objectOf(Object),
   userDataLoading: PropTypes.bool,
-};
-
-const defaultProps = {
-  name: '',
-  email: '',
-  avatar: '',
 };
 
 class UserCabinet extends Component {
@@ -28,19 +20,6 @@ class UserCabinet extends Component {
       edited: false,
       imageId: null,
     };
-  }
-
-  getInput(type, ref, defaultValue) {
-    return (<input
-      type={type}
-      ref={ref}
-      defaultValue={defaultValue}
-      placeholder="No name"
-      readOnly={!this.state.editable}
-      id={defaultValue}
-      onChange={this.inputChanged}
-      className={!this.state.editable ? 'clear-defaults' : ''}
-    />);
   }
 
   inputChanged() {
@@ -61,10 +40,13 @@ class UserCabinet extends Component {
     const email = this.email.value.trim();
     const name = this.name.value.trim();
     const avatar = this.avatar;
+    const position = this.position.value.trim();
+    const company = this.company.value.trim();
+    const about = this.about.value.trim();
 
     Meteor.call(
       'user.update',
-      { email, name, avatar },
+      { email, name, avatar, about, company, position },
       handleMethodsCallbacks(this.dataChangedCallback),
     );
   }
@@ -79,19 +61,77 @@ class UserCabinet extends Component {
         <ul className="form__list">
           <li>
             { this.state.editable ? <ImagePicker
-              getImageUrl={(url) => { this.avatar = url; this.inputChanged(); }}
-              currentImageUrl={this.props.avatar}
+              getImageUrl={(url) => { this.props.user.profile.avatar = url; this.inputChanged(); }}
+              currentImageUrl={this.props.user.profile.avatar}
             /> : <img
-              src={this.props.avatar}
-              alt={this.props.name}
+              src={this.props.user.profile.avatar}
+              alt={this.props.user.profile.name}
               className="avatar"
             /> }
           </li>
           <li>
-            <label htmlFor={this.props.name}>Name : </label>
-            { this.getInput('text', (name) => { this.name = name; }, this.props.name) }
+            <label htmlFor={this.props.user.profile.name}>Name : </label>
+            <input
+              type="text"
+              ref={(name) => { this.name = name; }}
+              defaultValue={this.props.user.profile.name}
+              placeholder="No name"
+              readOnly={!this.state.editable}
+              id={this.props.user.profile.name}
+              onChange={this.inputChanged}
+              className={!this.state.editable ? 'clear-defaults' : ''}
+            />
           </li>
-          <li>Email : { this.getInput('email', (email) => { this.email = email; }, this.props.email) }
+          <li>
+            <label htmlFor={this.props.user.profile.about}>About : </label>
+            <textarea
+              ref={(about) => { this.about = about; }}
+              defaultValue={this.props.user.profile.about}
+              placeholder="No name"
+              readOnly={!this.state.editable}
+              id={this.props.user.profile.about}
+              onChange={this.inputChanged}
+              className={!this.state.editable ? 'clear-defaults' : ''}
+            />
+          </li>
+          <li>
+            <label htmlFor={this.props.user.profile.company}>Company name : </label>
+            <input
+              type="text"
+              ref={(company) => { this.company = company; }}
+              defaultValue={this.props.user.profile.company}
+              placeholder="No name"
+              readOnly={!this.state.editable}
+              id={this.props.user.profile.company}
+              onChange={this.inputChanged}
+              className={!this.state.editable ? 'clear-defaults' : ''}
+            />
+          </li>
+          <li>
+            <label htmlFor={this.props.user.profile.position}>Position : </label>
+            <input
+              type="text"
+              ref={(position) => { this.position = position; }}
+              defaultValue={this.props.user.profile.position}
+              placeholder="No name"
+              readOnly={!this.state.editable}
+              id={this.props.user.profile.position}
+              onChange={this.inputChanged}
+              className={!this.state.editable ? 'clear-defaults' : ''}
+            />
+          </li>
+          <li>
+            <label htmlFor={this.props.user.emails[0].address}>Email :</label>
+            <input
+              type="email"
+              ref={(email) => { this.email = email; }}
+              defaultValue={this.props.user.emails[0].address}
+              placeholder="No name"
+              readOnly={!this.state.editable}
+              id={this.props.user.emails[0].address}
+              onChange={this.inputChanged}
+              className={!this.state.editable ? 'clear-defaults' : ''}
+            />
           </li>
           {this.state.editable && this.state.edited ?
             <li>
@@ -107,7 +147,6 @@ class UserCabinet extends Component {
 }
 
 UserCabinet.propTypes = propTypes;
-UserCabinet.defaultProps = defaultProps;
 
 const UserCabinetContainer = createContainer(({ id }) => {
   const handleUser = Meteor.subscribe('user', id);
@@ -118,6 +157,9 @@ const UserCabinetContainer = createContainer(({ id }) => {
     profile: {
       name: '',
       avatar: '',
+      about: '',
+      company: '',
+      position: '',
     },
     emails: [{
       address: '',
@@ -126,9 +168,7 @@ const UserCabinetContainer = createContainer(({ id }) => {
 
   return {
     id,
-    name: user.profile.name,
-    email: user.emails[0].address,
-    avatar: user.profile.avatar,
+    user,
     userDataLoading: !handleUser.ready(),
   };
 }, UserCabinet);

@@ -34,7 +34,7 @@ function MenuPickerFilter({ changeCallback }) {
     <label
       htmlFor="gte"
       className="user-picker__label"
-    >Price grate:</label>
+    >Price greater:</label>
     <input
       type="number"
       min="1"

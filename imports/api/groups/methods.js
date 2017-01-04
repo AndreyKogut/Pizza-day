@@ -45,6 +45,39 @@ Meteor.methods({
 
     return id;
   },
+  'groups.update': function updateGroups(requestData) {
+    const requestDataStructure = {
+      id: String,
+      name: Match.Maybe(String),
+      description: Match.Maybe(String),
+      avatar: Match.Maybe(String),
+      menu: Match.Maybe([String]),
+      members: Match.Maybe([]),
+    };
+
+    check(requestData, requestDataStructure);
+
+    const groupCreator = Groups.findOne({ _id: requestData.id }).creator;
+
+    if (groupCreator !== this.userId) {
+      throw new Meteor.Error(402, 'You must be creator');
+    }
+
+    const updateData = _.pick(requestData, value => value);
+
+    Groups.update({ _id: requestData.id }, updateData);
+  },
+  'groups.remove': function removeGroup(id) {
+    check(id, String);
+
+    const groupCreator = Groups.findOne({ _id: id }).creator;
+
+    if (groupCreator !== this.userId) {
+      throw new Meteor.Error(402, 'You must be creator');
+    }
+
+    Groups.remove({ _id: id });
+  },
 });
 
 Meteor.publish('Groups', function getGroups() {

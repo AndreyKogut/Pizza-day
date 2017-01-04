@@ -11,6 +11,8 @@ import Menu from '../imports/api/menu/collection';
 Meteor.startup(() => {
   process.env.MAIL_URL = Meteor.settings.smtp;
 
+  _ = lodash;
+
   const menuItemsCount = Menu.find().fetch().length;
 
   if (!menuItemsCount) {

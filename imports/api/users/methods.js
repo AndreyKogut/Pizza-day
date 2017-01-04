@@ -15,6 +15,7 @@ Meteor.methods({
     const requestDataFormat = {
       email: String,
       password: String,
+      profile: Match.Maybe(Object),
     };
 
     check(requestData, requestDataFormat);
@@ -22,6 +23,11 @@ Meteor.methods({
     check(requestData.password, String);
 
     Accounts.createUser(requestData);
+
+    return {
+      email: requestData.email,
+      password: requestData.password,
+    };
   },
 
   'user.update': function update(requestData) {
@@ -29,6 +35,9 @@ Meteor.methods({
       name: Match.Maybe(String),
       avatar: Match.Maybe(String),
       email: Match.Maybe(String),
+      about: Match.Maybe(String),
+      company: Match.Maybe(String),
+      position: Match.Maybe(String),
     };
 
     if (!this.userId) {
@@ -37,27 +46,22 @@ Meteor.methods({
 
     check(requestData, requestDataFormat);
 
-    const userData = {};
+    const updateFields = {
+      emails: requestData.email ? [{ address: requestData.email, verified: false }] : '',
+      'profile.name': requestData.name,
+      'profile.avatar': requestData.avatar,
+      'profile.about': requestData.about,
+      'profile.company': requestData.company,
+      'profile.position': requestData.position,
+    };
 
-    if (requestData.name) {
-      userData['profile.name'] = requestData.name;
-    }
+    const updateData = _.pick(updateFields, value => value);
 
-    if (requestData.avatar) {
-      userData['profile.avatar'] = requestData.avatar;
-    }
-
-    if (requestData.email) {
-      userData.emails = [{ address: requestData.email, verified: false }];
-    }
-
-    if (!userData.isEmpty) {
-      Meteor.users.upsert(this.userId, {
-        $set: {
-          ...userData,
-        },
-      });
-    }
+    Meteor.users.upsert(this.userId, {
+      $set: {
+        ...updateData,
+      },
+    });
   },
 });
 
