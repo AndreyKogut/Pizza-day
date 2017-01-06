@@ -8,10 +8,13 @@ const propTypes = {
   list: PropTypes.arrayOf(Object),
   getUsersList: PropTypes.func,
   usersLoading: PropTypes.bool,
+  pickedUsers: PropTypes.arrayOf(Object),
 };
 
 const defaultProps = {
-  list: [{}],
+  list: [],
+  pickedUsers: [],
+  getUsersList: () => {},
 };
 
 class UserPicker extends Component {
@@ -19,7 +22,7 @@ class UserPicker extends Component {
     super(props);
 
     this.state = {
-      users: new Set(),
+      users: new Set(...[this.props.pickedUsers]),
     };
   }
 
@@ -33,16 +36,7 @@ class UserPicker extends Component {
     }
 
     return filteredData.map((user) => {
-      if (this.state.users.has(user)) return '';
-      _.defaults(user, {
-        profile: {
-          name: 'No name',
-          avatar: '/images/user-avatar.png',
-        },
-        emails: [{
-          address: 'No email',
-        }],
-      });
+      if (_.some([...this.state.users], val => user._id === val._id)) return '';
 
       return (<UserListItem
         key={user._id}
@@ -55,22 +49,12 @@ class UserPicker extends Component {
   };
 
   getPickedUsers = () =>
-    [...this.state.users].map((user) => {
-      _.defaults(user, {
-        profile: {
-          name: 'No name',
-        },
-        emails: [{
-          address: 'No email',
-        }],
-      });
-
-      return (<UserListItem
+    [...this.state.users].map(user =>
+      (<UserListItem
         key={user._id}
         userObject={user}
         clickCallback={(clickedUser) => { this.deleteUser(clickedUser); }}
-      />);
-    });
+      />));
 
   addUser = (user) => {
     const newState = new Set(this.state.users);
@@ -96,9 +80,19 @@ class UserPicker extends Component {
 
   filterUsers = ({ name = '', email = '' }) => {
     const filteredUsers = this.props.list.filter(
-      user =>
-        user.emails[0].address.includes(email) &&
-        user.profile.name.includes(name),
+      (user) => {
+        _.defaults(user, {
+          profile: {
+            name: '',
+          },
+          emails: [{
+            address: '',
+          }],
+        });
+
+        return user.emails[0].address.includes(email) &&
+          user.profile.name.includes(name);
+      },
     );
 
     this.setState({
@@ -135,12 +129,14 @@ class UserPicker extends Component {
 UserPicker.propTypes = propTypes;
 UserPicker.defaultProps = defaultProps;
 
-const UserPickerContainer = createContainer(({ getUsersList }) => {
+const UserPickerContainer = createContainer((props) => {
   const handleUsers = Meteor.subscribe('UsersList');
 
+  const list = Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
+
   return {
-    getUsersList,
-    list: Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch(),
+    ...props,
+    list,
     usersLoading: !handleUsers.ready(),
   };
 }, UserPicker);

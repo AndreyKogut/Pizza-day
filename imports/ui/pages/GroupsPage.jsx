@@ -13,7 +13,7 @@ const defaultProps = {
   groups: [{}],
 };
 
-function GroupsPage({ groups, groupsLoading }) {
+const GroupsPage = ({ groups, groupsLoading }) => {
   if (groupsLoading) {
     return <div>Loading...</div>;
   }
@@ -21,7 +21,7 @@ function GroupsPage({ groups, groupsLoading }) {
   return (<div className="groups-page">
     <GroupsList list={groups} />
   </div>);
-}
+};
 
 GroupsPage.propTypes = propTypes;
 GroupsPage.defaultProps = defaultProps;

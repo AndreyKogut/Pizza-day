@@ -7,7 +7,7 @@ const propTypes = {
   id: PropTypes.string,
 };
 
-function Header({ id }) {
+const Header = ({ id }) => {
   const logout = () => {
     Meteor.logout();
   };
@@ -44,7 +44,7 @@ function Header({ id }) {
       </ul>
     </nav>
   </header>);
-}
+};
 
 Header.propTypes = propTypes;
 

@@ -2,26 +2,21 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import Events from './collection';
 import Groups from '../groups/collection';
-import checkData from '../checkData';
+import { stringList, notEmpty, dateNotPass } from '../checkData';
 
 Meteor.methods({
   'events.insert': function insert(requestData) {
     const requestDataStructure = {
-      name: String,
-      groupId: String,
-      date: String,
-      menu: [String],
+      name: Match.Where(notEmpty),
+      groupId: Match.Where(notEmpty),
+      date: Match.Where(dateNotPass),
+      menu: Match.Where(stringList),
       title: Match.Maybe(String),
     };
 
     check(requestData, requestDataStructure);
-    check(requestData.name, Match.Where(checkData.notEmpty));
-    check(requestData.groupId, Match.Where(checkData.notEmpty));
-    check(requestData.date, Match.Where(checkData.dateNotPass));
-    check(requestData.menu, Match.Where(checkData.stringList));
 
-    const { groupId, ...eventData } = requestData;
-    const groupCreatorId = Groups.findOne({ _id: groupId }).creator;
+    const groupCreatorId = Groups.findOne({ _id: requestData.groupId }).creator;
 
     if (groupCreatorId !== this.userId) {
       throw new Meteor.Error(400, 'Access denied');
@@ -33,14 +28,10 @@ Meteor.methods({
       _id: id,
       participants: [],
       status: 'ordering',
-      creator: requestData.groupId,
+      creator: this.userId,
       createdAt: new Date(),
-      ...eventData,
+      ...requestData,
     });
-
-    Groups.upsert({
-      _id: groupId,
-    }, { $push: { events: id } });
 
     return id;
   },
@@ -49,17 +40,16 @@ Meteor.methods({
     const requestDataStructure = {
       id: String,
       name: Match.Maybe(String),
-      date: Match.Maybe(Match.Where(checkData.dateNotPass)),
+      date: Match.Maybe(Match.Where(dateNotPass)),
       title: Match.Maybe(String),
       menu: Match.Maybe([String]),
     };
 
     check(requestData, requestDataStructure);
 
-    const checkMemberExistInGroup = Groups.find({
-      events: requestData.id,
-      creator: this.userId })
-    .count();
+    const checkMemberExistInGroup = Events.findOne({
+      _id: requestData.id,
+    }).creator === this.userId;
 
     if (!checkMemberExistInGroup) {
       throw new Meteor.Error(402, 'You should be group creator');
@@ -73,10 +63,9 @@ Meteor.methods({
   'events.orderEvent': function orderEvent(id) {
     check(id, String);
 
-    const checkMemberExistInGroup = Groups.find({
-      events: id,
-      creator: this.userId })
-    .count();
+    const checkMemberExistInGroup = Events.findOne({
+      _id: id,
+    }).creator === this.userId;
 
     if (!checkMemberExistInGroup) {
       throw new Meteor.Error(402, 'You should be group creator');
@@ -86,11 +75,13 @@ Meteor.methods({
   },
 
   'events.joinEvent': function addParticipant(id) {
-    check(id, Match.Where(checkData.notEmpty));
+    check(id, Match.Where(notEmpty));
 
-    const checkMemberExistInGroup = Groups.find({ events: id, 'members._id': this.userId }).count();
+    const groupId = Events.findOne({ _id: id }).groupId;
 
-    if (!checkMemberExistInGroup) {
+    const groupMembers = Groups.findOne({ _id: groupId }).members;
+
+    if (!_.indexOf(groupMembers, this.userId)) {
       throw new Meteor.Error(402, 'Access denied');
     }
 
@@ -100,7 +91,7 @@ Meteor.methods({
   },
 
   'events.leaveEvent': function deleteParticipant(eventId) {
-    check(eventId, Match.Where(checkData.notEmpty));
+    check(eventId, Match.Where(notEmpty));
 
     Events.update({ _id: eventId },
       { $pull: { participants: { _id: this.userId } } },
@@ -109,11 +100,10 @@ Meteor.methods({
 
   'events.orderItems': function orderEventItems({ eventId, menu }) {
     const menuObjectStructure = [{
-      _id: String,
+      _id: Match.Where(notEmpty),
       count: Number,
     }];
 
-    check(eventId, Match.Where(checkData.notEmpty));
     check(menu, menuObjectStructure);
 
     Events.update({ _id: eventId, participants: { $elemMatch: { _id: this.userId } } },
@@ -123,11 +113,9 @@ Meteor.methods({
 });
 
 Meteor.publish('GroupEvents', (id) => {
-  check(id, Match.Where(checkData.notEmpty));
+  check(id, Match.Where(notEmpty));
 
-  const groupEvents = Groups.findOne(id).events || [];
-
-  return Events.find({ _id: { $in: [...groupEvents] } });
+  return Events.find({ groupId: id });
 });
 
 Meteor.publish('Events', function getEvents() {
@@ -139,11 +127,12 @@ Meteor.publish('Events', function getEvents() {
 });
 
 Meteor.publish('Event', function publishEvent(id) {
-  check(id, Match.Where(checkData.notEmpty));
+  check(id, Match.Where(notEmpty));
 
-  const checkMemberExistInGroup = Groups.find({ events: id, 'members._id': this.userId }).fetch();
+  const groupId = Events.findOne({ _id: id }).groupId;
+  const groupMembers = Groups.findOne({ _id: groupId }).members;
 
-  if (!checkMemberExistInGroup.length) {
+  if (!_.some(groupMembers, ({ _id: userId }) => userId === this.userId)) {
     return this.error(new Meteor.Error(400, 'Access denied'));
   }
 

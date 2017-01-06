@@ -12,6 +12,7 @@ const propTypes = {
 
 const defaultProps = {
   getMenuList: () => {},
+  items: [],
   selectedItems: new Map(),
 };
 
@@ -80,9 +81,9 @@ class MenuPicker extends Component {
       if (this.props.withCounters) {
         const list = [];
 
-        this.menu.forEach((value, key) => {
+        _.map(this.menu, ((value, key) => {
           list.push({ _id: key, count: Number(value) });
-        });
+        }));
 
         this.props.getMenuList(list);
       } else {

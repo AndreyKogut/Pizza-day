@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { check, Match } from 'meteor/check';
-import checkData from '../checkData';
+import { notEmpty } from '../checkData';
 import Groups from '../../api/groups/collection';
 
 Meteor.publish('user', (id) => {
-  check(id, Match.Where(checkData.notEmpty));
+  check(id, Match.Where(notEmpty));
 
   return Meteor.users.find(id);
 });
@@ -13,14 +13,12 @@ Meteor.publish('user', (id) => {
 Meteor.methods({
   'user.insert': function insert(requestData) {
     const requestDataFormat = {
-      email: String,
-      password: String,
+      email: Match.Where(notEmpty),
+      password: Match.Where(notEmpty),
       profile: Match.Maybe(Object),
     };
 
     check(requestData, requestDataFormat);
-    check(requestData.email, String);
-    check(requestData.password, String);
 
     Accounts.createUser(requestData);
 
@@ -63,6 +61,9 @@ Meteor.methods({
       },
     });
   },
+  'users.get': function sdfs() {
+    return Meteor.users.find().fetch();
+  },
 });
 
 Meteor.publish('UsersList', function publishUsers() {
@@ -74,7 +75,7 @@ Meteor.publish('UsersList', function publishUsers() {
 });
 
 Meteor.publish('GroupMembers', function publishGroupMembers(groupId) {
-  check(groupId, Match.Where(checkData.notEmpty));
+  check(groupId, Match.Where(notEmpty));
 
   if (!this.userId) {
     return this.error(new Meteor.Error(401, 'Access denied'));

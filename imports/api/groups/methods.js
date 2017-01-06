@@ -1,16 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import Groups from './collection';
-import checkData from '../checkData';
+import { stringList, notEmpty } from '../checkData';
 
 Meteor.methods({
   'groups.insert': function insert(requestData) {
     const requestDateStructure = {
-      name: String,
+      name: Match.Where(notEmpty),
       description: Match.Maybe(String),
       avatar: Match.Maybe(String),
       members: [String],
-      menu: [String],
+      menu: Match.Where(stringList),
     };
 
     if (!this.userId) {
@@ -18,8 +18,6 @@ Meteor.methods({
     }
 
     check(requestData, requestDateStructure);
-    check(requestData.name, Match.Where(checkData.notEmpty));
-    check(requestData.menu, Match.Where(checkData.stringList));
 
     const id = new Meteor.Collection.ObjectID().valueOf();
     const { members = [], ...fieldsToInsert } = requestData;
@@ -37,7 +35,6 @@ Meteor.methods({
     Groups.insert({
       _id: id,
       ...fieldsToInsert,
-      events: [],
       members: convertedMembers,
       creator: this.userId,
       createdAt: new Date(),
@@ -45,6 +42,7 @@ Meteor.methods({
 
     return id;
   },
+
   'groups.update': function updateGroups(requestData) {
     const requestDataStructure = {
       id: String,
@@ -52,7 +50,7 @@ Meteor.methods({
       description: Match.Maybe(String),
       avatar: Match.Maybe(String),
       menu: Match.Maybe([String]),
-      members: Match.Maybe([]),
+      members: Match.Maybe([Object]),
     };
 
     check(requestData, requestDataStructure);
@@ -67,6 +65,7 @@ Meteor.methods({
 
     Groups.update({ _id: requestData.id }, updateData);
   },
+
   'groups.remove': function removeGroup(id) {
     check(id, String);
 
@@ -89,7 +88,7 @@ Meteor.publish('Groups', function getGroups() {
 });
 
 Meteor.publish('Group', function groupPublish(id) {
-  check(id, Match.Where(checkData.notEmpty));
+  check(id, Match.Where(notEmpty));
 
   if (!this.userId) {
     return this.error(new Meteor.Error(401, 'Access denied'));

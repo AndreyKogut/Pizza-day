@@ -3,21 +3,18 @@ import { check, Match } from 'meteor/check';
 import Groups from '../groups/collection';
 import Menu from './collection';
 import Event from '../events/collection';
-import checkData from '../checkData';
+import { notEmpty } from '../checkData';
 
 Meteor.methods({
   'menu.insert': function insert(requestData) {
     const requestDataStructure = {
-      name: String,
-      description: String,
-      mass: String,
+      name: Match.Where(notEmpty),
+      description: Match.Where(notEmpty),
+      mass: Match.Where(notEmpty),
       price: Number,
     };
 
     check(requestData, requestDataStructure);
-    check(requestData.name, Match.Where(checkData.notEmpty));
-    check(requestData.description, Match.Where(checkData.notEmpty));
-    check(requestData.mass, Match.Where(checkData.notEmpty));
 
     Menu.insert({
       _id: new Meteor.Collection.ObjectID().valueOf(),
@@ -29,7 +26,7 @@ Meteor.methods({
 Meteor.publish('Menu', () => Menu.find());
 
 Meteor.publish('GroupMenu', function publishGroupMenu(id) {
-  check(id, Match.Where(checkData.notEmpty));
+  check(id, Match.Where(notEmpty));
 
   if (!this.userId) {
     return this.error(new Meteor.Error(401, 'Access denied'));
@@ -41,7 +38,7 @@ Meteor.publish('GroupMenu', function publishGroupMenu(id) {
 });
 
 Meteor.publish('EventMenu', function publishMenu(id) {
-  check(id, Match.Where(checkData.notEmpty));
+  check(id, Match.Where(notEmpty));
 
   if (!this.userId) {
     return this.error(new Meteor.Error(401, 'Access denied'));

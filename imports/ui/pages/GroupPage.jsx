@@ -8,6 +8,7 @@ import Events from '../../api/events/collection';
 import MenuList from '../components/MenuList';
 import EventsList from '../components/EventsList';
 import UsersList from '../components/UsersList';
+import Controls from '../components/Controls';
 
 const propTypes = {
   id: PropTypes.string,
@@ -79,6 +80,14 @@ class GroupPage extends Component {
       <div className="group__members">
         { this.getUsers() }
       </div>
+      <div className="groups__controls">
+        <Controls
+          currentImage={this.props.avatar}
+          currentMembers={this.props.members}
+          currentMenu={this.props.menu}
+        />
+      </div>
+
       <h3 className="group__h">Menu</h3>
       <div className="group__menu">
         { this.getMenu() }

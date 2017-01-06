@@ -4,7 +4,7 @@ const propTypes = {
   changeCallback: PropTypes.func,
 };
 
-function MenuPickerFilter({ changeCallback }) {
+const MenuPickerFilter = ({ changeCallback }) => {
   const changeFields = () => {
     const name = this.itemName.value;
     const gte = this.gte.value ? this.gte.value : undefined;
@@ -60,7 +60,7 @@ function MenuPickerFilter({ changeCallback }) {
       id="lte"
     />
   </div>);
-}
+};
 
 MenuPickerFilter.propTypes = propTypes;
 

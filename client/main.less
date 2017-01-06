@@ -158,7 +158,6 @@
   }
 
   &__filter {
-    flex: 1;
     display: flex;
     align-items: center;
     margin: 10px 0;
@@ -182,6 +181,7 @@
 
   &__input {
     flex: 1;
+    min-width: 0;
     border-bottom: 1px solid #cfcfcf;
   }
 
@@ -243,7 +243,10 @@
 }
 
 .menu {
+  flex: 1;
   padding: 15px;
+  display: flex;
+  flex-direction: column;
   &__checkbox,
   &__counter {
     align-self: center;
@@ -270,6 +273,34 @@
   &__mass,
   &__price {
     float: right;
+  }
+
+  &__list {
+    flex: 1;
+    overflow: scroll;
+    overflow-x: hidden;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+}
+
+.controls {
+  &__picker {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    background: #fff;
+    margin-left: 50%;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 0;
+    max-width: 90vw;
+    max-height: 90vh;
+    z-index: 999;
+    border: 2px solid;
+    padding: 20px;
+    box-shadow: 0 0 35px 5px;
+    box-sizing: border-box;
   }
 }
 

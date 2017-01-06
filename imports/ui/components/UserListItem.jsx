@@ -5,7 +5,17 @@ const propTypes = {
   clickCallback: PropTypes.func,
 };
 
-function UserListItem({ userObject, clickCallback }) {
+const UserListItem = ({ userObject, clickCallback }) => {
+  _.defaults(userObject, {
+    profile: {
+      name: 'No name',
+      avatar: '/images/user-avatar.png',
+    },
+    emails: [{
+      address: 'No email',
+    }],
+  });
+
   return (<button
     onClick={() => { clickCallback(userObject); }}
     type="button"
@@ -21,7 +31,7 @@ function UserListItem({ userObject, clickCallback }) {
       <span className="user-picker__text">{ userObject.emails[0].address }</span>
     </div>
   </button>);
-}
+};
 
 UserListItem.propTypes = propTypes;
 

@@ -13,7 +13,7 @@ const defaultProps = {
   events: [{}],
 };
 
-function EventsPage({ events, eventsLoading }) {
+const EventsPage = ({ events, eventsLoading }) => {
   if (eventsLoading) {
     return <div>Loading...</div>;
   }
@@ -21,7 +21,7 @@ function EventsPage({ events, eventsLoading }) {
   return (<div className="events-page">
     <EventsList list={events} />
   </div>);
-}
+};
 
 EventsPage.propTypes = propTypes;
 EventsPage.defaultProps = defaultProps;

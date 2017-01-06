@@ -5,9 +5,9 @@ const propTypes = {
   items: PropTypes.arrayOf(Object),
 };
 
-function MenuList({ items }) {
-  const getList = () =>
-    items.map(({ _id: id, ...itemInfo }) => (
+const MenuList = ({ items }) =>
+  (<ul className="menu">
+    { items.map(({ _id: id, ...itemInfo }) => (
       <li className="menu__item" key={id}>
         <MenuListItem
           name={itemInfo.name}
@@ -16,12 +16,9 @@ function MenuList({ items }) {
           price={itemInfo.price}
         />
       </li>
-    ));
-
-  return (<ul className="menu">
-    { getList() }
+    )) }
   </ul>);
-}
+
 
 MenuList.propTypes = propTypes;
 

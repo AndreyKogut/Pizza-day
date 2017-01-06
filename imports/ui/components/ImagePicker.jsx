@@ -2,11 +2,16 @@ import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { FS } from 'meteor/cfs:base-package';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
-import Avatars from '../../api/avatars/avatarsCollection';
+import Avatars from '../../api/avatars/collection';
 
 const propTypes = {
   currentImageUrl: PropTypes.string,
   getImageUrl: PropTypes.func,
+};
+
+const defaultProps = {
+  currentImageUrl: '',
+  getImageUrl: () => {},
 };
 
 class ImagePicker extends Component {
@@ -39,9 +44,8 @@ class ImagePicker extends Component {
     const file = this.image.files[0];
     if (file) {
       const fsFile = new FS.File(file);
-      const currentUser = Meteor.userId();
 
-      fsFile.owner = currentUser;
+      fsFile.owner = Meteor.userId();
 
       if (this.state.imageId) {
         Avatars.remove(
@@ -88,5 +92,6 @@ class ImagePicker extends Component {
 }
 
 ImagePicker.propTypes = propTypes;
+ImagePicker.defaultProps = defaultProps;
 
 export default ImagePicker;

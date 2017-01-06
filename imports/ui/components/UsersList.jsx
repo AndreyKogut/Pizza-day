@@ -9,7 +9,7 @@ const defaultProps = {
   items: [{}],
 };
 
-function UsersList({ items }) {
+const UsersList = ({ items }) => {
   const getList = () =>
     items.map((item) => {
       _.defaults(item, {
@@ -35,8 +35,9 @@ function UsersList({ items }) {
   return (<ul className="users-list">
     { getList() }
   </ul>);
-}
+};
 
 UsersList.propTypes = propTypes;
 UsersList.defaultProps = defaultProps;
+
 export default UsersList;

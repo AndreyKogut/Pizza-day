@@ -4,7 +4,7 @@ const propTypes = {
   changeCallback: PropTypes.func,
 };
 
-function UserListFilter({ changeCallback }) {
+const UserListFilter = ({ changeCallback }) => {
   const changeFields = () => {
     const name = this.userName.value;
     const email = this.email.value;
@@ -36,7 +36,7 @@ function UserListFilter({ changeCallback }) {
       id="name"
     />
   </div>);
-}
+};
 
 UserListFilter.propTypes = propTypes;
 
