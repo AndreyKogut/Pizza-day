@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import Groups from './collection';
-import { stringList, notEmpty } from '../checkData';
+import { notEmpty } from '../checkData';
 
 Meteor.methods({
   'groups.insert': function insert(requestData) {
@@ -9,8 +9,8 @@ Meteor.methods({
       name: Match.Where(notEmpty),
       description: Match.Maybe(String),
       avatar: Match.Maybe(String),
-      members: [String],
-      menu: Match.Where(stringList),
+      members: [Match.Where(notEmpty)],
+      menu: [Match.Where(notEmpty)],
     };
 
     if (!this.userId) {
@@ -49,8 +49,7 @@ Meteor.methods({
       name: Match.Maybe(String),
       description: Match.Maybe(String),
       avatar: Match.Maybe(String),
-      menu: Match.Maybe([String]),
-      members: Match.Maybe([Object]),
+      menu: Match.Maybe([Match.Where(notEmpty)]),
     };
 
     check(requestData, requestDataStructure);
@@ -67,7 +66,7 @@ Meteor.methods({
   },
 
   'groups.remove': function removeGroup(id) {
-    check(id, String);
+    check(id, Match.Where(notEmpty));
 
     const groupCreator = Groups.findOne({ _id: id }).creator;
 

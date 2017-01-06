@@ -1,18 +1,14 @@
 import React, { Component, PropTypes } from 'react';
-import MenuPicker from '../../ui/components/MenuPicker';
+import { ItemsMenuPicker } from '../../ui/components/MenuPicker';
 import UserPickerContainer from '../../ui/components/UserPicker';
 import ImagePicker from '../../ui/components/ImagePicker';
 
 const propTypes = {
   pickerData: PropTypes.func,
-  currentMenu: PropTypes.arrayOf(Object),
-  currentMembers: PropTypes.arrayOf(Object),
 };
 
 const defaultProps = {
   pickerData: () => {},
-  currentMenu: [{}],
-  currentMembers: [{}],
 };
 
 class Controls extends Component {
@@ -33,14 +29,12 @@ class Controls extends Component {
     let template;
     switch (this.state.type) {
       case 'menuPicker': {
-        template = (<MenuPicker
-          defaultValue={this.props.currentMenu}
-        />);
+        template = (<ItemsMenuPicker getMenuList={() => {}} />);
         break;
       }
 
       case 'userPicker': {
-        template = <UserPickerContainer pickedUsers={this.props.currentMembers} />;
+        template = <UserPickerContainer />;
         break;
       }
 

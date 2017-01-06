@@ -2,9 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
-import MenuPicker from '../components/MenuPicker';
+import { OrderMenuPicker } from '../components/MenuPicker';
 import Events from '../../api/events/collection';
-import Menu from '../../api/menu/collection';
 
 const propTypes = {
   eventId: PropTypes.string,
@@ -14,9 +13,7 @@ const propTypes = {
   status: PropTypes.string,
   orderedItems: PropTypes.arrayOf(PropTypes.any),
   isParticipant: PropTypes.bool,
-  menu: PropTypes.arrayOf(Object),
   eventLoading: PropTypes.bool,
-  menuLoading: PropTypes.bool,
 };
 
 const defaultProps = {
@@ -27,19 +24,6 @@ class EventPage extends Component {
   constructor(props) {
     super(props);
     this.menu = [];
-  }
-
-  getMenu() {
-    if (this.props.menuLoading) {
-      return <div>Menu loading..</div>;
-    }
-
-    return (<MenuPicker
-      defaultValue={this.props.orderedItems}
-      items={this.props.menu}
-      getMenuList={(list) => { this.menu = [...list]; }}
-      withCounters
-    />);
   }
 
   joinEvent = () => {
@@ -73,7 +57,11 @@ class EventPage extends Component {
         </li>
       </ul>
       <div className="event-page__menu">
-        { this.getMenu() }
+        <OrderMenuPicker
+          id={this.props.eventId}
+          defaultValue={this.props.orderedItems}
+          getMenuList={(list) => { this.menu = [...list]; }}
+        />
       </div>
       <button type="button" onClick={this.orderItems}>Order items</button>
     </div>);
@@ -85,7 +73,6 @@ EventPage.defaultProps = defaultProps;
 
 const EventPageContainer = createContainer(({ eventId }) => {
   const handleEvent = Meteor.subscribe('Event', eventId);
-  const handleMenu = Meteor.subscribe('EventMenu', eventId);
 
   const event = Events.findOne() || {};
   const participant = _.findWhere(event.participants, { _id: Meteor.userId() });
@@ -95,9 +82,7 @@ const EventPageContainer = createContainer(({ eventId }) => {
     ...event,
     orderedItems: participant ? participant.menu : [],
     isParticipant: !!participant,
-    menu: Menu.find().fetch(),
     eventLoading: !handleEvent.ready(),
-    menuLoading: !handleMenu.ready(),
   };
 }, EventPage);
 

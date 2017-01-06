@@ -1,13 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
+import { Meteor } from 'meteor/meteor';
 import MenuListItem from '../../ui/components/MenuListItem';
 import MenuPickerFilter from '../../ui/components/MenuPickerFilter';
+import Menu from '../../api/menu/collection';
 
 const propTypes = {
   items: PropTypes.arrayOf(Object),
   getMenuList: PropTypes.func,
   withCounters: PropTypes.bool,
   selectedItems: PropTypes.instanceOf(Map),
+  menuLoading: PropTypes.bool,
 };
 
 const defaultProps = {
@@ -113,6 +116,10 @@ class MenuPicker extends Component {
   };
 
   render() {
+    if (this.props.menuLoading) {
+      return <div>Loading..</div>;
+    }
+
     return (<div className="menu">
       <MenuPickerFilter changeCallback={(filter) => { this.filterItems(filter); }} />
       <ul className="menu__list">
@@ -125,7 +132,8 @@ class MenuPicker extends Component {
 MenuPicker.propTypes = propTypes;
 MenuPicker.defaultProps = defaultProps;
 
-const MenuPickerContainer = createContainer(({ defaultValue = [], ...props }) => {
+const OrderMenuPicker = createContainer(({ defaultValue = [], id, getMenuList }) => {
+  const handleMenu = Meteor.subscribe('EventMenu', id);
   const itemsMap = new Map();
 
   defaultValue.forEach((value) => {
@@ -137,9 +145,27 @@ const MenuPickerContainer = createContainer(({ defaultValue = [], ...props }) =>
   });
 
   return {
+    items: Menu.find().fetch(),
     selectedItems: itemsMap,
-    ...props,
+    withCounters: true,
+    getMenuList,
+    menuLoading: !handleMenu.ready(),
   };
 }, MenuPicker);
 
-export default MenuPickerContainer;
+const ItemsMenuPicker = createContainer(({ getMenuList }) => {
+  const handleMenu = Meteor.subscribe('Menu');
+
+  return {
+    items: Menu.find().fetch(),
+    withCounters: false,
+    getMenuList,
+    menuLoading: !handleMenu.ready(),
+  };
+}, MenuPicker);
+
+export default MenuPicker;
+export {
+  OrderMenuPicker,
+  ItemsMenuPicker,
+};

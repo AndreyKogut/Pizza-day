@@ -1,15 +1,22 @@
 import React, { PropTypes } from 'react';
+import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { createContainer } from 'meteor/react-meteor-data';
 
 const propTypes = {
   items: PropTypes.arrayOf(Object),
+  usersLoading: PropTypes.bool,
 };
 
 const defaultProps = {
   items: [{}],
 };
 
-const UsersList = ({ items }) => {
+const UsersList = ({ items, usersLoading }) => {
+  if (usersLoading) {
+    return <div>Users loading...</div>;
+  }
+
   const getList = () =>
     items.map((item) => {
       _.defaults(item, {
@@ -37,7 +44,19 @@ const UsersList = ({ items }) => {
   </ul>);
 };
 
+const GroupUsersList = createContainer(({ id }) => {
+  const handleUsers = Meteor.subscribe('GroupMembers', id);
+
+  return {
+    items: Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch(),
+    usersLoading: !handleUsers.ready(),
+  };
+}, UsersList);
+
 UsersList.propTypes = propTypes;
 UsersList.defaultProps = defaultProps;
 
 export default UsersList;
+export {
+  GroupUsersList,
+};

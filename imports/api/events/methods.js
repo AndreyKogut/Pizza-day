@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import Events from './collection';
 import Groups from '../groups/collection';
-import { stringList, notEmpty, dateNotPass } from '../checkData';
+import { notEmpty, dateNotPass } from '../checkData';
 
 Meteor.methods({
   'events.insert': function insert(requestData) {
@@ -10,7 +10,7 @@ Meteor.methods({
       name: Match.Where(notEmpty),
       groupId: Match.Where(notEmpty),
       date: Match.Where(dateNotPass),
-      menu: Match.Where(stringList),
+      menu: [Match.Where(notEmpty)],
       title: Match.Maybe(String),
     };
 
@@ -38,11 +38,11 @@ Meteor.methods({
 
   'events.update': function updateEvent(requestData) {
     const requestDataStructure = {
-      id: String,
+      id: Match.Where(notEmpty),
       name: Match.Maybe(String),
       date: Match.Maybe(Match.Where(dateNotPass)),
       title: Match.Maybe(String),
-      menu: Match.Maybe([String]),
+      menu: Match.Maybe([Match.Where(notEmpty)]),
     };
 
     check(requestData, requestDataStructure);
@@ -61,7 +61,7 @@ Meteor.methods({
   },
 
   'events.orderEvent': function orderEvent(id) {
-    check(id, String);
+    check(id, Match.Where(notEmpty));
 
     const checkMemberExistInGroup = Events.findOne({
       _id: id,

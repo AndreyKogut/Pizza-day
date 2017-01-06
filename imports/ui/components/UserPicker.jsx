@@ -8,12 +8,10 @@ const propTypes = {
   list: PropTypes.arrayOf(Object),
   getUsersList: PropTypes.func,
   usersLoading: PropTypes.bool,
-  pickedUsers: PropTypes.arrayOf(Object),
 };
 
 const defaultProps = {
   list: [],
-  pickedUsers: [],
   getUsersList: () => {},
 };
 
@@ -22,7 +20,7 @@ class UserPicker extends Component {
     super(props);
 
     this.state = {
-      users: new Set(...[this.props.pickedUsers]),
+      users: new Set(),
     };
   }
 
