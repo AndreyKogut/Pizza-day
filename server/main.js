@@ -5,6 +5,7 @@ import '../imports/api/events/methods';
 import '../imports/api/menu/methods';
 import '../imports/api/groups/methods';
 import '../imports/api/avatars/collection';
+import '../imports/api/orders/methods';
 import MenuItem from '../imports/sturtup/server/fixtures';
 import Menu from '../imports/api/menu/collection';
 

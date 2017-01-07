@@ -15,7 +15,6 @@ const MenuListItem = ({ name, description, mass, price }) =>
     <span className="menu__price">{ price }</span>
   </div>);
 
-
 MenuListItem.propTypes = propTypes;
 
 export default MenuListItem;

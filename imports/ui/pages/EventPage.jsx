@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 import { OrderMenuPicker } from '../components/MenuPicker';
+import { OrderInfoContainer } from '../components/OrderInfo';
 import Events from '../../api/events/collection';
 
 const propTypes = {
@@ -11,7 +12,7 @@ const propTypes = {
   title: PropTypes.string,
   date: PropTypes.string,
   status: PropTypes.string,
-  orderedItems: PropTypes.arrayOf(PropTypes.any),
+  orderId: PropTypes.string,
   isParticipant: PropTypes.bool,
   eventLoading: PropTypes.bool,
 };
@@ -35,10 +36,11 @@ class EventPage extends Component {
   };
 
   orderItems = () => {
-    const eventId = this.props.eventId;
     const menu = this.menu;
+    const eventId = this.props.eventId;
+    const userId = Meteor.userId();
 
-    Meteor.call('events.orderItems', { eventId, menu }, handleMethodsCallbacks);
+    Meteor.call('orders.insert', { eventId, menu, userId }, handleMethodsCallbacks);
   };
   render() {
     if (this.props.eventLoading) {
@@ -57,11 +59,14 @@ class EventPage extends Component {
         </li>
       </ul>
       <div className="event-page__menu">
-        <OrderMenuPicker
-          id={this.props.eventId}
-          defaultValue={this.props.orderedItems}
-          getMenuList={(list) => { this.menu = [...list]; }}
-        />
+        { this.props.orderId ?
+          <OrderInfoContainer
+            id={this.props.orderId}
+          /> :
+          <OrderMenuPicker
+            id={this.props.eventId}
+            getMenuList={(list) => { this.menu = [...list]; }}
+          /> }
       </div>
       <button type="button" onClick={this.orderItems}>Order items</button>
     </div>);
@@ -79,8 +84,8 @@ const EventPageContainer = createContainer(({ eventId }) => {
 
   return {
     eventId,
+    orderId: participant ? participant.order : null,
     ...event,
-    orderedItems: participant ? participant.menu : [],
     isParticipant: !!participant,
     eventLoading: !handleEvent.ready(),
   };

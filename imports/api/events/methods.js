@@ -83,7 +83,7 @@ Meteor.methods({
     }
 
     Events.update({ _id: id },
-      { $push: { participants: { _id: this.userId, menu: [], ordered: false } } },
+      { $push: { participants: { _id: this.userId, order: '', ordered: false } } },
     );
   },
 
