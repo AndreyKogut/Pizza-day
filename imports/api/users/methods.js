@@ -55,11 +55,13 @@ Meteor.methods({
 
     const updateData = _.pick(updateFields, value => value);
 
-    Meteor.users.upsert(this.userId, {
-      $set: {
-        ...updateData,
-      },
-    });
+    if (!_.isEmpty(updateData)) {
+      Meteor.users.upsert(this.userId, {
+        $set: {
+          ...updateData,
+        },
+      });
+    }
   },
   'users.get': function sdfs() {
     return Meteor.users.find().fetch();

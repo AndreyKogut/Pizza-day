@@ -1,18 +1,21 @@
 import React, { PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { createContainer } from 'meteor/react-meteor-data';
+import UserListItem from '../components/UserListItem';
 
 const propTypes = {
   items: PropTypes.arrayOf(Object),
   usersLoading: PropTypes.bool,
+  itemClick: PropTypes.func,
+  editable: PropTypes.bool,
 };
 
 const defaultProps = {
   items: [{}],
+  itemClick: () => {},
 };
 
-const UsersList = ({ items, usersLoading }) => {
+const UsersList = ({ items, usersLoading, itemClick, editable }) => {
   if (usersLoading) {
     return <div>Users loading...</div>;
   }
@@ -29,26 +32,27 @@ const UsersList = ({ items, usersLoading }) => {
         },
       });
 
-      return (<li className="users-list__item" key={item._id}>
-        <a href={FlowRouter.path('/users/:id', { id: item._id })} className="users-list__link">
-          <img src={item.profile.avatar} alt={item.profile.name} className="users-list__image" />
-          <span className="users-list__description">
-            { item.profile.name ? item.profile.name : item.emails[0].address }
-          </span>
-        </a>
-      </li>);
+      return (<div key={item._id}>
+        <UserListItem userObject={item} />
+        { editable ?
+          <button
+            type="button"
+            onClick={() => { itemClick(item._id); }}
+          >add/remove</button> : '' }
+      </div>);
     });
 
-  return (<ul className="users-list">
+  return (<div className="users-list">
     { getList() }
-  </ul>);
+  </div>);
 };
 
-const GroupUsersList = createContainer(({ id }) => {
+const GroupUsersList = createContainer(({ id, ...params }) => {
   const handleUsers = Meteor.subscribe('GroupMembers', id);
 
   return {
     items: Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch(),
+    ...params,
     usersLoading: !handleUsers.ready(),
   };
 }, UsersList);

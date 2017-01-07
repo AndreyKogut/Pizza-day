@@ -84,9 +84,9 @@ class MenuPicker extends Component {
       if (this.props.withCounters) {
         const list = [];
 
-        _.map(this.menu, ((value, key) => {
+        _.map([...this.menu], ([key, value]) => {
           list.push({ _id: key, count: Number(value) });
-        }));
+        });
 
         this.props.getMenuList(list);
       } else {
@@ -105,7 +105,7 @@ class MenuPicker extends Component {
     if (this.props.withCounters) {
       const list = [];
 
-      this.menu.forEach((value, key) => {
+      _.map([...this.menu], ([key, value]) => {
         list.push({ _id: key, count: Number(value) });
       });
 
@@ -153,11 +153,11 @@ const OrderMenuPicker = createContainer(({ defaultValue = [], id, getMenuList })
   };
 }, MenuPicker);
 
-const ItemsMenuPicker = createContainer(({ getMenuList }) => {
+const ItemsMenuPicker = createContainer(({ hideItems, getMenuList }) => {
   const handleMenu = Meteor.subscribe('Menu');
 
   return {
-    items: Menu.find().fetch(),
+    items: Menu.find({ _id: { $nin: hideItems } }).fetch(),
     withCounters: false,
     getMenuList,
     menuLoading: !handleMenu.ready(),

@@ -167,6 +167,11 @@
     height: 60px;
     padding: 0 10px;
     box-sizing: border-box;
+    display: inline-block;
+    text-align: left;
+    &:not(:last-child) {
+      margin-bottom: 10px;
+    }
   }
 
   &__list {
@@ -191,15 +196,6 @@
 
   &__picked {
     flex: 1;
-  }
-
-  &__item {
-    display: block;
-    width: 100%;
-    text-align: left;
-    &:not(:last-child) {
-      margin-bottom: 10px;
-    }
   }
 
   &__image {

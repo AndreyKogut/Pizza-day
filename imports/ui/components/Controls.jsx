@@ -4,11 +4,18 @@ import UserPickerContainer from '../../ui/components/UserPicker';
 import ImagePicker from '../../ui/components/ImagePicker';
 
 const propTypes = {
-  pickerData: PropTypes.func,
+  addMembers: PropTypes.func,
+  addMenuItems: PropTypes.func,
+  updateImage: PropTypes.func,
+  members: PropTypes.arrayOf(Object),
+  menu: PropTypes.arrayOf(Object),
 };
 
 const defaultProps = {
-  pickerData: () => {},
+  members: [],
+  menu: [],
+  addMembers: () => {},
+  addMenuItems: () => {},
 };
 
 class Controls extends Component {
@@ -18,6 +25,26 @@ class Controls extends Component {
       type: null,
     };
   }
+
+  submitData = () => {
+    switch (this.state.type) {
+      case 'menuPicker': {
+        this.props.addMenuItems(this.menu);
+        break;
+      }
+      case 'userPicker': {
+        this.props.addMembers(this.users);
+        break;
+      }
+      case 'imagePicker': {
+        this.props.updateImage(this.image);
+        break;
+      }
+      default : {
+        break;
+      }
+    }
+  };
 
   changePicker = (name) => {
     this.setState({
@@ -29,18 +56,24 @@ class Controls extends Component {
     let template;
     switch (this.state.type) {
       case 'menuPicker': {
-        template = (<ItemsMenuPicker getMenuList={() => {}} />);
+        template = (<ItemsMenuPicker
+          hideItems={this.props.menu}
+          getMenuList={(items) => { this.menu = items; }}
+        />);
         break;
       }
 
       case 'userPicker': {
-        template = <UserPickerContainer />;
+        template = (<UserPickerContainer
+          hideItems={this.props.members}
+          getUsersList={(items) => { this.users = items; }}
+        />);
         break;
       }
 
       case 'imagePicker': {
         template = (<ImagePicker
-          getImageUrl={(url) => { this.props.pickerData({ imageUrl: url }); }}
+          getImageUrl={(url) => { this.image = url; }}
         />);
         break;
       }
@@ -66,7 +99,8 @@ class Controls extends Component {
         <div className="controls__picker">
           { template }
           <div className="controls__buttons">
-            <button onClick={() => { this.changePicker(null); }}>Close</button>
+            <button type="button" onClick={() => { this.changePicker(null); }}>Close</button>
+            <button type="button" onClick={this.submitData}>Add</button>
           </div>
         </div> : '' }
     </div>);

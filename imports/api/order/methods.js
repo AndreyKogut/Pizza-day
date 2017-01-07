@@ -6,16 +6,11 @@ import Orders from './collection';
 Meteor.methods({
   'orders.insert': function orderInsert(requestData) {
     const requestDataStructure = {
-      menu: Match.Maybe([{
+      menu: [{
         _id: Match.Where(notEmpty),
         count: Number,
-      }]),
+      }],
       userId: Match.Where(notEmpty),
-      coupons: Match.Maybe([{
-        _id: Match.Where(notEmpty),
-        discount: Match.Maybe(Number),
-        count: Match.Maybe(Number),
-      }]),
     };
 
     check(requestData, requestDataStructure);

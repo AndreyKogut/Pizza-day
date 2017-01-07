@@ -22,18 +22,13 @@ Meteor.methods({
       throw new Meteor.Error(400, 'Access denied');
     }
 
-    const id = new Meteor.Collection.ObjectID().valueOf();
-
-    Events.insert({
-      _id: id,
+    return Events.insert({
       participants: [],
       status: 'ordering',
       creator: this.userId,
       createdAt: new Date(),
       ...requestData,
     });
-
-    return id;
   },
 
   'events.update': function updateEvent(requestData) {
@@ -57,7 +52,9 @@ Meteor.methods({
 
     const updateData = _.pick(requestData, value => value);
 
-    Events.update({ _id: requestData.id }, updateData);
+    if (!_.isEmpty(updateData)) {
+      Events.update({ _id: requestData.id }, updateData);
+    }
   },
 
   'events.orderEvent': function orderEvent(id) {
@@ -123,7 +120,7 @@ Meteor.publish('Events', function getEvents() {
     return this.error(new Meteor.Error(401, 'Access denied'));
   }
 
-  return Events.find({ 'participants._id': this.userId });
+  return Events.find({ $or: [{ 'participants._id': this.userId }, { creator: this.userId }] });
 });
 
 Meteor.publish('Event', function publishEvent(id) {

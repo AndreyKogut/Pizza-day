@@ -36,23 +36,21 @@ class UserPicker extends Component {
     return filteredData.map((user) => {
       if (_.some([...this.state.users], val => user._id === val._id)) return '';
 
-      return (<UserListItem
-        key={user._id}
-        userObject={user}
-        clickCallback={(clickedUser) => {
-          this.addUser(clickedUser);
-        }}
-      />);
+      return (<div key={user._id}>
+        <UserListItem userObject={user} />
+        <button type="button" onClick={() => { this.addUser(user); }}>add</button>
+      </div>);
     });
   };
 
   getPickedUsers = () =>
     [...this.state.users].map(user =>
-      (<UserListItem
-        key={user._id}
-        userObject={user}
-        clickCallback={(clickedUser) => { this.deleteUser(clickedUser); }}
-      />));
+      (<div key={user._id}>
+        <UserListItem
+          userObject={user}
+        />
+        <button type="button" onClick={() => { this.deleteUser(user); }}>delete</button>
+      </div>));
 
   addUser = (user) => {
     const newState = new Set(this.state.users);
@@ -127,10 +125,12 @@ class UserPicker extends Component {
 UserPicker.propTypes = propTypes;
 UserPicker.defaultProps = defaultProps;
 
-const UserPickerContainer = createContainer((props) => {
+const UserPickerContainer = createContainer(({ hideItems, ...props }) => {
   const handleUsers = Meteor.subscribe('UsersList');
 
-  const list = Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
+  const convertToStringsList = _.pluck(hideItems, '_id');
+
+  const list = Meteor.users.find({ _id: { $nin: convertToStringsList } }).fetch();
 
   return {
     ...props,

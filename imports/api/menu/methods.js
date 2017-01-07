@@ -16,10 +16,7 @@ Meteor.methods({
 
     check(requestData, requestDataStructure);
 
-    Menu.insert({
-      _id: new Meteor.Collection.ObjectID().valueOf(),
-      ...requestData,
-    });
+    Menu.insert(requestData);
   },
 });
 

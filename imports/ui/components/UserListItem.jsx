@@ -1,11 +1,11 @@
 import React, { PropTypes } from 'react';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 const propTypes = {
   userObject: PropTypes.objectOf(Object),
-  clickCallback: PropTypes.func,
 };
 
-const UserListItem = ({ userObject, clickCallback }) => {
+const UserListItem = ({ userObject }) => {
   _.defaults(userObject, {
     profile: {
       name: 'No name',
@@ -16,10 +16,9 @@ const UserListItem = ({ userObject, clickCallback }) => {
     }],
   });
 
-  return (<button
-    onClick={() => { clickCallback(userObject); }}
-    type="button"
-    className="user-picker__item clear-defaults"
+  return (<a
+    href={FlowRouter.path('/users/:id', { id: userObject._id })}
+    className="user-picker__item"
   >
     <img
       src={userObject.profile.avatar}
@@ -30,7 +29,7 @@ const UserListItem = ({ userObject, clickCallback }) => {
       <span className="user-picker__text">{ userObject.profile.name }</span>
       <span className="user-picker__text">{ userObject.emails[0].address }</span>
     </div>
-  </button>);
+  </a>);
 };
 
 UserListItem.propTypes = propTypes;

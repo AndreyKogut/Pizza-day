@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import Groups from './collection';
+import Events from '../events/collection';
 import { notEmpty } from '../checkData';
 
 Meteor.methods({
@@ -19,7 +20,6 @@ Meteor.methods({
 
     check(requestData, requestDateStructure);
 
-    const id = new Meteor.Collection.ObjectID().valueOf();
     const { members = [], ...fieldsToInsert } = requestData;
 
     const convertedMembers = [{
@@ -32,15 +32,12 @@ Meteor.methods({
       verified: false,
     }));
 
-    Groups.insert({
-      _id: id,
+    return Groups.insert({
       ...fieldsToInsert,
       members: convertedMembers,
       creator: this.userId,
       createdAt: new Date(),
     });
-
-    return id;
   },
 
   'groups.update': function updateGroups(requestData) {
@@ -54,15 +51,19 @@ Meteor.methods({
 
     check(requestData, requestDataStructure);
 
+    const { id, ...pushData } = requestData;
+
     const groupCreator = Groups.findOne({ _id: requestData.id }).creator;
 
     if (groupCreator !== this.userId) {
       throw new Meteor.Error(402, 'You must be creator');
     }
 
-    const updateData = _.pick(requestData, value => value);
+    const pushNotEmptyData = _.pick(pushData, value => value);
 
-    Groups.update({ _id: requestData.id }, updateData);
+    if (!_.isEmpty(pushNotEmptyData)) {
+      Groups.update({ _id: id }, { $set: { ...pushNotEmptyData } });
+    }
   },
 
   'groups.remove': function removeGroup(id) {
@@ -76,6 +77,80 @@ Meteor.methods({
 
     Groups.remove({ _id: id });
   },
+
+  'groups.addMembers': function addMembers(requestData) {
+    const requestDataStructure = {
+      id: Match.Where(notEmpty),
+      items: [Match.Where(notEmpty)],
+    };
+
+    check(requestData, requestDataStructure);
+
+    const groupCreator = Groups.findOne({ _id: requestData.id }).creator;
+
+    if (groupCreator !== this.userId) {
+      throw new Meteor.Error(402, 'You must be creator');
+    }
+
+    const convertedMembers = [];
+
+    requestData.items.map(item => convertedMembers.push({
+      _id: item,
+      verified: false,
+    }));
+
+    Groups.update({ _id: requestData.id }, { $push: { members: { $each: convertedMembers } } });
+  },
+
+  'groups.addMenuItems': function addMenuItems(requestData) {
+    const requestDataStructure = {
+      id: Match.Where(notEmpty),
+      items: [Match.Where(notEmpty)],
+    };
+
+    check(requestData, requestDataStructure);
+
+    const groupCreator = Groups.findOne({ _id: requestData.id }).creator;
+
+    if (groupCreator !== this.userId) {
+      throw new Meteor.Error(402, 'You must be creator');
+    }
+
+    Groups.update({ _id: requestData.id }, { $push: { menu: { $each: requestData.items } } });
+  },
+
+  'groups.removeMember': function removeMember(requestData) {
+    const requestDataStructure = {
+      groupId: Match.Where(notEmpty),
+      userId: Match.Where(notEmpty),
+    };
+
+    check(requestData, requestDataStructure);
+
+    const groupCreator = Groups.findOne({ _id: requestData.groupId }).creator;
+
+    if (groupCreator !== this.userId) {
+      throw new Meteor.Error(402, 'Not creator');
+    }
+
+    Groups.update(
+      { _id: requestData.groupId },
+      { $pull: { members: { _id: requestData.userId } } },
+      );
+
+    Events.update({
+      groupId: requestData.groupId,
+      'participants._id': requestData.userId,
+    }, {
+      $pull: {
+        participants: {
+          _id: requestData.userId,
+        },
+      },
+    }, {
+      multi: true,
+    });
+  },
 });
 
 Meteor.publish('Groups', function getGroups() {
@@ -83,7 +158,7 @@ Meteor.publish('Groups', function getGroups() {
     return this.error(new Meteor.Error(401, 'Access denied'));
   }
 
-  return Groups.find({ 'members._id': this.userId }, { sort: { createdAt: -1 } });
+  return Groups.find({ $or: [{ 'members._id': this.userId }, { creator: this.userId }] }, { sort: { createdAt: -1 } });
 });
 
 Meteor.publish('Group', function groupPublish(id) {
