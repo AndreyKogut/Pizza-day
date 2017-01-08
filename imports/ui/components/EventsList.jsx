@@ -20,7 +20,7 @@ const EventsList = ({ items, eventsLoading }) => {
 
   return (<ul className="events"> { items.map(event => (<li key={event._id} className="events__item">
     <a
-      href={FlowRouter.path('/groups/:id/events/:eventId', { id: event.creator, eventId: event._id })}
+      href={FlowRouter.path('/groups/:id/events/:eventId', { id: event.groupId, eventId: event._id })}
       className="events__link"
     >
       { event.name }

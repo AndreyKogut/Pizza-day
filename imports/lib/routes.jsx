@@ -90,11 +90,11 @@ privateRouts.route('/groups/:id', {
   },
 });
 
-privateRouts.route('/groups/:id/create-event', {
+privateRouts.route('/groups/:groupId/create-event', {
   name: 'CreateEvent',
-  action({ id }) {
+  action({ groupId }) {
     mount(App, {
-      content: () => (<CreateEvent id={id} />),
+      content: () => (<CreateEvent groupId={groupId} />),
     });
   },
 });

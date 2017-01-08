@@ -63,9 +63,6 @@ Meteor.methods({
       });
     }
   },
-  'users.get': function sdfs() {
-    return Meteor.users.find().fetch();
-  },
 });
 
 Meteor.publish('UsersList', function publishUsers() {

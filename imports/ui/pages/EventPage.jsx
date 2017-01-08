@@ -61,6 +61,17 @@ const EventPage = (props) => {
     Meteor.call('events.addMenuItems', { id: eventId, items });
   }
 
+  function deliverEvent() {
+    Meteor.call('events.deliverEvent', props.eventId);
+  }
+
+  function changeStatus(event) {
+    Meteor.call('events.updateStatus', {
+      id: props.eventId,
+      status: event.target.value,
+    });
+  }
+
   if (props.eventLoading) {
     return <div>Loading event...</div>;
   }
@@ -68,6 +79,10 @@ const EventPage = (props) => {
   return (<div className="event-page">
     { editable ?
       <div className="groups__controls">
+        <button
+          type="button"
+          onClick={deliverEvent}
+        >Deliver items</button>
         <Controls
           updateData={(date) => { updateData({ date }); }}
           eventId={props.eventId}
@@ -89,7 +104,15 @@ const EventPage = (props) => {
           onChange={() => { updateData({ name: this.eventName.value }); }}
           className={!editable ? 'clear-defaults' : ''}
         />
-        ({ props.status })
+        ({ editable ? <select
+          defaultValue={props.status}
+          onChange={changeStatus}
+        >
+          <option value="ordering">ordering</option>
+          <option value="ordered">ordered</option>
+          <option value="delivering">delivering</option>
+          <option value="delivered">delivered</option>
+        </select> : props.status })
       </div>
       <div><label htmlFor={props.title}>Title : </label>
         <input

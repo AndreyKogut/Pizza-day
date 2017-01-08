@@ -1,8 +1,8 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
-import ImagePicker from '../components/ImagePicker';
+import Controls from '../components/Controls';
 
 const propTypes = {
   id: PropTypes.string,
@@ -10,141 +10,104 @@ const propTypes = {
   userDataLoading: PropTypes.bool,
 };
 
-class UserCabinet extends Component {
-  constructor(props) {
-    super(props);
-    this.updateUserData = this.updateUserData.bind(this);
-    this.inputChanged = this.inputChanged.bind(this);
-    this.state = {
-      editable: this.props.id === Meteor.userId(),
-      edited: false,
-      imageId: null,
-    };
-  }
+const UserCabinet = (props) => {
+  const editable = props.id === Meteor.userId();
 
-  inputChanged() {
-    this.setState({
-      edited: true,
-    });
-  }
-
-  dataChangedCallback = () => {
-    this.setState({
-      edited: false,
-    });
-  };
-
-  updateUserData(event) {
-    event.preventDefault();
-
-    const email = this.email.value.trim();
-    const name = this.name.value.trim();
-    const avatar = this.avatar;
-    const position = this.position.value.trim();
-    const company = this.company.value.trim();
-    const about = this.about.value.trim();
-
+  function updateUserData(obj) {
     Meteor.call(
       'user.update',
-      { email, name, avatar, about, company, position },
-      handleMethodsCallbacks(this.dataChangedCallback),
+      obj,
+      handleMethodsCallbacks,
     );
   }
 
-  render() {
-    if (this.props.userDataLoading) {
-      return (<div>Loading..</div>);
-    }
-
-    return (<div className="form user-cabinet">
-      <form onSubmit={this.updateUserData}>
-        <ul className="form__list">
-          <li>
-            { this.state.editable ? <ImagePicker
-              getImageUrl={(url) => { this.props.user.profile.avatar = url; this.inputChanged(); }}
-              currentImageUrl={this.props.user.profile.avatar}
-            /> : <img
-              src={this.props.user.profile.avatar}
-              alt={this.props.user.profile.name}
-              className="avatar"
-            /> }
-          </li>
-          <li>
-            <label htmlFor={this.props.user.profile.name}>Name : </label>
-            <input
-              type="text"
-              ref={(name) => { this.name = name; }}
-              defaultValue={this.props.user.profile.name}
-              placeholder="No name"
-              readOnly={!this.state.editable}
-              id={this.props.user.profile.name}
-              onChange={this.inputChanged}
-              className={!this.state.editable ? 'clear-defaults' : ''}
-            />
-          </li>
-          <li>
-            <label htmlFor={this.props.user.profile.about}>About : </label>
-            <textarea
-              ref={(about) => { this.about = about; }}
-              defaultValue={this.props.user.profile.about}
-              placeholder="No name"
-              readOnly={!this.state.editable}
-              id={this.props.user.profile.about}
-              onChange={this.inputChanged}
-              className={!this.state.editable ? 'clear-defaults' : ''}
-            />
-          </li>
-          <li>
-            <label htmlFor={this.props.user.profile.company}>Company name : </label>
-            <input
-              type="text"
-              ref={(company) => { this.company = company; }}
-              defaultValue={this.props.user.profile.company}
-              placeholder="No name"
-              readOnly={!this.state.editable}
-              id={this.props.user.profile.company}
-              onChange={this.inputChanged}
-              className={!this.state.editable ? 'clear-defaults' : ''}
-            />
-          </li>
-          <li>
-            <label htmlFor={this.props.user.profile.position}>Position : </label>
-            <input
-              type="text"
-              ref={(position) => { this.position = position; }}
-              defaultValue={this.props.user.profile.position}
-              placeholder="No name"
-              readOnly={!this.state.editable}
-              id={this.props.user.profile.position}
-              onChange={this.inputChanged}
-              className={!this.state.editable ? 'clear-defaults' : ''}
-            />
-          </li>
-          <li>
-            <label htmlFor={this.props.user.emails[0].address}>Email :</label>
-            <input
-              type="email"
-              ref={(email) => { this.email = email; }}
-              defaultValue={this.props.user.emails[0].address}
-              placeholder="No name"
-              readOnly={!this.state.editable}
-              id={this.props.user.emails[0].address}
-              onChange={this.inputChanged}
-              className={!this.state.editable ? 'clear-defaults' : ''}
-            />
-          </li>
-          {this.state.editable && this.state.edited ?
-            <li>
-              <input type="submit" value="Update user data" />
-            </li> : ''}
-          <li>
-            { this.state.editable ? <a href="/create-group">Create group</a> : '' }
-          </li>
-        </ul>
-      </form>
-    </div>);
+  if (props.userDataLoading) {
+    return (<div>Loading..</div>);
   }
-}
+
+  return (<div className="form user-cabinet">
+    <Controls
+      controls={{ avatar: true }}
+      updateImage={(imageUrl) => { updateUserData({ avatar: imageUrl }); }}
+    />
+    <ul className="form__list">
+      <li>
+        <img
+          src={props.user.profile.avatar}
+          alt={props.user.profile.name}
+          className="avatar"
+        />
+      </li>
+      <li>
+        <label htmlFor={props.user.profile.name}>Name : </label>
+        <input
+          type="text"
+          ref={(name) => { this.userName = name; }}
+          defaultValue={props.user.profile.name}
+          placeholder="No name"
+          readOnly={!editable}
+          id={props.user.profile.name}
+          onChange={() => { updateUserData({ name: this.userName.value }); }}
+          className={!editable ? 'clear-defaults' : ''}
+        />
+      </li>
+      <li>
+        <label htmlFor={props.user.profile.about}>About : </label>
+        <textarea
+          ref={(about) => { this.about = about; }}
+          defaultValue={props.user.profile.about}
+          placeholder="No name"
+          readOnly={!editable}
+          id={props.user.profile.about}
+          onChange={() => { updateUserData({ about: this.about.value }); }}
+          className={!editable ? 'clear-defaults' : ''}
+        />
+      </li>
+      <li>
+        <label htmlFor={props.user.profile.company}>Company name : </label>
+        <input
+          type="text"
+          ref={(company) => { this.company = company; }}
+          defaultValue={props.user.profile.company}
+          placeholder="No name"
+          readOnly={!editable}
+          id={props.user.profile.company}
+          onChange={() => { updateUserData({ company: this.company.value }); }}
+          className={!editable ? 'clear-defaults' : ''}
+        />
+      </li>
+      <li>
+        <label htmlFor={props.user.profile.position}>Position : </label>
+        <input
+          type="text"
+          ref={(position) => { this.position = position; }}
+          defaultValue={props.user.profile.position}
+          placeholder="No name"
+          readOnly={!editable}
+          id={props.user.profile.position}
+          onChange={() => { updateUserData({ position: this.position.value }); }}
+          className={!editable ? 'clear-defaults' : ''}
+        />
+      </li>
+      <li>
+        <label htmlFor={props.user.emails[0].address}>Email :</label>
+        <input
+          type="email"
+          ref={(email) => { this.email = email; }}
+          defaultValue={props.user.emails[0].address}
+          placeholder="No name"
+          readOnly={!editable}
+          id={props.user.emails[0].address}
+          onChange={() => { updateUserData({ email: this.email.value }); }}
+          className={!editable ? 'clear-defaults' : ''}
+        />
+      </li>
+      <li>
+        { editable ? <a href="/create-group">Create group</a> : '' }
+      </li>
+    </ul>
+  </div>);
+};
 
 UserCabinet.propTypes = propTypes;
 

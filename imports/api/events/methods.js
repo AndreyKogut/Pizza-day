@@ -3,7 +3,7 @@ import { check, Match } from 'meteor/check';
 import Events from './collection';
 import Groups from '../groups/collection';
 import Orders from '../orders/collection';
-import { notEmpty, dateNotPass } from '../checkData';
+import { stringList, notEmpty, dateNotPass } from '../checkData';
 
 Meteor.methods({
   'events.insert': function insert(requestData) {
@@ -11,7 +11,7 @@ Meteor.methods({
       name: Match.Where(notEmpty),
       groupId: Match.Where(notEmpty),
       date: Match.Where(dateNotPass),
-      menu: [Match.Where(notEmpty)],
+      menu: Match.Where(stringList),
       title: Match.Maybe(String),
     };
 
@@ -57,26 +57,40 @@ Meteor.methods({
     }
   },
 
-  'events.orderEvent': function orderEvent(id) {
-    check(id, Match.Where(notEmpty));
+  'events.updateStatus': function orderEvent(requestData) {
+    const requestDataStructure = {
+      id: Match.Where(notEmpty),
+      status: Match.Where((data) => {
+        const requiredStatus = ['ordering', 'ordered', 'delivering', 'delivered'];
 
-    const checkMemberExistInGroup = Events.findOne({
-      _id: id,
-    }).creator === this.userId;
+        return _.contains(requiredStatus, data);
+      }),
+    };
 
-    if (!checkMemberExistInGroup) {
+    check(requestData, requestDataStructure);
+
+    const event = Events.findOne({ _id: requestData.id });
+
+    if (event.creator !== this.userId) {
       throw new Meteor.Error(402, 'You should be group creator');
     }
 
-    Events.update({ _id: id }, { status: 'ordered' });
+    Events.update({ _id: requestData.id }, { $set: { status: requestData.status } });
+
+    if (requestData.status !== 'ordering') {
+      Events.update({ _id: requestData.id }, { $pull: { participants: { ordered: false } } });
+    }
   },
 
   'events.joinEvent': function addParticipant(id) {
     check(id, Match.Where(notEmpty));
 
-    const groupId = Events.findOne({ _id: id }).groupId;
+    const event = Events.findOne({ _id: id });
+    if (event.status !== 'ordering') {
+      throw new Meteor.Error(400, 'Event ordered');
+    }
 
-    const groupMembers = Groups.findOne({ _id: groupId }).members;
+    const groupMembers = Groups.findOne({ _id: event.groupId }).members;
 
     if (!_.indexOf(groupMembers, this.userId)) {
       throw new Meteor.Error(402, 'Access denied');
@@ -95,9 +109,12 @@ Meteor.methods({
 
     check(requestData, requestDataStructure);
 
-    const eventCreator = Events.findOne({ _id: requestData.id }).creator;
+    const event = Events.findOne({ _id: requestData.id });
+    if (event.status !== 'ordering') {
+      throw new Meteor.Error(400, 'Event ordered');
+    }
 
-    if (eventCreator !== this.userId) {
+    if (event.creator !== this.userId) {
       throw new Meteor.Error(402, 'You must be creator');
     }
 
@@ -106,6 +123,12 @@ Meteor.methods({
 
   'events.leaveEvent': function deleteParticipant(eventId) {
     check(eventId, Match.Where(notEmpty));
+
+    const event = Events.findOne({ _id: eventId });
+
+    if (event.status !== 'ordering') {
+      throw new Meteor.Error(400, 'Event ordered');
+    }
 
     Events.update({ _id: eventId },
       { $pull: { participants: { _id: this.userId } } },
@@ -120,6 +143,10 @@ Meteor.methods({
     }
 
     const event = Events.findOne({ _id: eventId });
+    if (event.status !== 'ordering') {
+      throw new Meteor.Error(400, 'Event ordered');
+    }
+
     const eventParticipant = _.findWhere(event.participants, { _id: this.userId });
 
     Events.update({ _id: eventId, participants: { $elemMatch: { _id: this.userId } } },
