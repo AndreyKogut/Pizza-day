@@ -153,6 +153,17 @@ const OrderMenuPicker = createContainer(({ defaultValue = [], id, getMenuList })
   };
 }, MenuPicker);
 
+const EventMenuPicker = createContainer(({ eventId, hideItems, getMenuList }) => {
+  const handleMenu = Meteor.subscribe('GroupMenuForEvent', eventId);
+
+  return {
+    items: Menu.find({ _id: { $nin: hideItems } }).fetch(),
+    withCounters: false,
+    getMenuList,
+    menuLoading: !handleMenu.ready(),
+  };
+}, MenuPicker);
+
 const ItemsMenuPicker = createContainer(({ hideItems, getMenuList }) => {
   const handleMenu = Meteor.subscribe('Menu');
 
@@ -168,4 +179,5 @@ export default MenuPicker;
 export {
   OrderMenuPicker,
   ItemsMenuPicker,
+  EventMenuPicker,
 };

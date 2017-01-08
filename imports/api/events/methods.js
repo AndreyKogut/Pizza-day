@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import Events from './collection';
 import Groups from '../groups/collection';
+import Orders from '../orders/collection';
 import { notEmpty, dateNotPass } from '../checkData';
 
 Meteor.methods({
@@ -37,23 +38,22 @@ Meteor.methods({
       name: Match.Maybe(String),
       date: Match.Maybe(Match.Where(dateNotPass)),
       title: Match.Maybe(String),
-      menu: Match.Maybe([Match.Where(notEmpty)]),
     };
 
     check(requestData, requestDataStructure);
 
-    const checkMemberExistInGroup = Events.findOne({
+    const group = Events.findOne({
       _id: requestData.id,
-    }).creator === this.userId;
+    });
 
-    if (!checkMemberExistInGroup) {
+    if (group.creator !== this.userId) {
       throw new Meteor.Error(402, 'You should be group creator');
     }
 
     const updateData = _.pick(requestData, value => value);
 
     if (!_.isEmpty(updateData)) {
-      Events.update({ _id: requestData.id }, updateData);
+      Events.update({ _id: requestData.id }, { $set: { ...updateData } });
     }
   },
 
@@ -87,6 +87,23 @@ Meteor.methods({
     );
   },
 
+  'events.addMenuItems': function addMenuItems(requestData) {
+    const requestDataStructure = {
+      id: Match.Where(notEmpty),
+      items: [Match.Where(notEmpty)],
+    };
+
+    check(requestData, requestDataStructure);
+
+    const eventCreator = Events.findOne({ _id: requestData.id }).creator;
+
+    if (eventCreator !== this.userId) {
+      throw new Meteor.Error(402, 'You must be creator');
+    }
+
+    Events.update({ _id: requestData.id }, { $push: { menu: { $each: requestData.items } } });
+  },
+
   'events.leaveEvent': function deleteParticipant(eventId) {
     check(eventId, Match.Where(notEmpty));
 
@@ -95,17 +112,21 @@ Meteor.methods({
     );
   },
 
-  'events.orderItems': function orderEventItems({ eventId, menu }) {
-    const menuObjectStructure = [{
-      _id: Match.Where(notEmpty),
-      count: Number,
-    }];
+  'events.removeOrdering': function orderEventItems(eventId) {
+    check(eventId, Match.Where(notEmpty));
 
-    check(menu, menuObjectStructure);
+    if (!this.userId) {
+      throw new Meteor.Error(402, 'Unauthorized');
+    }
+
+    const event = Events.findOne({ _id: eventId });
+    const eventParticipant = _.findWhere(event.participants, { _id: this.userId });
 
     Events.update({ _id: eventId, participants: { $elemMatch: { _id: this.userId } } },
-      { $set: { 'participants.$.ordered': !!menu.length, 'participants.$.menu': menu } },
+      { $set: { 'participants.$.ordered': false, 'participants.$.order': '' } },
     );
+
+    Orders.remove({ _id: eventParticipant.order });
   },
 });
 

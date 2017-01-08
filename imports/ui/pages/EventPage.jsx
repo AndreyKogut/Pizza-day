@@ -1,16 +1,19 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 import { OrderMenuPicker } from '../components/MenuPicker';
 import { OrderInfoContainer } from '../components/OrderInfo';
 import Events from '../../api/events/collection';
+import Controls from '../../ui/components/Controls';
 
 const propTypes = {
   eventId: PropTypes.string,
+  creator: PropTypes.string,
   name: PropTypes.string,
   title: PropTypes.string,
   date: PropTypes.string,
+  menu: PropTypes.arrayOf(String),
   status: PropTypes.string,
   orderId: PropTypes.string,
   isParticipant: PropTypes.bool,
@@ -21,57 +24,107 @@ const defaultProps = {
   orderedItems: [],
 };
 
-class EventPage extends Component {
-  constructor(props) {
-    super(props);
-    this.menu = [];
+const EventPage = (props) => {
+  const editable = props.creator === Meteor.userId();
+
+  function updateData(obj) {
+    Meteor.call('events.update',
+      { id: props.eventId, ...obj },
+      handleMethodsCallbacks,
+    );
   }
 
-  joinEvent = () => {
-    Meteor.call('events.joinEvent', this.props.eventId, handleMethodsCallbacks);
-  };
+  function joinEvent() {
+    Meteor.call('events.joinEvent', props.eventId, handleMethodsCallbacks);
+  }
 
-  leaveEvent = () => {
-    Meteor.call('events.leaveEvent', this.props.eventId, handleMethodsCallbacks);
-  };
+  function leaveEvent() {
+    Meteor.call('events.leaveEvent', props.eventId, handleMethodsCallbacks);
+  }
 
-  orderItems = () => {
-    const menu = this.menu;
-    const eventId = this.props.eventId;
-    const userId = Meteor.userId();
+  function orderItems() {
+    const menu = this.menu || [];
+    const eventId = props.eventId;
 
-    Meteor.call('orders.insert', { eventId, menu, userId }, handleMethodsCallbacks);
-  };
-  render() {
-    if (this.props.eventLoading) {
-      return <div>Loading event...</div>;
-    }
+    Meteor.call('orders.insert', { eventId, menu }, handleMethodsCallbacks);
+  }
 
-    return (<div className="event-page">
-      <ul className="event-page__info">
-        <li>Name: { this.props.name }({ this.props.status })</li>
-        <li>Title: { this.props.title }</li>
-        <li>Date: { this.props.date }</li>
-        <li>
-          { this.props.isParticipant ?
-            <button type="button" onClick={this.leaveEvent}>Leave</button> :
-            <button type="button" onClick={this.joinEvent}>Join</button> }
-        </li>
-      </ul>
-      <div className="event-page__menu">
-        { this.props.orderId ?
-          <OrderInfoContainer
-            id={this.props.orderId}
-          /> :
-          <OrderMenuPicker
-            id={this.props.eventId}
-            getMenuList={(list) => { this.menu = [...list]; }}
-          /> }
+  function deleteOrder() {
+    const eventId = props.eventId;
+
+    Meteor.call('events.removeOrdering', eventId, handleMethodsCallbacks);
+  }
+
+  function addMenuItems(items) {
+    const eventId = props.eventId;
+
+    Meteor.call('events.addMenuItems', { id: eventId, items });
+  }
+
+  if (props.eventLoading) {
+    return <div>Loading event...</div>;
+  }
+
+  return (<div className="event-page">
+    { editable ?
+      <div className="groups__controls">
+        <Controls
+          updateData={(date) => { updateData({ date }); }}
+          eventId={props.eventId}
+          controls={{ menu: true, date: true }}
+          menu={props.menu}
+          addMenuItems={(items) => { addMenuItems(items); }}
+        />
+      </div> : '' }
+    <div className="event-page__info">
+      <div>
+        <label htmlFor={props.name}>Name : </label>
+        <input
+          type="text"
+          ref={(name) => { this.eventName = name; }}
+          defaultValue={props.name}
+          placeholder="No name"
+          readOnly={!editable}
+          id={props.name}
+          onChange={() => { updateData({ name: this.eventName.value }); }}
+          className={!editable ? 'clear-defaults' : ''}
+        />
+        ({ props.status })
       </div>
-      <button type="button" onClick={this.orderItems}>Order items</button>
-    </div>);
-  }
-}
+      <div><label htmlFor={props.title}>Title : </label>
+        <input
+          type="text"
+          ref={(title) => { this.title = title; }}
+          defaultValue={props.title}
+          placeholder="No name"
+          readOnly={!editable}
+          id={props.title}
+          onChange={() => { updateData({ title: this.title.value }); }}
+          className={!editable ? 'clear-defaults' : ''}
+        /></div>
+      <div>Date: { props.date }</div>
+      <div>
+        { props.isParticipant ?
+          <button type="button" onClick={leaveEvent}>Leave</button> :
+          <button type="button" onClick={joinEvent}>Join</button> }
+      </div>
+    </div>
+    <div className="event-page__menu">
+      { props.orderId ?
+        <OrderInfoContainer
+          id={props.orderId}
+        /> :
+        <OrderMenuPicker
+          id={props.eventId}
+          key={props.menu}
+          getMenuList={(list) => { this.menu = [...list]; }}
+        /> }
+    </div>
+    { props.orderId ?
+      <button type="button" onClick={deleteOrder}>Delete ordering</button> :
+      <button type="button" onClick={orderItems}>Order items</button> }
+  </div>);
+};
 
 EventPage.propTypes = propTypes;
 EventPage.defaultProps = defaultProps;

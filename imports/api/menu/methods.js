@@ -30,9 +30,22 @@ Meteor.publish('GroupMenu', function publishGroupMenu(id) {
     return this.error(new Meteor.Error(401, 'Access denied'));
   }
 
-  const groupMenu = Groups.findOne({ _id: id }).menu || [];
+  const group = Groups.findOne({ _id: id });
 
-  return Menu.find({ _id: { $in: [...groupMenu] } });
+  return Menu.find({ _id: { $in: [...group.menu] } });
+});
+
+Meteor.publish('GroupMenuForEvent', function publishGroupMenu(id) {
+  check(id, Match.Where(notEmpty));
+
+  if (!this.userId) {
+    return this.error(new Meteor.Error(401, 'Access denied'));
+  }
+
+  const event = Events.findOne({ _id: id });
+  const group = Groups.findOne({ _id: event.groupId });
+
+  return Menu.find({ _id: { $in: [...group.menu] } });
 });
 
 Meteor.publish('EventMenu', function publishMenu(id) {
@@ -50,7 +63,7 @@ Meteor.publish('EventMenu', function publishMenu(id) {
 Meteor.publish('OrderMenu', function publishOrder(id) {
   check(id, Match.Where(notEmpty));
 
-  const order = Orders.findOne({ _id: id });
+  const order = Orders.findOne({ _id: id }) || {};
 
   if (this.userId !== order.userId) {
     return this.ready();

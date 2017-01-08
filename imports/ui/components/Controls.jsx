@@ -1,9 +1,12 @@
 import React, { Component, PropTypes } from 'react';
-import { ItemsMenuPicker } from '../../ui/components/MenuPicker';
+import { ItemsMenuPicker, EventMenuPicker } from '../../ui/components/MenuPicker';
 import UserPickerContainer from '../../ui/components/UserPicker';
 import ImagePicker from '../../ui/components/ImagePicker';
 
 const propTypes = {
+  controls: PropTypes.objectOf(Object),
+  eventId: PropTypes.string,
+  updateData: PropTypes.func,
   addMembers: PropTypes.func,
   addMenuItems: PropTypes.func,
   updateImage: PropTypes.func,
@@ -14,8 +17,11 @@ const propTypes = {
 const defaultProps = {
   members: [],
   menu: [],
+  updateData: () => {},
   addMembers: () => {},
   addMenuItems: () => {},
+  updateImage: () => {},
+  controls: {},
 };
 
 class Controls extends Component {
@@ -28,6 +34,10 @@ class Controls extends Component {
 
   submitData = () => {
     switch (this.state.type) {
+      case 'datePicker': {
+        this.props.updateData(this.date.value);
+        break;
+      }
       case 'menuPicker': {
         this.props.addMenuItems(this.menu);
         break;
@@ -54,12 +64,21 @@ class Controls extends Component {
 
   render() {
     let template;
+
     switch (this.state.type) {
       case 'menuPicker': {
-        template = (<ItemsMenuPicker
-          hideItems={this.props.menu}
-          getMenuList={(items) => { this.menu = items; }}
-        />);
+        if (this.props.eventId) {
+          template = (<EventMenuPicker
+            eventId={this.props.eventId}
+            hideItems={this.props.menu}
+            getMenuList={(items) => { this.menu = items; }}
+          />);
+        } else {
+          template = (<ItemsMenuPicker
+            hideItems={this.props.menu}
+            getMenuList={(items) => { this.menu = items; }}
+          />);
+        }
         break;
       }
 
@@ -78,6 +97,15 @@ class Controls extends Component {
         break;
       }
 
+      case 'datePicker': {
+        template = (<input
+          type="datetime-local"
+          ref={(date) => { this.date = date; }}
+          required
+        />);
+        break;
+      }
+
       default: {
         template = '';
       }
@@ -85,15 +113,22 @@ class Controls extends Component {
 
     return (<div className="controls">
       <ul className="controls__menu">
-        <li className="controls__item">
-          <button onClick={() => { this.changePicker('menuPicker'); }} className="controls__link">Menu</button>
-        </li>
-        <li className="controls__item">
-          <button onClick={() => { this.changePicker('userPicker'); }} className="controls__link">Members</button>
-        </li>
-        <li className="controls__item">
-          <button onClick={() => { this.changePicker('imagePicker'); }} className="controls__link">Image</button>
-        </li>
+        { this.props.controls.menu ?
+          <li className="controls__item">
+            <button onClick={() => { this.changePicker('menuPicker'); }} className="controls__link">Menu</button>
+          </li> : '' }
+        { this.props.controls.users ?
+          <li className="controls__item">
+            <button onClick={() => { this.changePicker('userPicker'); }} className="controls__link">Members</button>
+          </li> : '' }
+        { this.props.controls.avatar ?
+          <li className="controls__item">
+            <button onClick={() => { this.changePicker('imagePicker'); }} className="controls__link">Image</button>
+          </li> : '' }
+        { this.props.controls.date ?
+          <li className="controls__item">
+            <button onClick={() => { this.changePicker('datePicker'); }} className="controls__link">Date</button>
+          </li> : '' }
       </ul>
       { this.state.type ?
         <div className="controls__picker">

@@ -9,21 +9,23 @@ const propTypes = {
   items: PropTypes.arrayOf(Object),
   mapOfItemCounter: PropTypes.instanceOf(Map),
   menuLoading: PropTypes.bool,
+  total: PropTypes.number,
 };
 
 const defaultProps = {
   items: [],
   mapOfItemCounter: [],
+  total: 0,
 };
 
-const OrderInfo = ({ items, menuLoading, mapOfItemCounter }) => {
-  if (menuLoading) {
+const OrderInfo = (props) => {
+  if (props.menuLoading) {
     return <div>Order loading...</div>;
   }
 
-  return (<ul className="menu">
-    { items.map(({ _id: id, ...itemInfo }) => (
-      <li className="menu__item" key={id}>
+  return (<div className="menu">
+    { props.items.map(({ _id: id, ...itemInfo }) => (
+      <div className="menu__item" key={id}>
         <MenuListItem
           name={itemInfo.name}
           description={itemInfo.description}
@@ -31,11 +33,12 @@ const OrderInfo = ({ items, menuLoading, mapOfItemCounter }) => {
           price={itemInfo.price}
         />
         <span>
-          { mapOfItemCounter.get(id) }
+          { props.mapOfItemCounter.get(id) }
         </span>
-      </li>
+      </div>
     )) }
-  </ul>);
+    <p>Total: { props.total } </p>
+  </div>);
 };
 
 const OrderInfoContainer = createContainer(({ id }) => {
@@ -48,6 +51,7 @@ const OrderInfoContainer = createContainer(({ id }) => {
   _.map(order.menu, ({ _id: itemId, count }) => { mapOfItemCounter.set(itemId, count); });
 
   return {
+    total: order.totalPrice,
     mapOfItemCounter,
     items: Menu.find().fetch(),
     menuLoading: !handleMenu.ready(),

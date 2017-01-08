@@ -63,17 +63,12 @@ const GroupPage = (props) => {
     { editable ?
       <div className="groups__controls">
         <Controls
+          controls={{ menu: true, users: true, avatar: true }}
           members={props.members}
           menu={props.menu}
-          addMembers={(items) => {
-            addMembers(items);
-          }}
-          addMenuItems={(items) => {
-            addMenuItems(items);
-          }}
-          updateImage={(url) => {
-            updateData({ avatar: url });
-          }}
+          addMembers={(items) => { addMembers(items); }}
+          addMenuItems={(items) => { addMenuItems(items); }}
+          updateImage={(url) => { updateData({ avatar: url }); }}
         />
       </div> : '' }
     <div className="group__info">
