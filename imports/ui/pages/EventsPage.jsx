@@ -18,7 +18,7 @@ const EventsPage = ({ events, eventsLoading }) => {
     return <div>Loading...</div>;
   }
 
-  return (<div className="events-page">
+  return (<div className="content page-content">
     <EventsList items={events} />
   </div>);
 };

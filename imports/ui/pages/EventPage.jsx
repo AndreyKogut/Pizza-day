@@ -61,10 +61,6 @@ const EventPage = (props) => {
     Meteor.call('events.addMenuItems', { id: eventId, items });
   }
 
-  function deliverEvent() {
-    Meteor.call('events.deliverEvent', props.eventId);
-  }
-
   function changeStatus(event) {
     Meteor.call('events.updateStatus', {
       id: props.eventId,
@@ -72,17 +68,73 @@ const EventPage = (props) => {
     });
   }
 
+  function enterData(func) {
+    return (event) => {
+      if (event.key.toLowerCase() === 'enter') {
+        func();
+      }
+
+      return true;
+    };
+  }
+
   if (props.eventLoading) {
     return <div>Loading event...</div>;
   }
 
-  return (<div className="event-page">
-    { editable ?
-      <div className="groups__controls">
-        <button
-          type="button"
-          onClick={deliverEvent}
-        >Deliver items</button>
+  return (<div className="content page-content">
+    <div className="mdl-grid">
+      <div className="mdl-cell mdl-cell--8-col">
+        <h1>{ props.name }
+          { editable && <div className="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+            <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.name}>
+              <i className="material-icons">edit</i>
+            </label>
+            <div className="mdl-textfield__expandable-holder">
+              <input
+                type="text"
+                ref={(name) => {
+                  this.eventName = name;
+                }}
+                id={props.name}
+                onKeyPress={enterData(() => {
+                  updateData({ name: this.eventName.value });
+                  this.eventName.value = '';
+                })}
+                className="mdl-textfield__input"
+              />
+              <label className="mdl-textfield__label" htmlFor={props.name}>New name</label>
+            </div>
+          </div> }
+        </h1>
+      </div>
+      <div className="mdl-layout-spacer" />
+      <div className="controls">
+        { props.isParticipant ?
+          <button
+            type="button"
+            className=""
+            onClick={leaveEvent}
+          >Leave</button> :
+          <button
+            type="button"
+            className=""
+            onClick={joinEvent}
+          >Join</button> }
+        { editable ? <select onChange={changeStatus}>
+          <option
+            value="ordering"
+          >ordering</option>
+          <option
+            value="ordered"
+          >ordered</option>
+          <option
+            value="delivering"
+          >delivering</option>
+          <option
+            value="delivered"
+          >delivered</option>
+        </select> : props.status }
         <Controls
           updateData={(date) => { updateData({ date }); }}
           eventId={props.eventId}
@@ -90,62 +142,67 @@ const EventPage = (props) => {
           menu={props.menu}
           addMenuItems={(items) => { addMenuItems(items); }}
         />
-      </div> : '' }
-    <div className="event-page__info">
-      <div>
-        <label htmlFor={props.name}>Name : </label>
-        <input
-          type="text"
-          ref={(name) => { this.eventName = name; }}
-          defaultValue={props.name}
-          placeholder="No name"
-          readOnly={!editable}
-          id={props.name}
-          onChange={() => { updateData({ name: this.eventName.value }); }}
-          className={!editable ? 'clear-defaults' : ''}
-        />
-        ({ editable ? <select
-          defaultValue={props.status}
-          onChange={changeStatus}
-        >
-          <option value="ordering">ordering</option>
-          <option value="ordered">ordered</option>
-          <option value="delivering">delivering</option>
-          <option value="delivered">delivered</option>
-        </select> : props.status })
-      </div>
-      <div><label htmlFor={props.title}>Title : </label>
-        <input
-          type="text"
-          ref={(title) => { this.title = title; }}
-          defaultValue={props.title}
-          placeholder="No name"
-          readOnly={!editable}
-          id={props.title}
-          onChange={() => { updateData({ title: this.title.value }); }}
-          className={!editable ? 'clear-defaults' : ''}
-        /></div>
-      <div>Date: { props.date }</div>
-      <div>
-        { props.isParticipant ?
-          <button type="button" onClick={leaveEvent}>Leave</button> :
-          <button type="button" onClick={joinEvent}>Join</button> }
       </div>
     </div>
-    <div className="event-page__menu">
-      { props.orderId ?
-        <OrderInfoContainer
-          id={props.orderId}
-        /> :
-        <OrderMenuPicker
-          id={props.eventId}
-          key={props.menu}
-          getMenuList={(list) => { this.menu = [...list]; }}
-        /> }
+    <div className="mdl-grid">
+      <div className="mdl-cell mdl-cell--5-col">
+        <span className="as-b">{ props.title }
+          { editable && <div className="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+            <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.title}>
+              <i className="material-icons">edit</i>
+            </label>
+            <div className="mdl-textfield__expandable-holder">
+              <input
+                type="text"
+                ref={(name) => {
+                  this.title = name;
+                }}
+                id={props.title}
+                onKeyPress={enterData(() => {
+                  updateData({ title: this.title.value });
+                  this.title.value = '';
+                })}
+                className="mdl-textfield__input"
+              />
+              <label className="mdl-textfield__label" htmlFor={props.title}>New title</label>
+            </div>
+          </div> }
+        </span>
+      </div>
+      <div className="mdl-layout-spacer" />
+      <h5 className="as-b headline">{ props.date }</h5>
     </div>
     { props.orderId ?
-      <button type="button" onClick={deleteOrder}>Delete ordering</button> :
-      <button type="button" onClick={orderItems}>Order items</button> }
+      <div className="mdl-grid">
+        <div className="mdl-cell mdl-cell--5-col">
+          <h4>Order</h4>
+        </div>
+        <div className="mdl-layout-spacer" />
+        <button
+          className="as-c mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+          type="button"
+          onClick={deleteOrder}
+        >Delete ordering</button>
+      </div> : <div className="mdl-grid">
+        <div className="mdl-cell mdl-cell--6-col">
+          <h4>Menu</h4>
+        </div>
+        <div className="mdl-layout-spacer" />
+        <button
+          className="as-c mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+          type="button"
+          onClick={orderItems}
+        >Order items</button>
+      </div> }
+    { props.orderId ?
+      <OrderInfoContainer
+        id={props.orderId}
+      /> :
+      <OrderMenuPicker
+        id={props.eventId}
+        key={props.menu}
+        getMenuList={(list) => { this.menu = [...list]; }}
+      /> }
   </div>);
 };
 

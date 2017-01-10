@@ -1,31 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.login = this.login.bind(this);
-  }
-
-  googleLoginCallback = () => {
-    console.log('loggined with google plus');
-  };
-
-  passwordLoginCallback = () => {
-    console.log('logined with pass');
-  };
-
-  loginWithGoogle = (event) => {
-    event.preventDefault();
-
+const Login = () => {
+  function loginWithGoogle() {
     Meteor.loginWithGoogle({
       requestPermissions: ['email', 'profile'],
       loginStyle: 'popup',
-    }, handleMethodsCallbacks(this.googleLoginCallback));
-  };
-
-  login(event) {
+    }, handleMethodsCallbacks);
+  }
+  function login(event) {
     event.preventDefault();
 
     const email = this.email.value.trim();
@@ -34,21 +18,61 @@ class Login extends Component {
     Meteor.loginWithPassword(
       email,
       password,
-      handleMethodsCallbacks(this.passwordLoginCallback),
+      handleMethodsCallbacks,
     );
   }
 
-  render() {
-    return (<div>
-      <h1>Authorization</h1>
-      <form onSubmit={this.login}>
-        <button onClick={this.loginWithGoogle} type="button">Google</button>
-        <input type="email" ref={(email) => { this.email = email; }} required placeholder="email" />
-        <input type="password" ref={(password) => { this.password = password; }} required placeholder="pass" />
-        <input type="submit" value="Login" />
-      </form>
-    </div>);
-  }
-}
+  return (<div className="content page-content">
+    <h3 className="ta-c">Authorization</h3>
+    <form onSubmit={login} className="mb--30">
+      <div className="mdl-grid">
+        <button
+          onClick={loginWithGoogle}
+          className="m-auto mdl-button mdl-js-button mdl-button--colored"
+          type="button"
+        >
+          Login with google
+        </button>
+      </div>
+      <div className="mdl-grid">
+        <div className="m-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <input
+            type="email"
+            id="email"
+            className="mdl-textfield__input"
+            ref={(email) => { this.email = email; }}
+            required
+          />
+          <label
+            className="mdl-textfield__label"
+            htmlFor="email"
+          >Email...</label>
+        </div>
+      </div>
+      <div className="mdl-grid">
+        <div className="m-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <input
+            type="password"
+            id="pass"
+            className="mdl-textfield__input"
+            ref={(password) => { this.password = password; }}
+            required
+          />
+          <label
+            className="mdl-textfield__label"
+            htmlFor="pass"
+          >Password...</label>
+        </div>
+      </div>
+      <div className="mdl-grid">
+        <input
+          className="m-auto mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+          type="submit"
+          value="Login"
+        />
+      </div>
+    </form>
+  </div>);
+};
 
 export default Login;

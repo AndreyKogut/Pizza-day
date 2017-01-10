@@ -18,17 +18,15 @@ const UserListItem = ({ userObject }) => {
 
   return (<a
     href={FlowRouter.path('/users/:id', { id: userObject._id })}
-    className="user-picker__item"
+    className="mdl-list__item-primary-content"
   >
     <img
       src={userObject.profile.avatar}
-      className="user-picker__image"
+      className="user-list-avatar mdl-list__item-avatar"
       alt={userObject.profile.name}
     />
-    <div className="user-picker__info">
-      <span className="user-picker__text">{ userObject.profile.name }</span>
-      <span className="user-picker__text">{ userObject.emails[0].address }</span>
-    </div>
+    <span>{ userObject.profile.name }</span>
+    <span className="mdl-list__item-sub-title">{ userObject.emails[0].address }</span>
   </a>);
 };
 

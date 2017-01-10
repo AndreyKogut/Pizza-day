@@ -111,25 +111,46 @@ class Controls extends Component {
       }
     }
 
-    return (<div className="controls">
-      <ul className="controls__menu">
-        { this.props.controls.menu ?
-          <li className="controls__item">
-            <button onClick={() => { this.changePicker('menuPicker'); }} className="controls__link">Menu</button>
-          </li> : '' }
-        { this.props.controls.users ?
-          <li className="controls__item">
-            <button onClick={() => { this.changePicker('userPicker'); }} className="controls__link">Members</button>
-          </li> : '' }
-        { this.props.controls.avatar ?
-          <li className="controls__item">
-            <button onClick={() => { this.changePicker('imagePicker'); }} className="controls__link">Image</button>
-          </li> : '' }
-        { this.props.controls.date ?
-          <li className="controls__item">
-            <button onClick={() => { this.changePicker('datePicker'); }} className="controls__link">Date</button>
-          </li> : '' }
-      </ul>
+    return (<div>
+      <div>
+        { this.props.controls.menu &&
+          <button
+            id="menu-items"
+            onClick={() => { this.changePicker('menuPicker'); }}
+            className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect"
+          ><i className="material-icons">restaurant</i></button> }
+        { this.props.controls.users &&
+          <button
+            id="members"
+            onClick={() => { this.changePicker('userPicker'); }}
+            className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect"
+          ><i className="material-icons">group_add</i></button> }
+        { this.props.controls.avatar &&
+          <button
+            id="image"
+            onClick={() => { this.changePicker('imagePicker'); }}
+            className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect"
+          ><i className="material-icons">image</i></button> }
+        { this.props.controls.date &&
+          <button
+            id="dating"
+            onClick={() => { this.changePicker('datePicker'); }}
+            className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect"
+          ><i className="material-icons">today</i></button> }
+
+        <div className="mdl-tooltip" data-mdl-for="menu-items">
+          Add menu items
+        </div>
+        <div className="mdl-tooltip" data-mdl-for="members">
+          Add members
+        </div>
+        <div className="mdl-tooltip" data-mdl-for="image">
+          Change image
+        </div>
+        <div className="mdl-tooltip" data-mdl-for="dating">
+          Change date
+        </div>
+      </div>
       { this.state.type ?
         <div className="controls__picker">
           { template }

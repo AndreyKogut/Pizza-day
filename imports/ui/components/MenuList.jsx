@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import MenuListItem from '../../ui/components/MenuListItem';
 import Menu from '../../api/menu/collection';
 
 const propTypes = {
@@ -14,18 +13,34 @@ const MenuList = ({ items, menuLoading }) => {
     return <div>Menu loading...</div>;
   }
 
-  return (<ul className="menu">
-    { items.map(({ _id: id, ...itemInfo }) => (
-      <li className="menu__item" key={id}>
-        <MenuListItem
-          name={itemInfo.name}
-          description={itemInfo.description}
-          mass={itemInfo.mass}
-          price={itemInfo.price}
-        />
-      </li>
-    )) }
-  </ul>);
+  function getList() {
+    return items.map(({ _id: id, ...itemInfo }) => (
+      <tr key={id}>
+        <td>{ itemInfo.name }.</td>
+        <td>{ itemInfo.description }</td>
+        <td>({ itemInfo.mass })</td>
+        <td>{ itemInfo.price }</td>
+      </tr>
+    ));
+  }
+
+  return (<div className="mdl-grid">
+    <div className="table-container">
+      <table className="table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+        <thead>
+          <tr>
+            <th className="mdl-data-table__cell--non-numeric">Name</th>
+            <th>Description</th>
+            <th>Weight</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          { getList() }
+        </tbody>
+      </table>
+    </div>
+  </div>);
 };
 
 const GroupMenuList = createContainer(({ id }) => {

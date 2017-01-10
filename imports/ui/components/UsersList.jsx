@@ -32,19 +32,23 @@ const UsersList = ({ items, usersLoading, itemClick, editable }) => {
         },
       });
 
-      return (<div key={item._id}>
+      return (<li
+        className="mdl-list__item mdl-list__item--two-line"
+        key={item._id}
+      >
         <UserListItem userObject={item} />
-        { editable ?
+        { editable && <div className="mdl-list__item-secondary-content">
           <button
             type="button"
+            className="mdl-button mdl-js-button mdl-button--icon"
             onClick={() => { itemClick(item._id); }}
-          >add/remove</button> : '' }
-      </div>);
+          ><i className="material-icons">clear</i></button></div> }
+      </li>);
     });
 
-  return (<div className="users-list">
+  return (<ul className="mdl-list">
     { getList() }
-  </div>);
+  </ul>);
 };
 
 const GroupUsersList = createContainer(({ id, ...params }) => {

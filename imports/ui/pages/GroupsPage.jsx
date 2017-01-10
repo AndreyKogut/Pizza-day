@@ -18,7 +18,7 @@ const GroupsPage = ({ groups, groupsLoading }) => {
     return <div>Loading...</div>;
   }
 
-  return (<div className="groups-page">
+  return (<div className="content page-content">
     <GroupsList list={groups} />
   </div>);
 };

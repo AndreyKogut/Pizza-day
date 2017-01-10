@@ -55,83 +55,120 @@ const GroupPage = (props) => {
     });
   }
 
+  function enterData(func) {
+    return (event) => {
+      if (event.key.toLowerCase() === 'enter') {
+        func();
+      }
+
+      return true;
+    };
+  }
+
   if (props.groupLoading) {
     return <div>Loading..</div>;
   }
 
-  return (<div className="group">
-    { editable ?
-      <div className="groups__controls">
-        <Controls
-          controls={{ menu: true, users: true, avatar: true }}
-          members={props.members}
-          menu={props.menu}
-          addMembers={(items) => { addMembers(items); }}
-          addMenuItems={(items) => { addMenuItems(items); }}
-          updateImage={(url) => { updateData({ avatar: url }); }}
-        />
-      </div> : '' }
-    <div className="group__info">
-      <p><img src={props.avatar} className="avatar" alt="" /></p>
-      <div>
-        <label htmlFor={props.name}>Name : </label>
-        <input
-          type="text"
-          ref={(name) => {
-            this.groupName = name;
-          }}
-          defaultValue={props.name}
-          placeholder="No name"
-          readOnly={!editable}
-          id={props.name}
-          onChange={() => {
-            updateData({ name: this.groupName.value });
-          }}
-          className={!editable ? 'clear-defaults' : ''}
-        />
+  return (<div className="content page-content">
+    <div className="mdl-grid">
+      <div className="mdl-cell mdl-cell--8-col">
+        <h1>{ props.name }
+          { editable && <div className="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+            <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.name}>
+              <i className="material-icons">edit</i>
+            </label>
+            <div className="mdl-textfield__expandable-holder">
+              <input
+                type="text"
+                ref={(name) => {
+                  this.groupName = name;
+                }}
+                id={props.name}
+                onKeyPress={enterData(() => {
+                  updateData({ name: this.groupName.value });
+                })}
+                className="mdl-textfield__input"
+              />
+              <label className="mdl-textfield__label" htmlFor={props.name}>New name</label>
+            </div>
+          </div> }
+        </h1>
       </div>
-      <div>
-        <label htmlFor={props.description}>Description : </label>
-        <input
-          type="text"
-          ref={(description) => {
-            this.description = description;
-          }}
-          defaultValue={props.description}
-          placeholder="No name"
-          readOnly={!editable}
-          id={props.description}
-          onChange={() => {
-            updateData({ description: this.description.value });
-          }}
-          className={!editable ? 'clear-defaults' : ''}
-        />
-      </div>
-    </div>
-    <h3 className="group__h">Events</h3>
-    <div className="group__events">
-      <GroupEventsList id={props.id} />
+      <div className="mdl-layout-spacer" />
       { editable ?
-        <a href={FlowRouter.path('/groups/:id/create-event', { id: props.id })}>Create</a>
-        : '' }
+        <div className="controls">
+          <Controls
+            controls={{ menu: true, users: true, avatar: true }}
+            members={props.members}
+            menu={props.menu}
+            addMembers={(items) => { addMembers(items); }}
+            addMenuItems={(items) => { addMenuItems(items); }}
+            updateImage={(url) => { updateData({ avatar: url }); }}
+          />
+        </div> : '' }
     </div>
-    <h3 className="group__h">Members</h3>
-    <div className="group__members">
-      <GroupUsersList
-        key={props.members.length}
-        id={props.id}
-        editable={editable}
-        itemClick={(id) => {
-          removeMember(id);
-        }}
-      />
+    <div className="mdl-grid">
+      <img src={props.avatar} className="avatar--big m-auto" alt="" />
     </div>
-    <h3 className="group__h">Menu</h3>
-    <div className="group__menu">
-      <GroupMenuList
-        key={props.menu.length}
-        id={props.id}
-      />
+    <div className="mdl-grid">
+      <div className="m-auto ta-c mdl-cell mdl-cell--6-col">
+        <p>{ props.description }</p>
+        { editable && <div className="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.description}>
+            <i className="material-icons">edit</i>
+          </label>
+          <div className="mdl-textfield__expandable-holder">
+            <label className="mdl-textfield__label" htmlFor={props.description}>Description</label>
+            <input
+              type="text"
+              ref={(description) => {
+                this.description = description;
+              }}
+              id={props.description}
+              onKeyPress={enterData(() => {
+                updateData({ description: this.description.value });
+              })}
+              className="mdl-textfield__input"
+            />
+          </div>
+        </div> }
+      </div>
+    </div>
+    <div className="mdl-grid">
+      <h3 className="group__h">Events</h3>
+      <div className="mdl-layout-spacer" />
+      { editable &&
+        <a
+          id="create-event"
+          className="mdl-button mdl-js-button mdl-button--fab mdl-button--colored"
+          href={FlowRouter.path('/groups/:id/create-event', { id: props.id })}
+        ><i className="material-icons">add</i>
+          <div className="mdl-tooltip" data-mdl-for="create-event">
+            Create event
+          </div>
+        </a> }
+    </div>
+    <GroupEventsList id={props.id} />
+    <div className="mdl-grid">
+      <div className="mdl-cell mdl-cell--4-col">
+        <h3 className="ta-c">Members</h3>
+        <GroupUsersList
+          key={props.members.length}
+          id={props.id}
+          editable={editable}
+          itemClick={(id) => {
+            removeMember(id);
+          }}
+        />
+      </div>
+
+      <div className="mdl-cell mdl-cell--8-col">
+        <h3 className="ta-c">Menu</h3>
+        <GroupMenuList
+          key={props.menu.length}
+          id={props.id}
+        />
+      </div>
     </div>
   </div>);
 };

@@ -86,12 +86,10 @@ class CreateGroup extends Component {
         <UserPicker getUsersList={(users) => { this.users = users; }} />
       </div>
       <h3 className="group-create__h">Group menu</h3>
-      <div className="group-create__menu">
-        <MenuPicker
-          items={this.props.menu}
-          getMenuList={(data) => { this.menu = [...data]; }}
-        />
-      </div>
+      <MenuPicker
+        items={this.props.menu}
+        getMenuList={(data) => { this.menu = [...data]; }}
+      />
     </form>);
   }
 }

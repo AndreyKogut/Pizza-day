@@ -7,12 +7,12 @@ const propTypes = {
 };
 
 function App({ content = () => {} }) {
-  return (<div className="app-container">
+  return (<div className="mdl-layout mdl-js-layout mdl-layout--fixed-header">
     <HeaderContainer />
 
-    <div className="content">
+    <main className="mdl-layout__content">
       { content() }
-    </div>
+    </main>
 
     <Footer />
   </div>);

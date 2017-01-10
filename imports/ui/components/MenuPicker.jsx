@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import MenuListItem from '../../ui/components/MenuListItem';
 import MenuPickerFilter from '../../ui/components/MenuPickerFilter';
 import Menu from '../../api/menu/collection';
 
@@ -38,20 +37,23 @@ class MenuPicker extends Component {
     }
 
     return filteredData.map(
-      ({ _id: id, ...itemInfo }) => (<li key={id} className="menu__item">
-        <input
-          type="checkbox"
-          className="menu__checkbox"
-          defaultChecked={this.props.selectedItems.has(id)}
-          onChange={() => { this.addRemoveItem(id); }}
-        />
-        <MenuListItem
-          name={itemInfo.name}
-          description={itemInfo.description}
-          mass={itemInfo.mass}
-          price={itemInfo.price}
-        />
-        { this.props.withCounters ? <input
+      ({ _id: id, ...itemInfo }) => (<tr key={id} className="menu__item">
+        <td>
+          <label className="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" htmlFor={id}>
+            <input
+              defaultChecked={this.props.selectedItems.has(id)}
+              onChange={() => { this.addRemoveItem(id); }}
+              type="checkbox"
+              id={id}
+              className="mdl-checkbox__input"
+            />
+          </label>
+        </td>
+        <td className="menu__name">{ itemInfo.name }.</td>
+        <td className="menu__description">{ itemInfo.description }</td>
+        <td className="menu__mass">{ itemInfo.mass }</td>
+        <td className="menu__price">{ itemInfo.price }</td>
+        { this.props.withCounters && <td><input
           type="number"
           className="menu__counter"
           ref={(val) => { this[id] = val; }}
@@ -59,8 +61,8 @@ class MenuPicker extends Component {
           min="1"
           onChange={() => { this.changeCounter(id); }}
           max="10"
-        /> : ''}
-      </li>));
+        /></td> }
+      </tr>));
   };
 
   filterItems = ({ name = '', gte = 0, lte = Number.POSITIVE_INFINITY }) => {
@@ -120,11 +122,27 @@ class MenuPicker extends Component {
       return <div>Loading..</div>;
     }
 
-    return (<div className="menu">
+    return (<div>
       <MenuPickerFilter changeCallback={(filter) => { this.filterItems(filter); }} />
-      <ul className="menu__list">
-        { this.getMenuItems() }
-      </ul>
+      <div className="mdl-grid">
+        <div className="table-container">
+          <table className="table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+            <thead>
+              <tr>
+                <th>Pick</th>
+                <th className="mdl-data-table__cell--non-numeric">Name</th>
+                <th>Description</th>
+                <th>Weight</th>
+                <th>Price</th>
+                { this.props.withCounters && <th>Count</th> }
+              </tr>
+            </thead>
+            <tbody>
+              { this.getMenuItems() }
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>);
   }
 }

@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import MenuListItem from '../../ui/components/MenuListItem';
 import Menu from '../../api/menu/collection';
 import Order from '../../api/orders/collection';
 
@@ -23,21 +22,32 @@ const OrderInfo = (props) => {
     return <div>Order loading...</div>;
   }
 
-  return (<div className="menu">
-    { props.items.map(({ _id: id, ...itemInfo }) => (
-      <div className="menu__item" key={id}>
-        <MenuListItem
-          name={itemInfo.name}
-          description={itemInfo.description}
-          mass={itemInfo.mass}
-          price={itemInfo.price}
-        />
-        <span>
-          { props.mapOfItemCounter.get(id) }
-        </span>
-      </div>
-    )) }
-    <p>Total: { props.total } </p>
+  return (<div>
+    <div className="mdl-grid">
+      <table className="m-auto mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+        <thead>
+          <tr>
+            <td>Name</td>
+            <td>Description</td>
+            <td>Mass</td>
+            <td>Price</td>
+            <td>Count</td>
+          </tr>
+        </thead>
+        <tbody>
+          { props.items.map(({ _id: id, ...itemInfo }) => (<tr key={id}>
+            <td className="mdl-data-table__cell--non-numeric">{ itemInfo.name }</td>
+            <td className="mdl-data-table__cell--non-numeric">{ itemInfo.description }</td>
+            <td className="menu__mass">{ itemInfo.mass }</td>
+            <td className="menu__price">{ itemInfo.price }</td>
+            <td>
+              { props.mapOfItemCounter.get(id) }
+            </td>
+          </tr>)) }
+        </tbody>
+      </table>
+    </div>
+    <h5 className="ta-c">Total price:{ props.total }</h5>
   </div>);
 };
 

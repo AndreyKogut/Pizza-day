@@ -12,37 +12,39 @@ const Header = ({ id }) => {
     Meteor.logout();
   };
 
-  return (<header className="header">
-    <nav className="header__nav">
-      <ul className="header__list cf">
-        <li className="header__item">
-          <a href="/" className="header__link">Home</a>
-        </li>
-        <li className="header__item">
-          <a href="/groups" className="header__link">Groups</a>
-        </li>
-        <li className="header__item">
-          <a href="/events" className="header__link">Events</a>
-        </li>
-        { id ?
-          <li className="header__item header__item_login">
-            <a
-              className="header__link"
-              href={FlowRouter.path('/users/:id', { id })}
-            >Cabinet</a>
-            <button
-              onClick={logout}
-              className="header__link header__link_logout clear-defaults"
-            >Logout</button>
-          </li>
-          :
-          <li className="header__item header__item_login">
-            <a href="/signup" className="header__link">Sign up</a>
-            <span className="header__separator">/</span>
-            <a href="/signin" className="header__link">Sign in</a>
-          </li>}
-      </ul>
-    </nav>
+  return (<header className="mdl-layout__header">
+    <div className="mdl-layout__header-row">
+      <span className="mdl-layout-title">Pizza-day</span>
+      <div className="mdl-layout-spacer" />
+      <nav className="mdl-navigation">
+        <a href="/groups" className="mdl-navigation__link">Groups</a>
+        <a href="/events" className="mdl-navigation__link">Events</a>
+        { id ? <div className="wrap-items">
+          <a
+            className="mdl-navigation__link"
+            href={FlowRouter.path('/users/:id', { id })}
+          >Cabinet</a>
+          <button
+            id="logout"
+            onClick={logout}
+            className="as-c mdl-button mdl-js-button mdl-button--icon"
+          ><i className="material-icons">call_made</i></button></div> :
+        <div className="wrap-items">
+          <a
+            className="mdl-button mdl-js-button mdl-js-ripple-effect"
+            href="/signup"
+          >Sign up</a>
+          <a
+            className="mdl-button mdl-js-button mdl-js-ripple-effect"
+            href="/signin"
+          >Sign in</a>
+        </div>}
+      </nav>
+    </div>
+    <div className="mdl-tooltip" data-mdl-for="logout">
+      Logout
+    </div>
+
   </header>);
 };
 

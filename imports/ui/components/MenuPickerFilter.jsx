@@ -19,46 +19,58 @@ const MenuPickerFilter = ({ changeCallback }) => {
     }
   };
 
-  return (<div className="user-picker__filter">
-    <label
-      htmlFor="name"
-      className="user-picker__label"
-    >Name:</label>
-    <input
-      type="text"
-      ref={(item) => { this.itemName = item; }}
-      onChange={changeFields}
-      className="user-picker__input clear-defaults"
-      id="name"
-    />
-    <label
-      htmlFor="gte"
-      className="user-picker__label"
-    >Price greater:</label>
-    <input
-      type="number"
-      min="1"
-      defaultValue={null}
-      ref={(item) => { this.gte = item; }}
-      onKeyPress={validateNumber}
-      onChange={changeFields}
-      className="user-picker__input clear-defaults"
-      id="gte"
-    />
-    <label
-      htmlFor="lte"
-      className="user-picker__label"
-    >Price less:</label>
-    <input
-      type="number"
-      min="1"
-      defaultValue={null}
-      ref={(item) => { this.lte = item; }}
-      onKeyPress={validateNumber}
-      onChange={changeFields}
-      className="user-picker__input clear-defaults"
-      id="lte"
-    />
+  return (<div className="mdl-grid">
+    <div className="ta-c mdl-cell mdl-cell--4-col">
+      <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <label
+          htmlFor="name"
+          className="mdl-textfield__label"
+        >Name:</label>
+        <input
+          type="text"
+          ref={(item) => { this.itemName = item; }}
+          onChange={changeFields}
+          className="mdl-textfield__input"
+          id="name"
+        />
+      </div>
+    </div>
+    <div className="ta-c mdl-cell mdl-cell--4-col">
+      <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <label
+          htmlFor="gte"
+          className="mdl-textfield__label"
+        >Price greater:</label>
+        <input
+          type="number"
+          min="1"
+          defaultValue={null}
+          ref={(item) => { this.gte = item; }}
+          onKeyPress={validateNumber}
+          onChange={changeFields}
+          className="mdl-textfield__input"
+          id="gte"
+        />
+      </div>
+    </div>
+    <div className="ta-c mdl-cell mdl-cell--4-col">
+      <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <label
+          htmlFor="lte"
+          className="mdl-textfield__label"
+        >Price less:</label>
+        <input
+          type="number"
+          min="1"
+          defaultValue={null}
+          ref={(item) => { this.lte = item; }}
+          onKeyPress={validateNumber}
+          onChange={changeFields}
+          className="mdl-textfield__input"
+          id="lte"
+        />
+      </div>
+    </div>
   </div>);
 };
 
