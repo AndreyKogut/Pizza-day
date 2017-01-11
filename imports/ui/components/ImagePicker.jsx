@@ -77,11 +77,22 @@ class ImagePicker extends Component {
 
   render() {
     return (
-      <figure>
-        <img src={this.state.imageUrl} onError={this.loadError} className="avatar" alt="" />
-        <figcaption>
+      <figure className="m-auto">
+        <img
+          src={this.state.imageUrl}
+          onError={this.loadError}
+          role="presentation"
+          className="avatar--big"
+        />
+        <figcaption className="mt--10 ta-c">
+          <label
+            className="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"
+            htmlFor="file-picker"
+          ><i className="material-icons">file_upload</i> Upload image</label>
           <input
             type="file"
+            id="file-picker"
+            className="d-none"
             ref={(image) => { this.image = image; }}
             onChange={this.loadFile}
           />

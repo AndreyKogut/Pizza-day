@@ -12,29 +12,37 @@ const UserListFilter = ({ changeCallback }) => {
     changeCallback({ name, email });
   };
 
-  return (<div className="user-picker__filter">
-    <label
-      htmlFor="email"
-      className="user-picker__label"
-    >Email:</label>
-    <input
-      type="text"
-      ref={(item) => { this.email = item; }}
-      onChange={changeFields}
-      className="user-picker__input clear-defaults"
-      id="email"
-    />
-    <label
-      htmlFor="name"
-      className="user-picker__label"
-    >Name:</label>
-    <input
-      type="text"
-      ref={(item) => { this.userName = item; }}
-      onChange={changeFields}
-      className="user-picker__input clear-defaults"
-      id="name"
-    />
+  return (<div className="mdl-grid">
+    <div className="ta-c mdl-cell mdl-cell--6-col">
+      <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <label
+          htmlFor="email"
+          className="mdl-textfield__label"
+        >Email:</label>
+        <input
+          type="text"
+          ref={(item) => { this.email = item; }}
+          onChange={changeFields}
+          className="mdl-textfield__input"
+          id="email"
+        />
+      </div>
+    </div>
+    <div className="ta-c mdl-cell mdl-cell--6-col">
+      <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <label
+          htmlFor="name"
+          className="mdl-textfield__label"
+        >Name:</label>
+        <input
+          type="text"
+          ref={(item) => { this.userName = item; }}
+          onChange={changeFields}
+          className="mdl-textfield__input"
+          id="name"
+        />
+      </div>
+    </div>
   </div>);
 };
 

@@ -71,9 +71,9 @@ const GroupPage = (props) => {
 
   return (<div className="content page-content">
     <div className="mdl-grid">
-      <div className="mdl-cell mdl-cell--8-col">
-        <h1>{ props.name }
-          { editable && <div className="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+      <div className="mdl-cell mdl-cell--6-col">
+        <h2>{ props.name }
+          { editable && <div className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
             <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.name}>
               <i className="material-icons">edit</i>
             </label>
@@ -92,10 +92,10 @@ const GroupPage = (props) => {
               <label className="mdl-textfield__label" htmlFor={props.name}>New name</label>
             </div>
           </div> }
-        </h1>
+        </h2>
       </div>
       <div className="mdl-layout-spacer" />
-      { editable ?
+      { editable &&
         <div className="controls">
           <Controls
             controls={{ menu: true, users: true, avatar: true }}
@@ -105,7 +105,7 @@ const GroupPage = (props) => {
             addMenuItems={(items) => { addMenuItems(items); }}
             updateImage={(url) => { updateData({ avatar: url }); }}
           />
-        </div> : '' }
+        </div> }
     </div>
     <div className="mdl-grid">
       <img src={props.avatar} className="avatar--big m-auto" alt="" />
@@ -113,7 +113,7 @@ const GroupPage = (props) => {
     <div className="mdl-grid">
       <div className="m-auto ta-c mdl-cell mdl-cell--6-col">
         <p>{ props.description }</p>
-        { editable && <div className="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+        { editable && <div className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
           <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.description}>
             <i className="material-icons">edit</i>
           </label>
@@ -149,8 +149,8 @@ const GroupPage = (props) => {
         </a> }
     </div>
     <GroupEventsList id={props.id} />
-    <div className="mdl-grid">
-      <div className="mdl-cell mdl-cell--4-col">
+    <div className="just-around mdl-grid">
+      <div className="">
         <h3 className="ta-c">Members</h3>
         <GroupUsersList
           key={props.members.length}
@@ -162,7 +162,7 @@ const GroupPage = (props) => {
         />
       </div>
 
-      <div className="mdl-cell mdl-cell--8-col">
+      <div className="">
         <h3 className="ta-c">Menu</h3>
         <GroupMenuList
           key={props.menu.length}

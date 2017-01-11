@@ -48,49 +48,75 @@ class CreateGroup extends Component {
       return <div>Loading</div>;
     }
 
-    return (<form onSubmit={this.createGroup} className="form group-create">
-      <div className="group-create__info">
-        <div className="group-create__item">
+    return (<div className="content page-content">
+      <div className="mdl-grid main-header">
+        <h3 className="m-auto">Add new group</h3>
+      </div>
+      <form onSubmit={this.createGroup} className="content page-content">
+        <div className="mdl-grid">
+          <div className="m-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <label
+              className="mdl-textfield__label"
+              htmlFor="name"
+            >
+              Name:
+            </label>
+            <input
+              type="text"
+              ref={(name) => { this.name = name; }}
+              id="name"
+              className="mdl-textfield__input"
+            />
+          </div>
+        </div>
+        <div className="mdl-grid">
+          <div className="m-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <label
+              className="mdl-textfield__label"
+              htmlFor="description"
+            >
+              Description:
+            </label>
+            <textarea
+              ref={(description) => { this.description = description; }}
+              id="description"
+              className="mdl-textfield__input"
+            />
+          </div>
+        </div>
+        <div className="mdl-grid">
+          <h4>Avatar</h4>
+        </div>
+        <div className="mdl-grid">
           <ImagePicker
             getImageUrl={(url) => { this.avatar = url; }}
             currentImageUrl={''}
           />
         </div>
-        <p className="group-create__item">
-          <label className="form__label" htmlFor="name">
-          Name:
-          </label>
+        <div className="mdl-grid">
+          <h4>Group members</h4>
+        </div>
+        <div className="mdl-grid">
+          <UserPicker getUsersList={(users) => { this.users = users; }} />
+        </div>
+        <div className="mdl-grid">
+          <h4>Group menu</h4>
+        </div>
+        <div className="mdl-grid">
+          <MenuPicker
+            items={this.props.menu}
+            getMenuList={(data) => { this.menu = [...data]; }}
+          />
+        </div>
+        <div className="mdl-grid mb--30">
           <input
-            type="text"
-            ref={(name) => { this.name = name; }}
-            id="name"
-            className="form__input"
+            className="m-auto mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+            type="submit"
+            value="Create"
           />
-        </p>
-        <p className="group-create__item">
-          <label className="form__label" htmlFor="description">
-          Description:
-          </label>
-          <textarea
-            ref={(description) => { this.description = description; }}
-            id="description"
-            className="form__textarea"
-          />
-        </p>
-        <p className="group-create__item">
-          <input type="submit" value="Create group" />
-        </p>
-      </div>
-      <h3 className="group-create__h">Group members</h3>
-      <div className="group-create__user-picker">
-        <UserPicker getUsersList={(users) => { this.users = users; }} />
-      </div>
-      <h3 className="group-create__h">Group menu</h3>
-      <MenuPicker
-        items={this.props.menu}
-        getMenuList={(data) => { this.menu = [...data]; }}
-      />
-    </form>);
+        </div>
+      </form>
+    </div>);
   }
 }
 

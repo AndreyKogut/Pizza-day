@@ -41,7 +41,9 @@ class SignUp extends Component {
 
   render() {
     return (<div className="content page-content">
-      <h3 className="ta-c">Join us</h3>
+      <div className="mdl-grid main-header">
+        <h3 className="m-auto">Join us</h3>
+      </div>
       <form onSubmit={this.signUp} className="mb--30">
         <div className="mdl-grid">
           <div className="m-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">

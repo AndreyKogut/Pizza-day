@@ -122,7 +122,7 @@ class MenuPicker extends Component {
       return <div>Loading..</div>;
     }
 
-    return (<div>
+    return (<div className="m-auto mb--30">
       <MenuPickerFilter changeCallback={(filter) => { this.filterItems(filter); }} />
       <div className="mdl-grid">
         <div className="table-container">

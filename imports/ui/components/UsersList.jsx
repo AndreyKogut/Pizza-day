@@ -46,7 +46,7 @@ const UsersList = ({ items, usersLoading, itemClick, editable }) => {
       </li>);
     });
 
-  return (<ul className="mdl-list">
+  return (<ul className="user-list mdl-list">
     { getList() }
   </ul>);
 };

@@ -28,7 +28,7 @@ const Header = ({ id }) => {
             id="logout"
             onClick={logout}
             className="as-c mdl-button mdl-js-button mdl-button--icon"
-          ><i className="material-icons">call_made</i></button></div> :
+          ><i className="material-icons">exit_to_app</i></button></div> :
         <div className="wrap-items">
           <a
             className="mdl-button mdl-js-button mdl-js-ripple-effect"

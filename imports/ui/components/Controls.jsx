@@ -54,6 +54,8 @@ class Controls extends Component {
         break;
       }
     }
+
+    this.setState({ type: null });
   };
 
   changePicker = (name) => {
@@ -98,11 +100,12 @@ class Controls extends Component {
       }
 
       case 'datePicker': {
-        template = (<input
+        template = (<div className="m-auto mdl-textfield mdl-js-textfield"><input
           type="datetime-local"
+          className="mdl-textfield__input"
           ref={(date) => { this.date = date; }}
           required
-        />);
+        /></div>);
         break;
       }
 
@@ -152,11 +155,19 @@ class Controls extends Component {
         </div>
       </div>
       { this.state.type ?
-        <div className="controls__picker">
+        <div className="controls__picker mdl-shadow--24dp">
           { template }
-          <div className="controls__buttons">
-            <button type="button" onClick={() => { this.changePicker(null); }}>Close</button>
-            <button type="button" onClick={this.submitData}>Add</button>
+          <div className="ta-r">
+            <button
+              type="button"
+              className="mdl-button mdl-js-button mdl-button--raised"
+              onClick={this.submitData}
+            ><i className="material-icons">send</i> Update data</button>
+            <button
+              className="mdl-button mdl-js-button mdl-button--raised"
+              type="button"
+              onClick={() => { this.changePicker(null); }}
+            ><i className="material-icons">close</i> Close</button>
           </div>
         </div> : '' }
     </div>);

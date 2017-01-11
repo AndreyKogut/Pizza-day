@@ -23,7 +23,9 @@ const Login = () => {
   }
 
   return (<div className="content page-content">
-    <h3 className="ta-c">Authorization</h3>
+    <div className="mdl-grid main-header">
+      <h3 className="m-auto">Authorization</h3>
+    </div>
     <form onSubmit={login} className="mb--30">
       <div className="mdl-grid">
         <button

@@ -37,50 +37,69 @@ const CreateEvent = (props) => {
     return <div>Loading...</div>;
   }
 
-  return (<form onSubmit={createEvent} className="form event-create">
-    <ul className="event-create__list">
-      <li className="event-create__item">
-        <label className="form__label" htmlFor="name">
-          Name:
-        </label>
-        <input
-          type="text"
-          ref={(name) => { this.userName = name; }}
-          id="name"
-          className="form__input"
-        />
-      </li>
-      <li className="event-create__item">
-        <label className="form__label" htmlFor="title">
-          Title:
-        </label>
-        <textarea
-          ref={(title) => { this.title = title; }}
-          id="title"
-          className="form__textarea"
-        />
-      </li>
-      <li className="event-create__item">
-        <label htmlFor="date" className="event-create__label">
-          Date:
-        </label>
-        <input
-          type="datetime-local"
-          ref={(date) => { this.date = date; }}
-          className="event-create__input"
-        />
-      </li>
-      <li className="event-create__item">
-        <input type="submit" value="Create event" />
-      </li>
-    </ul>
-    <div className="event-create__menu">
-      <MenuPickerContainer
-        items={props.menu}
-        getMenuList={(data) => { this.menu = [...data]; }}
-      />
+  return (<div className="content page-content">
+    <div className="mdl-grid main-header">
+      <h3 className="m-auto">New event</h3>
     </div>
-  </form>);
+    <form onSubmit={createEvent}>
+      <div className="mdl-grid main-header">
+        <div className="m-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <label
+            className="mdl-textfield__label"
+            htmlFor="name"
+          >
+            Name:
+          </label>
+          <input
+            type="text"
+            ref={(name) => { this.userName = name; }}
+            id="name"
+            className="mdl-textfield__input"
+          />
+        </div>
+      </div>
+      <div className="mdl-grid">
+        <div className="m-auto mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <label
+            className="mdl-textfield__label"
+            htmlFor="title"
+          >
+            Title:
+          </label>
+          <textarea
+            ref={(title) => { this.title = title; }}
+            id="title"
+            className="mdl-textfield__input"
+          />
+        </div>
+      </div>
+      <div className="mdl-grid">
+        <div className="m-auto mdl-textfield mdl-js-textfield">
+          <input
+            type="datetime-local"
+            ref={(date) => { this.date = date; }}
+            className="mdl-textfield__input"
+          />
+        </div>
+      </div>
+      <div className="mdl-grid">
+        <h4>Menu</h4>
+      </div>
+      <div className="mdl-grid">
+        <MenuPickerContainer
+          items={props.menu}
+          getMenuList={(data) => { this.menu = [...data]; }}
+        />
+      </div>
+      <div className="mdl-grid mb--30">
+        <input
+          className="m-auto mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+          type="submit"
+          value="Create"
+        />
+      </div>
+    </form>
+  </div>);
 };
 
 CreateEvent.propTypes = propTypes;

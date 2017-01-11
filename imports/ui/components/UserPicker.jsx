@@ -36,21 +36,43 @@ class UserPicker extends Component {
     return filteredData.map((user) => {
       if (_.some([...this.state.users], val => user._id === val._id)) return '';
 
-      return (<div key={user._id}>
+      return (<li
+        className="mdl-list__item mdl-list__item--two-line"
+        key={user._id}
+      >
         <UserListItem userObject={user} />
-        <button type="button" onClick={() => { this.addUser(user); }}>add</button>
-      </div>);
+        <div className="mdl-list__item-secondary-content">
+          <button
+            type="button"
+            className="mdl-button mdl-js-button mdl-button--icon"
+            onClick={() => { this.addUser(user); }}
+          >
+            <i className="material-icons">add</i>
+          </button>
+        </div>
+      </li>);
     });
   };
 
   getPickedUsers = () =>
     [...this.state.users].map(user =>
-      (<div key={user._id}>
+      (<li
+        className="mdl-list__item mdl-list__item--two-line"
+        key={user._id}
+      >
         <UserListItem
           userObject={user}
         />
-        <button type="button" onClick={() => { this.deleteUser(user); }}>delete</button>
-      </div>));
+        <div className="mdl-list__item-secondary-content">
+          <button
+            type="button"
+            className="mdl-button mdl-js-button mdl-button--icon"
+            onClick={() => { this.deleteUser(user); }}
+          >
+            <i className="material-icons">remove</i>
+          </button>
+        </div>
+      </li>));
 
   addUser = (user) => {
     const newState = new Set(this.state.users);
@@ -101,21 +123,20 @@ class UserPicker extends Component {
       return <div>Loading...</div>;
     }
 
-    return (<div className="user-picker">
-      <h3 className="user-picker__h">Filter data</h3>
+    return (<div className="m-auto">
       <UserPickerFilter changeCallback={(filter) => { this.filterUsers(filter); }} />
-      <div className="user-picker__data">
-        <div className="user-picker__all">
-          <h3 className="user-picker__h">Users:</h3>
-          <div className="user-picker__list">
+      <div className="mdl-grid">
+        <div className="mdl-cell mdl-cell--6-col">
+          <h5 className="user-picker__h">All</h5>
+          <ul className="users-list">
             { this.getAllUsers() }
-          </div>
+          </ul>
         </div>
-        <div className="user-picker__picked">
-          <h3 className="user-picker__h">Picked:</h3>
-          <div className="user-picker__list">
+        <div className="mdl-cell mdl-cell--6-col">
+          <h5 className="user-picker__h">Members</h5>
+          <ul className="users-list">
             { this.getPickedUsers() }
-          </div>
+          </ul>
         </div>
       </div>
     </div>);

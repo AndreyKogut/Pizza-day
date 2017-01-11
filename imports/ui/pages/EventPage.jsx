@@ -84,9 +84,9 @@ const EventPage = (props) => {
 
   return (<div className="content page-content">
     <div className="mdl-grid">
-      <div className="mdl-cell mdl-cell--8-col">
-        <h1>{ props.name }
-          { editable && <div className="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+      <div className="mdl-cell mdl-cell--6-col">
+        <h2>{ props.name }
+          { editable && <div className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
             <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.name}>
               <i className="material-icons">edit</i>
             </label>
@@ -106,48 +106,65 @@ const EventPage = (props) => {
               <label className="mdl-textfield__label" htmlFor={props.name}>New name</label>
             </div>
           </div> }
-        </h1>
+        </h2>
       </div>
       <div className="mdl-layout-spacer" />
-      <div className="controls">
-        { props.isParticipant ?
-          <button
-            type="button"
-            className=""
-            onClick={leaveEvent}
-          >Leave</button> :
-          <button
-            type="button"
-            className=""
-            onClick={joinEvent}
-          >Join</button> }
-        { editable ? <select onChange={changeStatus}>
-          <option
-            value="ordering"
-          >ordering</option>
-          <option
-            value="ordered"
-          >ordered</option>
-          <option
-            value="delivering"
-          >delivering</option>
-          <option
-            value="delivered"
-          >delivered</option>
-        </select> : props.status }
-        <Controls
-          updateData={(date) => { updateData({ date }); }}
-          eventId={props.eventId}
-          controls={{ menu: true, date: true }}
-          menu={props.menu}
-          addMenuItems={(items) => { addMenuItems(items); }}
-        />
+      <div>
+        <div className="controls">
+          { editable ? <select
+            className="status-select mdl-button"
+            onChange={changeStatus}
+          >
+            <option
+              value="ordering"
+            >ordering</option>
+            <option
+              value="ordered"
+            >ordered</option>
+            <option
+              value="delivering"
+            >delivering</option>
+            <option
+              value="delivered"
+            >delivered</option>
+          </select> : <span>props.status</span> }
+          { props.isParticipant ?
+            <button
+              type="button"
+              id="leave-event"
+              className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--accent"
+              onClick={leaveEvent}
+            >
+              <i className="material-icons">not_interested</i>
+              <div className="mdl-tooltip" data-mdl-for="leave-event">
+                Leave event
+              </div>
+            </button> :
+            <button
+              type="button"
+              id="join-event"
+              className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--accent"
+              onClick={joinEvent}
+            >
+              <div className="mdl-tooltip" data-mdl-for="join-event">
+                Join event
+              </div>
+              <i className="material-icons">add_circle_outline</i>
+            </button> }
+          { editable && <Controls
+            updateData={(date) => { updateData({ date }); }}
+            eventId={props.eventId}
+            controls={{ menu: true, date: true }}
+            menu={props.menu}
+            addMenuItems={(items) => { addMenuItems(items); }}
+          /> }
+        </div>
       </div>
     </div>
     <div className="mdl-grid">
-      <div className="mdl-cell mdl-cell--5-col">
+      <div className="mdl-cell mdl-cell--6-col">
         <span className="as-b">{ props.title }
-          { editable && <div className="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+          { editable && <div className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
             <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.title}>
               <i className="material-icons">edit</i>
             </label>
@@ -174,7 +191,7 @@ const EventPage = (props) => {
     </div>
     { props.orderId ?
       <div className="mdl-grid">
-        <div className="mdl-cell mdl-cell--5-col">
+        <div className="mdl-cell mdl-cell--6-col">
           <h4>Order</h4>
         </div>
         <div className="mdl-layout-spacer" />

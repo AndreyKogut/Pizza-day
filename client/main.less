@@ -78,6 +78,10 @@
   text-align: center;
 }
 
+.ta-r {
+  text-align: right;
+}
+
 .as-c {
   align-self: center;
 }
@@ -99,10 +103,45 @@
 }
 
 .controls {
+  display: flex;
   align-self: center;
-  button {
-    margin: 0 10px;
+  height: 100%;
+  justify-content: flex-end;
+  & > * {
+    align-self: center;
+    white-space: pre;
   }
+  .mdl-button:not(:last-child) {
+    margin-right: 15px;
+  }
+
+  &--head {
+    margin-top: 35px;
+  }
+
+  &__picker {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    background: #fff;
+    margin-left: 50%;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 0;
+    min-width: 50vw;
+    min-height: 50vh;
+    max-width: 90vw;
+    width: 100%;
+    max-height: 70vh;
+    overflow-y: scroll;
+    z-index: 999;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+}
+
+.correct-indent {
+  margin: 0 10px;
 }
 
 .wrap-items {
@@ -115,8 +154,61 @@
   }
 }
 
+.mt {
+  &--10 {
+    margin-top: 10px;
+  }
+}
+
+.main-header {
+  margin-top: 50px;
+}
+
+.select-box {
+  align-self: center;
+}
+
 .footer {
   display: block;
   padding: 15px;
   justify-content: flex-start;
+}
+
+.status-select {
+  align-self: center;
+  width: 100%;
+  max-width: 155px;
+}
+
+.just-around {
+  justify-content: space-around;
+}
+
+.d-none {
+  display: none;
+}
+
+.user-list {
+  & > .mdl-list__item {
+    display: flex;
+
+    & > .mdl-list__item-primary-content {
+      white-space: nowrap;
+    }
+
+    & > .mdl-list__item-primary-content{
+      width: 180px;
+    }
+
+    & span {
+      display: inherit;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.users-list {
+  max-height: 350px;
+  overflow-y: scroll;
 }
