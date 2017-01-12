@@ -12,15 +12,24 @@ Meteor.publish('user', (id) => {
 
 Meteor.methods({
   'user.insert': function insert(requestData) {
-    const requestDataFormat = {
+    const requestDataStructure = {
       email: Match.Where(notEmpty),
       password: Match.Where(notEmpty),
-      profile: Match.Maybe(Object),
+      name: Match.Where(notEmpty),
+      about: Match.Maybe(String),
+      company: Match.Maybe(String),
+      position: Match.Maybe(String),
     };
 
-    check(requestData, requestDataFormat);
+    try {
+      check(requestData, requestDataStructure);
+    } catch (err) {
+      throw new Meteor.Error(400, `Invalid ${err.path}`);
+    }
 
-    Accounts.createUser(requestData);
+    const { email, password, ...profile } = requestData;
+
+    Accounts.createUser({ email, password, profile });
 
     return {
       email: requestData.email,
@@ -29,7 +38,7 @@ Meteor.methods({
   },
 
   'user.update': function update(requestData) {
-    const requestDataFormat = {
+    const requestDataStructure = {
       name: Match.Maybe(String),
       avatar: Match.Maybe(String),
       email: Match.Maybe(String),
@@ -39,10 +48,22 @@ Meteor.methods({
     };
 
     if (!this.userId) {
-      throw new Meteor.Error(401, 'Access denied');
+      throw new Meteor.Error(403, 'Unauthorized');
     }
 
-    check(requestData, requestDataFormat);
+    try {
+      check(requestData, requestDataStructure);
+    } catch (err) {
+      throw new Meteor.Error(400, `Invalid ${err.path}`);
+    }
+
+    if (requestData.email) {
+      const exist = Meteor.users.findOne({ 'emails.address': requestData.email });
+
+      if (exist) {
+        throw new Meteor.Error(403, 'Email already exists');
+      }
+    }
 
     const updateFields = {
       emails: requestData.email ? [{ address: requestData.email, verified: false }] : '',
@@ -67,7 +88,7 @@ Meteor.methods({
 
 Meteor.publish('UsersList', function publishUsers() {
   if (!this.userId) {
-    return this.error(new Meteor.Error(401, 'Access denied'));
+    return this.ready();
   }
 
   return Meteor.users.find({ _id: { $ne: this.userId } }, { fields: { emails: 1, profile: 1 } });
@@ -77,7 +98,7 @@ Meteor.publish('GroupMembers', function publishGroupMembers(groupId) {
   check(groupId, Match.Where(notEmpty));
 
   if (!this.userId) {
-    return this.error(new Meteor.Error(401, 'Access denied'));
+    return this.ready();
   }
 
   const members = Groups.findOne({ _id: groupId }).members;

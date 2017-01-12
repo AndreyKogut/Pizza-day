@@ -66,6 +66,7 @@ class CreateGroup extends Component {
               ref={(name) => { this.name = name; }}
               id="name"
               className="mdl-textfield__input"
+              required
             />
           </div>
         </div>

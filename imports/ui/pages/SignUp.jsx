@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
+import showMessage from '../../helpers/showMessage';
 
 class SignUp extends Component {
   constructor(props) {
@@ -27,15 +28,13 @@ class SignUp extends Component {
       Meteor.call('user.insert', {
         email,
         password,
-        profile: {
-          name,
-          position,
-          company,
-          about,
-        },
+        name,
+        position,
+        company,
+        about,
       }, handleMethodsCallbacks(this.signUpCallback));
     } else {
-      // TODO: Inform user that passwords not equal
+      showMessage('Password and confirm password not equal');
     }
   }
 
@@ -53,6 +52,7 @@ class SignUp extends Component {
               ref={(userName) => { this.userName = userName; }}
               name="name"
               className="mdl-textfield__input"
+              required
             />
             <label
               className="mdl-textfield__label"
@@ -68,6 +68,7 @@ class SignUp extends Component {
               ref={(email) => { this.email = email; }}
               name="login"
               className="mdl-textfield__input"
+              required
             />
             <label
               className="mdl-textfield__label"
@@ -83,6 +84,7 @@ class SignUp extends Component {
               ref={(password) => { this.password = password; }}
               name="password"
               className="mdl-textfield__input"
+              required
             />
             <label
               className="mdl-textfield__label"
@@ -98,6 +100,7 @@ class SignUp extends Component {
               ref={(confirm) => { this.confirmPassword = confirm; }}
               name="confirmPassword"
               className="mdl-textfield__input"
+              required
             />
             <label
               className="mdl-textfield__label"

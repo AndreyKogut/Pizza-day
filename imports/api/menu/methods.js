@@ -27,32 +27,32 @@ Meteor.publish('GroupMenu', function publishGroupMenu(id) {
   check(id, Match.Where(notEmpty));
 
   if (!this.userId) {
-    return this.error(new Meteor.Error(401, 'Access denied'));
+    return this.ready();
   }
 
-  const group = Groups.findOne({ _id: id });
+  const groupMenu = Groups.findOne({ _id: id }).menu || [];
 
-  return Menu.find({ _id: { $in: [...group.menu] } });
+  return Menu.find({ _id: { $in: [...groupMenu] } });
 });
 
 Meteor.publish('GroupMenuForEvent', function publishGroupMenu(id) {
   check(id, Match.Where(notEmpty));
 
   if (!this.userId) {
-    return this.error(new Meteor.Error(401, 'Access denied'));
+    return this.ready();
   }
 
   const event = Events.findOne({ _id: id });
-  const group = Groups.findOne({ _id: event.groupId });
+  const groupMenu = Groups.findOne({ _id: event.groupId }).menu || [];
 
-  return Menu.find({ _id: { $in: [...group.menu] } });
+  return Menu.find({ _id: { $in: [...groupMenu] } });
 });
 
 Meteor.publish('EventMenu', function publishMenu(id) {
   check(id, Match.Where(notEmpty));
 
   if (!this.userId) {
-    return this.error(new Meteor.Error(401, 'Access denied'));
+    return this.ready();
   }
 
   const eventMenu = Events.findOne({ _id: id }).menu || [];

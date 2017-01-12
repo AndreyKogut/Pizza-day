@@ -15,10 +15,14 @@ Meteor.methods({
       }],
     };
 
-    check(requestData, requestDataStructure);
+    try {
+      check(requestData, requestDataStructure);
+    } catch (err) {
+      throw new Meteor.Error(400, `Invalid ${err.path}`);
+    }
 
     if (!this.userId) {
-      throw new Meteor.Error(402, 'Not member');
+      throw new Meteor.Error(403, 'Unauthorized');
     }
 
     const { eventId, ...orderData } = requestData;
@@ -26,7 +30,7 @@ Meteor.methods({
     const isParticipant = _.some(eventData.participants, item => item._id === this.userId);
 
     if (!isParticipant) {
-      throw new Meteor.Error(402, 'Not member');
+      throw new Meteor.Error(403, 'Not member');
     }
 
     let totalPrice = 0;
@@ -53,7 +57,7 @@ Meteor.methods({
     const order = Orders.findOne({ _id: id });
 
     if (order.userId !== this.userId) {
-      throw new Meteor.Error(402, 'Not owner');
+      throw new Meteor.Error(403, 'Not owner');
     }
 
     Orders.remove({ _id: id });

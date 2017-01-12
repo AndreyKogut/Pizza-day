@@ -17,7 +17,7 @@ const UserCabinet = (props) => {
     Meteor.call(
       'user.update',
       obj,
-      handleMethodsCallbacks,
+      handleMethodsCallbacks(),
     );
   }
 
@@ -37,8 +37,9 @@ const UserCabinet = (props) => {
 
   return (<div className="content page-content">
     <div className="mdl-grid">
-      <h4>{ props.user.profile.name } { editable && <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-        <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.user.profile.name}>
+      <h4>{ props.user.profile.name } { editable &&
+      <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+        <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="name">
           <i className="material-icons">edit</i>
         </label>
         <div className="mdl-textfield__expandable-holder">
@@ -47,14 +48,14 @@ const UserCabinet = (props) => {
             ref={(name) => {
               this.userName = name;
             }}
-            id={props.user.profile.name}
+            id="name"
             onKeyPress={enterData(() => {
               updateUserData({ name: this.userName.value });
               this.userName.value = '';
             })}
             className="mdl-textfield__input"
           />
-          <label className="mdl-textfield__label" htmlFor={props.user.profile.name}>New name</label>
+          <label className="mdl-textfield__label" htmlFor="name">New name</label>
         </div>
       </span> }</h4>
       <div className="mdl-layout-spacer" />
@@ -86,7 +87,7 @@ const UserCabinet = (props) => {
       </div>
       <div className="mdl-cell mdl-cell--6-col">
         <p>Company: { props.user.profile.company } { editable && <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.user.profile.company}>
+          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="company">
             <i className="material-icons">edit</i>
           </label>
           <span className="mdl-textfield__expandable-holder">
@@ -95,18 +96,18 @@ const UserCabinet = (props) => {
               ref={(name) => {
                 this.company = name;
               }}
-              id={props.user.profile.company}
+              id="company"
               onKeyPress={enterData(() => {
                 updateUserData({ company: this.company.value });
                 this.company.value = '';
               })}
               className="mdl-textfield__input"
             />
-            <label className="mdl-textfield__label" htmlFor={props.user.profile.company}>Company name</label>
+            <label className="mdl-textfield__label" htmlFor="company">Company name</label>
           </span>
         </span> }</p>
         <p>Position: { props.user.profile.position }{ editable && <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.user.profile.position}>
+          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="position">
             <i className="material-icons">edit</i>
           </label>
           <span className="mdl-textfield__expandable-holder">
@@ -115,38 +116,38 @@ const UserCabinet = (props) => {
               ref={(name) => {
                 this.position = name;
               }}
-              id={props.user.profile.position}
+              id="position"
               onKeyPress={enterData(() => {
                 updateUserData({ position: this.position.value });
                 this.position.value = '';
               })}
               className="mdl-textfield__input"
             />
-            <label className="mdl-textfield__label" htmlFor={props.user.profile.position}>Company name</label>
+            <label className="mdl-textfield__label" htmlFor="position">Company name</label>
           </span>
         </span> }</p>
         <p>Email: { props.user.emails[0].address }{ editable && <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.user.emails[0].address}>
+          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="address">
             <i className="material-icons">edit</i>
           </label>
           <span className="mdl-textfield__expandable-holder">
             <input
-              type="text"
+              type="email"
               ref={(name) => {
                 this.email = name;
               }}
-              id={props.user.emails[0].address}
+              id="address"
               onKeyPress={enterData(() => {
-                updateUserData({ email: this.position.value });
+                updateUserData({ email: this.email.value });
                 this.email.value = '';
               })}
               className="mdl-textfield__input"
             />
-            <label className="mdl-textfield__label" htmlFor={props.user.emails[0].address}>Company name</label>
+            <label className="mdl-textfield__label" htmlFor="address">Company name</label>
           </span>
         </span> }</p>
         <p>About: { props.user.profile.about }{ editable && <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.user.profile.about}>
+          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="about">
             <i className="material-icons">edit</i>
           </label>
           <span className="mdl-textfield__expandable-holder">
@@ -155,14 +156,14 @@ const UserCabinet = (props) => {
               ref={(name) => {
                 this.about = name;
               }}
-              id={props.user.profile.about}
+              id="about"
               onKeyPress={enterData(() => {
                 updateUserData({ about: this.about.value });
                 this.about.value = '';
               })}
               className="mdl-textfield__input"
             />
-            <label className="mdl-textfield__label" htmlFor={props.user.profile.about}>Company name</label>
+            <label className="mdl-textfield__label" htmlFor="about">Company name</label>
           </span>
         </span> }</p>
       </div>

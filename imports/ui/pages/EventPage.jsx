@@ -30,29 +30,29 @@ const EventPage = (props) => {
   function updateData(obj) {
     Meteor.call('events.update',
       { id: props.eventId, ...obj },
-      handleMethodsCallbacks,
+      handleMethodsCallbacks(),
     );
   }
 
   function joinEvent() {
-    Meteor.call('events.joinEvent', props.eventId, handleMethodsCallbacks);
+    Meteor.call('events.joinEvent', props.eventId, handleMethodsCallbacks());
   }
 
   function leaveEvent() {
-    Meteor.call('events.leaveEvent', props.eventId, handleMethodsCallbacks);
+    Meteor.call('events.leaveEvent', props.eventId, handleMethodsCallbacks());
   }
 
   function orderItems() {
     const menu = this.menu || [];
     const eventId = props.eventId;
 
-    Meteor.call('orders.insert', { eventId, menu }, handleMethodsCallbacks);
+    Meteor.call('orders.insert', { eventId, menu }, handleMethodsCallbacks());
   }
 
   function deleteOrder() {
     const eventId = props.eventId;
 
-    Meteor.call('events.removeOrdering', eventId, handleMethodsCallbacks);
+    Meteor.call('events.removeOrdering', eventId, handleMethodsCallbacks());
   }
 
   function addMenuItems(items) {
@@ -229,7 +229,8 @@ EventPage.defaultProps = defaultProps;
 const EventPageContainer = createContainer(({ eventId }) => {
   const handleEvent = Meteor.subscribe('Event', eventId);
 
-  const event = Events.findOne() || {};
+  const event = Events.findOne(eventId) || {};
+
   const participant = _.findWhere(event.participants, { _id: Meteor.userId() });
 
   return {

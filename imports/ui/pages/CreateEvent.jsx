@@ -20,7 +20,7 @@ const CreateEvent = (props) => {
   function createEvent(event) {
     event.preventDefault();
 
-    const name = this.userName.value;
+    const name = this.eventName.value;
     const title = this.title.value;
     const date = this.date.value;
     const groupId = props.groupId;
@@ -52,9 +52,10 @@ const CreateEvent = (props) => {
           </label>
           <input
             type="text"
-            ref={(name) => { this.userName = name; }}
+            ref={(name) => { this.eventName = name; }}
             id="name"
             className="mdl-textfield__input"
+            required
           />
         </div>
       </div>
@@ -79,6 +80,7 @@ const CreateEvent = (props) => {
             type="datetime-local"
             ref={(date) => { this.date = date; }}
             className="mdl-textfield__input"
+            required
           />
         </div>
       </div>

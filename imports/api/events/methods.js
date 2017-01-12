@@ -11,16 +11,20 @@ Meteor.methods({
       name: Match.Where(notEmpty),
       groupId: Match.Where(notEmpty),
       date: Match.Where(dateNotPass),
-      menu: Match.Where(stringList),
+      menu: Match.Maybe(Match.Where(stringList)),
       title: Match.Maybe(String),
     };
 
-    check(requestData, requestDataStructure);
+    try {
+      check(requestData, requestDataStructure);
+    } catch (err) {
+      throw new Meteor.Error(400, `Invalid ${err.path}`);
+    }
 
     const groupCreatorId = Groups.findOne({ _id: requestData.groupId }).creator;
 
     if (groupCreatorId !== this.userId) {
-      throw new Meteor.Error(400, 'Access denied');
+      throw new Meteor.Error(403, 'Unauthorized');
     }
 
     return Events.insert({
@@ -40,14 +44,18 @@ Meteor.methods({
       title: Match.Maybe(String),
     };
 
-    check(requestData, requestDataStructure);
+    try {
+      check(requestData, requestDataStructure);
+    } catch (err) {
+      throw new Meteor.Error(400, `Invalid ${err.path}`);
+    }
 
     const group = Events.findOne({
       _id: requestData.id,
     });
 
     if (group.creator !== this.userId) {
-      throw new Meteor.Error(402, 'You should be group creator');
+      throw new Meteor.Error(403, 'Not owner');
     }
 
     const updateData = _.pick(requestData, value => value);
@@ -67,12 +75,16 @@ Meteor.methods({
       }),
     };
 
-    check(requestData, requestDataStructure);
+    try {
+      check(requestData, requestDataStructure);
+    } catch (err) {
+      throw new Meteor.Error(400, `Invalid ${err.path}`);
+    }
 
     const event = Events.findOne({ _id: requestData.id });
 
     if (event.creator !== this.userId) {
-      throw new Meteor.Error(402, 'You should be group creator');
+      throw new Meteor.Error(403, 'Not owner');
     }
 
     Events.update({ _id: requestData.id }, { $set: { status: requestData.status } });
@@ -87,13 +99,13 @@ Meteor.methods({
 
     const event = Events.findOne({ _id: id });
     if (event.status !== 'ordering') {
-      throw new Meteor.Error(400, 'Event ordered');
+      throw new Meteor.Error(403, 'Event ordered');
     }
 
     const groupMembers = Groups.findOne({ _id: event.groupId }).members;
 
     if (!_.indexOf(groupMembers, this.userId)) {
-      throw new Meteor.Error(402, 'Access denied');
+      throw new Meteor.Error(403, 'Not member');
     }
 
     Events.update({ _id: id },
@@ -107,15 +119,19 @@ Meteor.methods({
       items: [Match.Where(notEmpty)],
     };
 
-    check(requestData, requestDataStructure);
+    try {
+      check(requestData, requestDataStructure);
+    } catch (err) {
+      throw new Meteor.Error(400, `Invalid ${err.path}`);
+    }
 
     const event = Events.findOne({ _id: requestData.id });
     if (event.status !== 'ordering') {
-      throw new Meteor.Error(400, 'Event ordered');
+      throw new Meteor.Error(403, 'Event ordered');
     }
 
     if (event.creator !== this.userId) {
-      throw new Meteor.Error(402, 'You must be creator');
+      throw new Meteor.Error(403, 'Not owner');
     }
 
     Events.update({ _id: requestData.id }, { $push: { menu: { $each: requestData.items } } });
@@ -127,7 +143,7 @@ Meteor.methods({
     const event = Events.findOne({ _id: eventId });
 
     if (event.status !== 'ordering') {
-      throw new Meteor.Error(400, 'Event ordered');
+      throw new Meteor.Error(403, 'Event ordered');
     }
 
     Events.update({ _id: eventId },
@@ -139,12 +155,12 @@ Meteor.methods({
     check(eventId, Match.Where(notEmpty));
 
     if (!this.userId) {
-      throw new Meteor.Error(402, 'Unauthorized');
+      throw new Meteor.Error(403, 'Unauthorized');
     }
 
     const event = Events.findOne({ _id: eventId });
     if (event.status !== 'ordering') {
-      throw new Meteor.Error(400, 'Event ordered');
+      throw new Meteor.Error(403, 'Event ordered');
     }
 
     const eventParticipant = _.findWhere(event.participants, { _id: this.userId });
@@ -165,7 +181,7 @@ Meteor.publish('GroupEvents', (id) => {
 
 Meteor.publish('Events', function getEvents() {
   if (!this.userId) {
-    return this.error(new Meteor.Error(401, 'Access denied'));
+    return this.ready();
   }
 
   return Events.find({ $or: [{ 'participants._id': this.userId }, { creator: this.userId }] });
@@ -178,7 +194,7 @@ Meteor.publish('Event', function publishEvent(id) {
   const groupMembers = Groups.findOne({ _id: groupId }).members;
 
   if (!_.some(groupMembers, ({ _id: userId }) => userId === this.userId)) {
-    return this.error(new Meteor.Error(400, 'Access denied'));
+    return this.ready();
   }
 
   return Events.find({ _id: id });

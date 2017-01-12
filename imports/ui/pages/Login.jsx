@@ -7,7 +7,7 @@ const Login = () => {
     Meteor.loginWithGoogle({
       requestPermissions: ['email', 'profile'],
       loginStyle: 'popup',
-    }, handleMethodsCallbacks);
+    }, handleMethodsCallbacks());
   }
   function login(event) {
     event.preventDefault();
@@ -18,7 +18,7 @@ const Login = () => {
     Meteor.loginWithPassword(
       email,
       password,
-      handleMethodsCallbacks,
+      handleMethodsCallbacks(),
     );
   }
 
@@ -48,7 +48,7 @@ const Login = () => {
           <label
             className="mdl-textfield__label"
             htmlFor="email"
-          >Email...</label>
+          >Email</label>
         </div>
       </div>
       <div className="mdl-grid">

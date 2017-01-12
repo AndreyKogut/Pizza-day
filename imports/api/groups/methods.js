@@ -10,12 +10,12 @@ Meteor.methods({
       name: Match.Where(notEmpty),
       description: Match.Maybe(String),
       avatar: Match.Maybe(String),
-      members: [Match.Where(notEmpty)],
-      menu: [Match.Where(notEmpty)],
+      members: Match.Maybe([Match.Where(notEmpty)]),
+      menu: Match.Maybe([Match.Where(notEmpty)]),
     };
 
     if (!this.userId) {
-      throw new Meteor.Error(401, 'You mast be logged in');
+      throw new Meteor.Error(403, 'Unauthorized');
     }
 
     check(requestData, requestDateStructure);
@@ -56,7 +56,7 @@ Meteor.methods({
     const groupCreator = Groups.findOne({ _id: requestData.id }).creator;
 
     if (groupCreator !== this.userId) {
-      throw new Meteor.Error(402, 'You must be creator');
+      throw new Meteor.Error(403, 'Not owner');
     }
 
     const pushNotEmptyData = _.pick(pushData, value => value);
@@ -72,7 +72,7 @@ Meteor.methods({
     const groupCreator = Groups.findOne({ _id: id }).creator;
 
     if (groupCreator !== this.userId) {
-      throw new Meteor.Error(402, 'You must be creator');
+      throw new Meteor.Error(403, 'Not owner');
     }
 
     Groups.remove({ _id: id });
@@ -89,7 +89,7 @@ Meteor.methods({
     const groupCreator = Groups.findOne({ _id: requestData.id }).creator;
 
     if (groupCreator !== this.userId) {
-      throw new Meteor.Error(402, 'You must be creator');
+      throw new Meteor.Error(403, 'Not owner');
     }
 
     const convertedMembers = [];
@@ -113,7 +113,7 @@ Meteor.methods({
     const groupCreator = Groups.findOne({ _id: requestData.id }).creator;
 
     if (groupCreator !== this.userId) {
-      throw new Meteor.Error(402, 'You must be creator');
+      throw new Meteor.Error(403, 'Not owner');
     }
 
     Groups.update({ _id: requestData.id }, { $push: { menu: { $each: requestData.items } } });
@@ -130,7 +130,7 @@ Meteor.methods({
     const groupCreator = Groups.findOne({ _id: requestData.groupId }).creator;
 
     if (groupCreator !== this.userId) {
-      throw new Meteor.Error(402, 'Not creator');
+      throw new Meteor.Error(403, 'Not owner');
     }
 
     Groups.update(
@@ -155,7 +155,7 @@ Meteor.methods({
 
 Meteor.publish('Groups', function getGroups() {
   if (!this.userId) {
-    return this.error(new Meteor.Error(401, 'Access denied'));
+    return this.ready();
   }
 
   return Groups.find({ $or: [{ 'members._id': this.userId }, { creator: this.userId }] }, { sort: { createdAt: -1 } });
@@ -165,7 +165,7 @@ Meteor.publish('Group', function groupPublish(id) {
   check(id, Match.Where(notEmpty));
 
   if (!this.userId) {
-    return this.error(new Meteor.Error(401, 'Access denied'));
+    return this.ready();
   }
 
   return Groups.find(id);

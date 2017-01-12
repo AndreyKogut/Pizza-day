@@ -30,21 +30,21 @@ const GroupPage = (props) => {
   function updateData(obj) {
     Meteor.call('groups.update',
       { id: props.id, ...obj },
-      handleMethodsCallbacks,
+      handleMethodsCallbacks(),
     );
   }
 
   function addMembers(items) {
     Meteor.call('groups.addMembers',
       { id: props.id, items },
-      handleMethodsCallbacks,
+      handleMethodsCallbacks(),
     );
   }
 
   function addMenuItems(items) {
     Meteor.call('groups.addMenuItems',
       { id: props.id, items },
-      handleMethodsCallbacks,
+      handleMethodsCallbacks(),
     );
   }
 
@@ -52,7 +52,8 @@ const GroupPage = (props) => {
     Meteor.call('groups.removeMember', {
       groupId: props.id,
       userId: id,
-    });
+    },
+    handleMethodsCallbacks());
   }
 
   function enterData(func) {
@@ -74,7 +75,7 @@ const GroupPage = (props) => {
       <div className="mdl-cell mdl-cell--6-col">
         <h2>{ props.name }
           { editable && <div className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-            <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.name}>
+            <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="name">
               <i className="material-icons">edit</i>
             </label>
             <div className="mdl-textfield__expandable-holder">
@@ -83,13 +84,14 @@ const GroupPage = (props) => {
                 ref={(name) => {
                   this.groupName = name;
                 }}
-                id={props.name}
+                id="name"
                 onKeyPress={enterData(() => {
                   updateData({ name: this.groupName.value });
+                  this.groupName.value = '';
                 })}
                 className="mdl-textfield__input"
               />
-              <label className="mdl-textfield__label" htmlFor={props.name}>New name</label>
+              <label className="mdl-textfield__label" htmlFor="name">New name</label>
             </div>
           </div> }
         </h2>
@@ -114,19 +116,20 @@ const GroupPage = (props) => {
       <div className="m-auto ta-c mdl-cell mdl-cell--6-col">
         <p>{ props.description }</p>
         { editable && <div className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.description}>
+          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="description">
             <i className="material-icons">edit</i>
           </label>
           <div className="mdl-textfield__expandable-holder">
-            <label className="mdl-textfield__label" htmlFor={props.description}>Description</label>
+            <label className="mdl-textfield__label" htmlFor="description">Description</label>
             <input
               type="text"
               ref={(description) => {
                 this.description = description;
               }}
-              id={props.description}
+              id="description"
               onKeyPress={enterData(() => {
                 updateData({ description: this.description.value });
+                this.description.value = '';
               })}
               className="mdl-textfield__input"
             />
@@ -153,7 +156,7 @@ const GroupPage = (props) => {
       <div className="">
         <h3 className="ta-c">Members</h3>
         <GroupUsersList
-          key={props.members.length}
+          key={`members${props.members && props.members.length}`}
           id={props.id}
           editable={editable}
           itemClick={(id) => {
@@ -162,10 +165,10 @@ const GroupPage = (props) => {
         />
       </div>
 
-      <div className="">
+      <div>
         <h3 className="ta-c">Menu</h3>
         <GroupMenuList
-          key={props.menu.length}
+          key={`members${props.menu && props.menu.length}`}
           id={props.id}
         />
       </div>
@@ -180,7 +183,7 @@ Event.defaultProps = defaultProps;
 const GroupPageContainer = createContainer(({ id }) => {
   const handleGroup = Meteor.subscribe('Group', id);
 
-  const groupData = Groups.findOne() || {};
+  const groupData = Groups.findOne(id) || {};
 
   return {
     id,
