@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import '../imports/api/emailVerificationConfigs';
 import '../imports/api/googleOauth';
 import '../imports/api/users/methods';
 import '../imports/api/events/methods';

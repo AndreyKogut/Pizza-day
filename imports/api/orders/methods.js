@@ -15,14 +15,18 @@ Meteor.methods({
       }],
     };
 
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
+
     try {
       check(requestData, requestDataStructure);
     } catch (err) {
       throw new Meteor.Error(400, `Invalid ${err.path}`);
-    }
-
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
     }
 
     const { eventId, ...orderData } = requestData;
@@ -53,6 +57,14 @@ Meteor.methods({
 
   'orders.remove': function removeOrder(id) {
     check(id, Match.Where(notEmpty));
+
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
 
     const order = Orders.findOne({ _id: id });
 

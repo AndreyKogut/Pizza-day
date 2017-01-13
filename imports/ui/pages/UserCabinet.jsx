@@ -31,6 +31,10 @@ const UserCabinet = (props) => {
     };
   }
 
+  function resendVerificationLink() {
+    Meteor.call('user.resendVerificationLink', handleMethodsCallbacks());
+  }
+
   if (props.userDataLoading) {
     return (<div>Loading..</div>);
   }
@@ -60,19 +64,33 @@ const UserCabinet = (props) => {
       </span> }</h4>
       <div className="mdl-layout-spacer" />
       { editable && <div className="controls">
-        <a
-          id="create-group"
-          href="/create-group"
-          className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--accent"
-        >
-          <i className="material-icons">group</i>
-        </a>
-        <Controls
-          controls={{ avatar: true }}
-          updateImage={(imageUrl) => { updateUserData({ avatar: imageUrl }); }}
-        />
+        { !props.user.emails[0].verified ?
+          <button
+            id="verify"
+            className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--accent"
+            type="button"
+            onClick={resendVerificationLink}
+          >
+            <i className="material-icons">announcement</i>
+          </button> :
+          <div className="wrap-items">
+            <a
+              id="create-group"
+              href="/create-group"
+              className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--accent"
+            >
+              <i className="material-icons">group</i>
+            </a>
+            <Controls
+              controls={{ avatar: true }}
+              updateImage={(imageUrl) => { updateUserData({ avatar: imageUrl }); }}
+            />
+          </div> }
         <div className="mdl-tooltip" data-mdl-for="create-group">
           Create group
+        </div>
+        <div className="mdl-tooltip" data-mdl-for="verify">
+          Resend verification email
         </div>
       </div> }
     </div>
@@ -188,6 +206,7 @@ const UserCabinetContainer = createContainer(({ id }) => {
     },
     emails: [{
       address: '',
+      verified: false,
     }],
   });
 

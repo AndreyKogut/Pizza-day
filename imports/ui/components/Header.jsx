@@ -36,8 +36,8 @@ const Header = ({ id }) => {
           >Sign up</a>
           <a
             className="mdl-button mdl-js-button mdl-js-ripple-effect"
-            href="/signin"
-          >Sign in</a>
+            href="/login"
+          >Login</a>
         </div>}
       </nav>
     </div>

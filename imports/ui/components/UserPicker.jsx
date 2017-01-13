@@ -127,14 +127,14 @@ class UserPicker extends Component {
       <UserPickerFilter changeCallback={(filter) => { this.filterUsers(filter); }} />
       <div className="mdl-grid">
         <div className="mdl-cell mdl-cell--6-col">
-          <h5 className="user-picker__h">All</h5>
-          <ul className="users-list">
+          <h5>All</h5>
+          <ul className="user-list">
             { this.getAllUsers() }
           </ul>
         </div>
         <div className="mdl-cell mdl-cell--6-col">
-          <h5 className="user-picker__h">Members</h5>
-          <ul className="users-list">
+          <h5>Members</h5>
+          <ul className="user-list">
             { this.getPickedUsers() }
           </ul>
         </div>

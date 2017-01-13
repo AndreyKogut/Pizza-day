@@ -15,6 +15,14 @@ Meteor.methods({
       title: Match.Maybe(String),
     };
 
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
+
     try {
       check(requestData, requestDataStructure);
     } catch (err) {
@@ -24,7 +32,7 @@ Meteor.methods({
     const groupCreatorId = Groups.findOne({ _id: requestData.groupId }).creator;
 
     if (groupCreatorId !== this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
+      throw new Meteor.Error(403, 'Not owner');
     }
 
     return Events.insert({
@@ -43,6 +51,14 @@ Meteor.methods({
       date: Match.Maybe(Match.Where(dateNotPass)),
       title: Match.Maybe(String),
     };
+
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
 
     try {
       check(requestData, requestDataStructure);
@@ -75,6 +91,14 @@ Meteor.methods({
       }),
     };
 
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
+
     try {
       check(requestData, requestDataStructure);
     } catch (err) {
@@ -96,6 +120,14 @@ Meteor.methods({
 
   'events.joinEvent': function addParticipant(id) {
     check(id, Match.Where(notEmpty));
+
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
 
     const event = Events.findOne({ _id: id });
     if (event.status !== 'ordering') {
@@ -119,6 +151,14 @@ Meteor.methods({
       items: [Match.Where(notEmpty)],
     };
 
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
+
     try {
       check(requestData, requestDataStructure);
     } catch (err) {
@@ -140,6 +180,14 @@ Meteor.methods({
   'events.leaveEvent': function deleteParticipant(eventId) {
     check(eventId, Match.Where(notEmpty));
 
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
+
     const event = Events.findOne({ _id: eventId });
 
     if (event.status !== 'ordering') {
@@ -156,6 +204,10 @@ Meteor.methods({
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
     }
 
     const event = Events.findOne({ _id: eventId });

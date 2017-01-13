@@ -15,6 +15,18 @@ function handleMethodsCallbacks(handledFunction = () => {}) {
           }
           case 403: {
             switch (err.reason) {
+              case 'Unverified': {
+                errorText = 'You can\'t edit any data without email verification';
+                break;
+              }
+              case 'All emails verified': {
+                errorText = 'You have no unverified emails';
+                break;
+              }
+              case 'Verify email link expired' : {
+                errorText = 'Verify link expired';
+                break;
+              }
               case 'error.accounts.Login forbidden' : {
                 errorText = 'No such email and password combination';
                 break;

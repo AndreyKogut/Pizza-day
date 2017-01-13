@@ -4,10 +4,28 @@ import { check, Match } from 'meteor/check';
 import { notEmpty } from '../checkData';
 import Groups from '../../api/groups/collection';
 
-Meteor.publish('user', (id) => {
-  check(id, Match.Where(notEmpty));
+Accounts.onCreateUser((publicData, privateData) => {
+  if (privateData.services.google) {
+    const emails = [{
+      address: privateData.services.google.email,
+      verified: privateData.services.google.verified_email,
+    }];
 
-  return Meteor.users.find(id);
+    const userProfile = {
+      avatar: privateData.services.google.picture,
+      ...publicData.profile,
+    };
+
+    return { emails, profile: userProfile, ...privateData };
+  }
+
+  return {
+    profile: {
+      avatar: '/images/user-image.png',
+      ...publicData.profile,
+    },
+    ...privateData,
+  };
 });
 
 Meteor.methods({
@@ -29,7 +47,16 @@ Meteor.methods({
 
     const { email, password, ...profile } = requestData;
 
-    Accounts.createUser({ email, password, profile });
+    const userId = Accounts.createUser({
+      email,
+      password,
+      profile: {
+        avatar: '/images/user-avatar.png',
+        ...profile,
+      },
+    });
+
+    Accounts.sendVerificationEmail(userId, email);
 
     return {
       email: requestData.email,
@@ -49,6 +76,10 @@ Meteor.methods({
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
     }
 
     try {
@@ -84,6 +115,17 @@ Meteor.methods({
       });
     }
   },
+  'user.resendVerificationLink': function resend() {
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    try {
+      Accounts.sendVerificationEmail(this.userId);
+    } catch (err) {
+      throw new Meteor.Error(403, 'All emails verified');
+    }
+  },
 });
 
 Meteor.publish('UsersList', function publishUsers() {
@@ -91,7 +133,10 @@ Meteor.publish('UsersList', function publishUsers() {
     return this.ready();
   }
 
-  return Meteor.users.find({ _id: { $ne: this.userId } }, { fields: { emails: 1, profile: 1 } });
+  return Meteor.users.find({
+    _id: { $ne: this.userId },
+    'emails.verified': true,
+  }, { fields: { emails: 1, profile: 1 } });
 });
 
 Meteor.publish('GroupMembers', function publishGroupMembers(groupId) {
@@ -105,5 +150,14 @@ Meteor.publish('GroupMembers', function publishGroupMembers(groupId) {
 
   const usersId = _.pluck(members, '_id');
 
-  return Meteor.users.find({ _id: { $in: [...usersId] } }, { fields: { emails: 1, profile: 1 } });
+  return Meteor.users.find({
+    _id: { $in: [...usersId] },
+    'emails.verified': true,
+  }, { fields: { emails: 1, profile: 1 } });
+});
+
+Meteor.publish('user', (id) => {
+  check(id, Match.Where(notEmpty));
+
+  return Meteor.users.find(id);
 });

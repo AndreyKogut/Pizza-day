@@ -11,22 +11,27 @@ import GroupPageContainer from '../ui/pages/GroupPage';
 import EventPageContainer from '../ui/pages/EventPage';
 import CreateGroupContainer from '../ui/pages/CreateGroup';
 import CreateEvent from '../ui/pages/CreateEvent';
-import EventsPageContainver from '../ui/pages/EventsPage';
+import EventsPageContainer from '../ui/pages/EventsPage';
+import handleMethodsCallbacks from '../helpers/handleMethodsCallbacks';
 import App from '../ui/App';
 
-const privateRouteOnEnter = (context, redirect) => {
-  if (!Meteor.userId()) redirect('/signin');
+const appOnEnter = (context, redirect) => {
+  if (!Meteor.userId()) redirect('/login');
 };
 
-Accounts.onLogin(() => {
-  const current = FlowRouter.current().path;
-  if (current === '/signin' || current === '/signup') {
+
+Accounts.onEmailVerificationLink((token) => {
+  Accounts.verifyEmail(token, handleMethodsCallbacks(() => {
     FlowRouter.go('/users/:id', { id: Meteor.userId() });
-  }
+  }));
+});
+
+Accounts.onLogin(() => {
+  FlowRouter.go('/users/:id', { id: Meteor.userId() });
 });
 
 Accounts.onLogout(() => {
-  FlowRouter.go('/signin');
+  FlowRouter.go('/login');
 });
 
 const publicRouts = FlowRouter.group({
@@ -35,17 +40,10 @@ const publicRouts = FlowRouter.group({
 
 const privateRouts = FlowRouter.group({
   name: 'publicRouts',
-  triggersEnter: [privateRouteOnEnter],
+  triggersEnter: [appOnEnter],
 });
 
-publicRouts.route('/', {
-  name: 'Home',
-  action() {
-    mount(App);
-  },
-});
-
-publicRouts.route('/signin', {
+publicRouts.route('/login', {
   name: 'SignIn',
   action() {
     mount(App, {
@@ -103,7 +101,7 @@ privateRouts.route('/events', {
   name: 'UserEvents',
   action() {
     mount(App, {
-      content: () => (<EventsPageContainver />),
+      content: () => (<EventsPageContainer />),
     });
   },
 });
@@ -128,8 +126,6 @@ privateRouts.route('/create-group', {
 
 FlowRouter.notFound = {
   action() {
-    mount(App, {
-      content: () => (<div>Not found</div>),
-    });
+    FlowRouter.go('/login');
   },
 };

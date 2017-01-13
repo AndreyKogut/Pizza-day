@@ -18,9 +18,13 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Unauthorized');
     }
 
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
+
     check(requestData, requestDateStructure);
 
-    const { members = [], ...fieldsToInsert } = requestData;
+    const { members = [], avatar = '/images/group-avatar.png', ...fieldsToInsert } = requestData;
 
     const convertedMembers = [{
       _id: this.userId,
@@ -33,6 +37,7 @@ Meteor.methods({
     }));
 
     return Groups.insert({
+      avatar,
       ...fieldsToInsert,
       members: convertedMembers,
       creator: this.userId,
@@ -49,7 +54,19 @@ Meteor.methods({
       menu: Match.Maybe([Match.Where(notEmpty)]),
     };
 
-    check(requestData, requestDataStructure);
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
+
+    try {
+      check(requestData, requestDataStructure);
+    } catch (err) {
+      throw new Meteor.Error(400, `Invalid ${err.path}`);
+    }
 
     const { id, ...pushData } = requestData;
 
@@ -69,6 +86,14 @@ Meteor.methods({
   'groups.remove': function removeGroup(id) {
     check(id, Match.Where(notEmpty));
 
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
+
     const groupCreator = Groups.findOne({ _id: id }).creator;
 
     if (groupCreator !== this.userId) {
@@ -83,6 +108,14 @@ Meteor.methods({
       id: Match.Where(notEmpty),
       items: [Match.Where(notEmpty)],
     };
+
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
 
     check(requestData, requestDataStructure);
 
@@ -108,6 +141,14 @@ Meteor.methods({
       items: [Match.Where(notEmpty)],
     };
 
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
+
     check(requestData, requestDataStructure);
 
     const groupCreator = Groups.findOne({ _id: requestData.id }).creator;
@@ -124,6 +165,14 @@ Meteor.methods({
       groupId: Match.Where(notEmpty),
       userId: Match.Where(notEmpty),
     };
+
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
 
     check(requestData, requestDataStructure);
 

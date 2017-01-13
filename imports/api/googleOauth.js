@@ -8,6 +8,5 @@ ServiceConfiguration.configurations.upsert({
     clientId: Meteor.settings.google.client_id,
     secret: Meteor.settings.google.client_secret,
     loginStyle: 'redirect',
-    redirectUrl: '/',
   },
 });
