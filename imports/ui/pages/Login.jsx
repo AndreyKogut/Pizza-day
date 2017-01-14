@@ -22,11 +22,11 @@ const Login = () => {
     );
   }
 
-  return (<div className="content page-content">
+  return (<div className="ta-c content page-content">
     <div className="mdl-grid main-header">
       <h3 className="m-auto">Authorization</h3>
     </div>
-    <form onSubmit={login} className="mb--30">
+    <form onSubmit={login} className="form mb--30">
       <div className="mdl-grid">
         <button
           onClick={loginWithGoogle}
@@ -65,6 +65,9 @@ const Login = () => {
             htmlFor="pass"
           >Password...</label>
         </div>
+      </div>
+      <div className="mdl-grid">
+        <a href="/forgot-password">Forgot password?</a>
       </div>
       <div className="mdl-grid">
         <input

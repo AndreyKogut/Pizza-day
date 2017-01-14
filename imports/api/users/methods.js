@@ -126,6 +126,17 @@ Meteor.methods({
       throw new Meteor.Error(403, 'All emails verified');
     }
   },
+  'user.sendPasswordResetLink': function passReset() {
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
+
+    Accounts.sendResetPasswordEmail(this.userId);
+  },
 });
 
 Meteor.publish('UsersList', function publishUsers() {

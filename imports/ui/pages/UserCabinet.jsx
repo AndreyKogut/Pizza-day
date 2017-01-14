@@ -1,7 +1,9 @@
 import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
+import showMessage from '../../helpers/showMessage';
 import Controls from '../components/Controls';
 
 const propTypes = {
@@ -32,7 +34,21 @@ const UserCabinet = (props) => {
   }
 
   function resendVerificationLink() {
-    Meteor.call('user.resendVerificationLink', handleMethodsCallbacks());
+    Meteor.call(
+      'user.resendVerificationLink',
+      handleMethodsCallbacks(() => { showMessage('Verification link sent'); }),
+    );
+  }
+
+  function resetPassword() {
+    Accounts.logoutOtherClients(
+      handleMethodsCallbacks(() => { showMessage('Other devices logged out'); }),
+    );
+
+    Meteor.call(
+      'user.sendPasswordResetLink',
+      handleMethodsCallbacks(showMessage('Reset password link sent')),
+    );
   }
 
   if (props.userDataLoading) {
@@ -67,13 +83,12 @@ const UserCabinet = (props) => {
         { !props.user.emails[0].verified ?
           <button
             id="verify"
-            className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--accent"
+            className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect"
             type="button"
             onClick={resendVerificationLink}
           >
             <i className="material-icons">announcement</i>
-          </button> :
-          <div className="wrap-items">
+          </button> : <div className="wrap-items">
             <a
               id="create-group"
               href="/create-group"
@@ -81,6 +96,14 @@ const UserCabinet = (props) => {
             >
               <i className="material-icons">group</i>
             </a>
+            <button
+              id="reset-password"
+              className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect"
+              type="button"
+              onClick={resetPassword}
+            >
+              <i className="material-icons">lock</i>
+            </button>
             <Controls
               controls={{ avatar: true }}
               updateImage={(imageUrl) => { updateUserData({ avatar: imageUrl }); }}
@@ -88,6 +111,9 @@ const UserCabinet = (props) => {
           </div> }
         <div className="mdl-tooltip" data-mdl-for="create-group">
           Create group
+        </div>
+        <div className="mdl-tooltip" data-mdl-for="reset-password">
+          Change password and logout other devices
         </div>
         <div className="mdl-tooltip" data-mdl-for="verify">
           Resend verification email

@@ -12,6 +12,7 @@ import EventPageContainer from '../ui/pages/EventPage';
 import CreateGroupContainer from '../ui/pages/CreateGroup';
 import CreateEvent from '../ui/pages/CreateEvent';
 import EventsPageContainer from '../ui/pages/EventsPage';
+import PasswordReset from '../ui/pages/PasswordReset';
 import handleMethodsCallbacks from '../helpers/handleMethodsCallbacks';
 import App from '../ui/App';
 
@@ -19,6 +20,9 @@ const appOnEnter = (context, redirect) => {
   if (!Meteor.userId()) redirect('/login');
 };
 
+Accounts.onResetPasswordLink((token) => {
+  FlowRouter.go('/reset-password/:token', { token });
+});
 
 Accounts.onEmailVerificationLink((token) => {
   Accounts.verifyEmail(token, handleMethodsCallbacks(() => {
@@ -27,7 +31,10 @@ Accounts.onEmailVerificationLink((token) => {
 });
 
 Accounts.onLogin(() => {
-  FlowRouter.go('/users/:id', { id: Meteor.userId() });
+  const current = FlowRouter.current().path;
+  if (current === '/login' || current === '/signup') {
+    FlowRouter.go('/user/:id', { id: Meteor.userId() });
+  }
 });
 
 Accounts.onLogout(() => {
@@ -39,7 +46,7 @@ const publicRouts = FlowRouter.group({
 });
 
 const privateRouts = FlowRouter.group({
-  name: 'publicRouts',
+  name: 'privateRouts',
   triggersEnter: [appOnEnter],
 });
 
@@ -48,6 +55,15 @@ publicRouts.route('/login', {
   action() {
     mount(App, {
       content: () => (<Login />),
+    });
+  },
+});
+
+publicRouts.route('/reset-password/:token', {
+  name: 'ResetPassword',
+  action({ token }) {
+    mount(App, {
+      content: () => (<PasswordReset token={token} />),
     });
   },
 });

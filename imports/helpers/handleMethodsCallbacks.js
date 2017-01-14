@@ -15,8 +15,16 @@ function handleMethodsCallbacks(handledFunction = () => {}) {
           }
           case 403: {
             switch (err.reason) {
+              case 'Token expired' : {
+                errorText = 'Verification link expired';
+                break;
+              }
               case 'Unverified': {
                 errorText = 'You can\'t edit any data without email verification';
+                break;
+              }
+              case 'Event ordered': {
+                errorText = 'Event already ordered';
                 break;
               }
               case 'All emails verified': {
