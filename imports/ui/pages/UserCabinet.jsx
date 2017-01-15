@@ -47,7 +47,7 @@ const UserCabinet = (props) => {
 
     Meteor.call(
       'user.userPasswordResetLink',
-      handleMethodsCallbacks(showMessage('Reset password link sent')),
+      handleMethodsCallbacks(() => { showMessage('Reset password link sent'); }),
     );
   }
 

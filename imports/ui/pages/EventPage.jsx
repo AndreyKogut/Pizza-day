@@ -113,6 +113,7 @@ const EventPage = (props) => {
         <div className="controls">
           { editable ? <select
             className="status-select mdl-button"
+            value={props.status}
             onChange={changeStatus}
           >
             <option

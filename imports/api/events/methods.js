@@ -3,6 +3,7 @@ import { check, Match } from 'meteor/check';
 import Events from './collection';
 import Groups from '../groups/collection';
 import Orders from '../orders/collection';
+import sendUserOrder from '../sendUserOrder';
 import { stringList, notEmpty, dateNotPass } from '../checkData';
 
 Meteor.methods({
@@ -114,7 +115,15 @@ Meteor.methods({
     Events.update({ _id: requestData.id }, { $set: { status: requestData.status } });
 
     if (requestData.status !== 'ordering') {
-      Events.update({ _id: requestData.id }, { $pull: { participants: { ordered: false } } });
+      Events.update({
+        _id: requestData.id,
+      }, {
+        $pull: { participants: { ordered: false } },
+      }, (err) => {
+        if (!err) {
+          sendUserOrder(requestData.id);
+        }
+      });
     }
   },
 

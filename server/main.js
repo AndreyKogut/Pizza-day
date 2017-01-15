@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import ReactHTMLEmail from 'react-html-email';
 import '../imports/api/emailVerificationConfigs';
 import '../imports/api/googleOauth';
 import '../imports/api/users/methods';
@@ -12,6 +13,7 @@ import Menu from '../imports/api/menu/collection';
 
 Meteor.startup(() => {
   process.env.MAIL_URL = Meteor.settings.smtp;
+  ReactHTMLEmail.injectReactEmailAttributes();
 
   _ = lodash;
 
