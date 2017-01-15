@@ -56,7 +56,11 @@ Meteor.methods({
       },
     });
 
-    Accounts.sendVerificationEmail(userId, email);
+    try {
+      Accounts.sendVerificationEmail(userId, email);
+    } catch (err) {
+      // mailgun sending available for my address
+    }
 
     return {
       email: requestData.email,
@@ -68,7 +72,6 @@ Meteor.methods({
     const requestDataStructure = {
       name: Match.Maybe(String),
       avatar: Match.Maybe(String),
-      email: Match.Maybe(String),
       about: Match.Maybe(String),
       company: Match.Maybe(String),
       position: Match.Maybe(String),
@@ -126,7 +129,7 @@ Meteor.methods({
       throw new Meteor.Error(403, 'All emails verified');
     }
   },
-  'user.sendPasswordResetLink': function passReset() {
+  'user.userPasswordResetLink': function passReset() {
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
     }
@@ -136,6 +139,17 @@ Meteor.methods({
     }
 
     Accounts.sendResetPasswordEmail(this.userId);
+  },
+  'user.forgotPasswordResetLink': function passReset(email) {
+    check(email, Match.Where(notEmpty));
+
+    const user = Meteor.users.findOne({ 'emails.address': email });
+
+    if (!user) {
+      throw new Meteor.Error(403, 'User not found');
+    }
+
+    Accounts.sendResetPasswordEmail(user._id, email);
   },
 });
 

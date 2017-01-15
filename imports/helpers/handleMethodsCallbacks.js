@@ -15,7 +15,15 @@ function handleMethodsCallbacks(handledFunction = () => {}) {
           }
           case 403: {
             switch (err.reason) {
-              case 'Token expired' : {
+              case 'Invalid email': {
+                errorText = 'Such email don not exist';
+                break;
+              }
+              case 'User not found': {
+                errorText = 'Such user not found';
+                break;
+              }
+              case 'Token expired': {
                 errorText = 'Verification link expired';
                 break;
               }

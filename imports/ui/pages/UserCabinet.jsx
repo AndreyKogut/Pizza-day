@@ -46,7 +46,7 @@ const UserCabinet = (props) => {
     );
 
     Meteor.call(
-      'user.sendPasswordResetLink',
+      'user.userPasswordResetLink',
       handleMethodsCallbacks(showMessage('Reset password link sent')),
     );
   }
@@ -130,86 +130,70 @@ const UserCabinet = (props) => {
         />
       </div>
       <div className="mdl-cell mdl-cell--6-col">
-        <p>Company: { props.user.profile.company } { editable && <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="company">
-            <i className="material-icons">edit</i>
-          </label>
-          <span className="mdl-textfield__expandable-holder">
-            <input
-              type="text"
-              ref={(name) => {
-                this.company = name;
-              }}
-              id="company"
-              onKeyPress={enterData(() => {
-                updateUserData({ company: this.company.value });
-                this.company.value = '';
-              })}
-              className="mdl-textfield__input"
-            />
-            <label className="mdl-textfield__label" htmlFor="company">Company name</label>
-          </span>
-        </span> }</p>
-        <p>Position: { props.user.profile.position }{ editable && <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="position">
-            <i className="material-icons">edit</i>
-          </label>
-          <span className="mdl-textfield__expandable-holder">
-            <input
-              type="text"
-              ref={(name) => {
-                this.position = name;
-              }}
-              id="position"
-              onKeyPress={enterData(() => {
-                updateUserData({ position: this.position.value });
-                this.position.value = '';
-              })}
-              className="mdl-textfield__input"
-            />
-            <label className="mdl-textfield__label" htmlFor="position">Company name</label>
-          </span>
-        </span> }</p>
-        <p>Email: { props.user.emails[0].address }{ editable && <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="address">
-            <i className="material-icons">edit</i>
-          </label>
-          <span className="mdl-textfield__expandable-holder">
-            <input
-              type="email"
-              ref={(name) => {
-                this.email = name;
-              }}
-              id="address"
-              onKeyPress={enterData(() => {
-                updateUserData({ email: this.email.value });
-                this.email.value = '';
-              })}
-              className="mdl-textfield__input"
-            />
-            <label className="mdl-textfield__label" htmlFor="address">Company name</label>
-          </span>
-        </span> }</p>
-        <p>About: { props.user.profile.about }{ editable && <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-          <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="about">
-            <i className="material-icons">edit</i>
-          </label>
-          <span className="mdl-textfield__expandable-holder">
-            <input
-              type="text"
-              ref={(name) => {
-                this.about = name;
-              }}
-              id="about"
-              onKeyPress={enterData(() => {
-                updateUserData({ about: this.about.value });
-                this.about.value = '';
-              })}
-              className="mdl-textfield__input"
-            />
-            <label className="mdl-textfield__label" htmlFor="about">Company name</label>
-          </span>
-        </span> }</p>
+        <p>Company: { props.user.profile.company }
+          { editable && <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+            <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="company">
+              <i className="material-icons">edit</i>
+            </label>
+            <span className="mdl-textfield__expandable-holder">
+              <input
+                type="text"
+                ref={(name) => {
+                  this.company = name;
+                }}
+                id="company"
+                onKeyPress={enterData(() => {
+                  updateUserData({ company: this.company.value });
+                  this.company.value = '';
+                })}
+                className="mdl-textfield__input"
+              />
+              <label className="mdl-textfield__label" htmlFor="company">Company name</label>
+            </span>
+          </span> }</p>
+        <p>Position: { props.user.profile.position }
+          { editable && <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+            <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="position">
+              <i className="material-icons">edit</i>
+            </label>
+            <span className="mdl-textfield__expandable-holder">
+              <input
+                type="text"
+                ref={(name) => {
+                  this.position = name;
+                }}
+                id="position"
+                onKeyPress={enterData(() => {
+                  updateUserData({ position: this.position.value });
+                  this.position.value = '';
+                })}
+                className="mdl-textfield__input"
+              />
+              <label className="mdl-textfield__label" htmlFor="position">Company name</label>
+            </span>
+          </span> }</p>
+        <p>Email: { props.user.emails[0].address }</p>
+        <p>About: { props.user.profile.about }
+          { editable && <span className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+            <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="about">
+              <i className="material-icons">edit</i>
+            </label>
+            <span className="mdl-textfield__expandable-holder">
+              <input
+                type="text"
+                ref={(name) => {
+                  this.about = name;
+                }}
+                id="about"
+                onKeyPress={enterData(() => {
+                  updateUserData({ about: this.about.value });
+                  this.about.value = '';
+                })}
+                className="mdl-textfield__input"
+              />
+              <label className="mdl-textfield__label" htmlFor="about">Company name</label>
+            </span>
+          </span> }</p>
       </div>
     </div>
   </div>);

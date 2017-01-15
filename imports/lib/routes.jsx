@@ -13,15 +13,28 @@ import CreateGroupContainer from '../ui/pages/CreateGroup';
 import CreateEvent from '../ui/pages/CreateEvent';
 import EventsPageContainer from '../ui/pages/EventsPage';
 import PasswordReset from '../ui/pages/PasswordReset';
+import ForgotPassword from '../ui/pages/ForgotPassword';
 import handleMethodsCallbacks from '../helpers/handleMethodsCallbacks';
 import App from '../ui/App';
 
-const appOnEnter = (context, redirect) => {
+const RD = new ReactiveDict();
+
+const privateRouteEnter = (context, redirect) => {
   if (!Meteor.userId()) redirect('/login');
 };
 
+const publicRouts = FlowRouter.group({
+  name: 'publicRoutes',
+});
+
+const privateRouts = FlowRouter.group({
+  name: 'privateRoutes',
+  triggersEnter: [privateRouteEnter],
+});
+
 Accounts.onResetPasswordLink((token) => {
-  FlowRouter.go('/reset-password/:token', { token });
+  RD.set('token', token);
+  FlowRouter.go('/reset-password');
 });
 
 Accounts.onEmailVerificationLink((token) => {
@@ -33,7 +46,7 @@ Accounts.onEmailVerificationLink((token) => {
 Accounts.onLogin(() => {
   const current = FlowRouter.current().path;
   if (current === '/login' || current === '/signup') {
-    FlowRouter.go('/user/:id', { id: Meteor.userId() });
+    FlowRouter.go('/users/:id', { id: Meteor.userId() });
   }
 });
 
@@ -41,29 +54,35 @@ Accounts.onLogout(() => {
   FlowRouter.go('/login');
 });
 
-const publicRouts = FlowRouter.group({
-  name: 'publicRouts',
-});
-
-const privateRouts = FlowRouter.group({
-  name: 'privateRouts',
-  triggersEnter: [appOnEnter],
-});
-
 publicRouts.route('/login', {
   name: 'SignIn',
   action() {
     mount(App, {
-      content: () => (<Login />),
+      content: () => <Login />,
     });
   },
 });
 
-publicRouts.route('/reset-password/:token', {
-  name: 'ResetPassword',
-  action({ token }) {
+publicRouts.route('/forgot-password', {
+  name: 'Forgot password',
+  action() {
     mount(App, {
-      content: () => (<PasswordReset token={token} />),
+      content: () => <ForgotPassword />,
+    });
+  },
+});
+
+publicRouts.route('/reset-password', {
+  name: 'ResetPassword',
+  action() {
+    const currentToken = RD.get('token');
+    RD.clear();
+    if (!currentToken) {
+      FlowRouter.go('/login');
+    }
+
+    mount(App, {
+      content: () => <PasswordReset token={currentToken} />,
     });
   },
 });
@@ -72,7 +91,7 @@ publicRouts.route('/signup', {
   name: 'SignUp',
   action() {
     mount(App, {
-      content: () => (<SignUp />),
+      content: () => <SignUp />,
     });
   },
 });
@@ -81,7 +100,7 @@ privateRouts.route('/users/:id', {
   name: 'Cabinet',
   action({ id }) {
     mount(App, {
-      content: () => (<UserCabinetContainer id={id} />),
+      content: () => <UserCabinetContainer id={id} />,
     });
   },
 });
@@ -90,7 +109,7 @@ privateRouts.route('/groups', {
   name: 'Groups',
   action() {
     mount(App, {
-      content: () => (<GroupsPageContainer />),
+      content: () => <GroupsPageContainer />,
     });
   },
 });
@@ -99,7 +118,7 @@ privateRouts.route('/groups/:id', {
   name: 'Group',
   action({ id }) {
     mount(App, {
-      content: () => (<GroupPageContainer id={id} />),
+      content: () => <GroupPageContainer id={id} />,
     });
   },
 });
@@ -108,7 +127,7 @@ privateRouts.route('/groups/:groupId/create-event', {
   name: 'CreateEvent',
   action({ groupId }) {
     mount(App, {
-      content: () => (<CreateEvent groupId={groupId} />),
+      content: () => <CreateEvent groupId={groupId} />,
     });
   },
 });
@@ -117,7 +136,7 @@ privateRouts.route('/events', {
   name: 'UserEvents',
   action() {
     mount(App, {
-      content: () => (<EventsPageContainer />),
+      content: () => <EventsPageContainer />,
     });
   },
 });
@@ -126,7 +145,7 @@ privateRouts.route('/groups/:id/events/:eventId', {
   name: 'CreateEvent',
   action({ id, eventId }) {
     mount(App, {
-      content: () => (<EventPageContainer id={id} eventId={eventId} />),
+      content: () => <EventPageContainer id={id} eventId={eventId} />,
     });
   },
 });
@@ -135,13 +154,23 @@ privateRouts.route('/create-group', {
   name: 'CreateGroup',
   action() {
     mount(App, {
-      content: () => (<CreateGroupContainer />),
+      content: () => <CreateGroupContainer />,
     });
   },
 });
 
 FlowRouter.notFound = {
   action() {
-    FlowRouter.go('/login');
+    if (FlowRouter.current().path === '/') {
+      if (Meteor.userId()) {
+        FlowRouter.go(FlowRouter.path('/users/:id', { id: Meteor.userId() }));
+      } else {
+        FlowRouter.go('/login');
+      }
+    }
+
+    mount(App, {
+      content: () => <div>Not found</div>,
+    });
   },
 };
