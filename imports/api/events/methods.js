@@ -114,7 +114,7 @@ Meteor.methods({
 
     Events.update({ _id: requestData.id }, { $set: { status: requestData.status } });
 
-    if (requestData.status !== 'ordering') {
+    if (requestData.status === 'ordered') {
       Events.update({
         _id: requestData.id,
       }, {

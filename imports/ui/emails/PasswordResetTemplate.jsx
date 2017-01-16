@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Box, Email, Item, Span, A, Image, renderEmail } from 'react-html-email';
+import Oy, { Table, TBody, TR, TD, A, Img } from 'oy-vey';
 
 const propTypes = {
   user: PropTypes.string,
@@ -8,40 +8,41 @@ const propTypes = {
 };
 
 const PasswordResetTemplate = ({ user, link }) =>
-  <Email title="Reset password">
-    <Box>
-      <Item>
-        <Item>
-          <Span>Hello</Span>
-        </Item>
-        <Item>
-          <Span>{ user }</Span>
-        </Item>
-      </Item>
-      <Item>
-        <Span>Reset password link</Span>
-      </Item>
-      <Item>
-        <Item>
+  <Table>
+    <TBody>
+      <TR>
+        <TD>
+          <span>Hello { user }</span>
+        </TD>
+      </TR>
+      <TR>
+        <TD>
+          <span>Reset password link</span>
+        </TD>
+      </TR>
+      <TR>
+        <TD>
           <A href={link}>Reset</A>
-        </Item>
-      </Item>
-      <Item>
-        <Item />
-        <Image
+        </TD>
+      </TR>
+      <TR>
+        <Img
           src={FlowRouter.url('/:image', { image: '/images/logo.png' })}
           height={100}
           width={100}
+          align="center"
           alt="Pizza-day logo"
         />
-        <Item />
-      </Item>
-    </Box>
-  </Email>;
+      </TR>
+    </TBody>
+  </Table>;
 
 PasswordResetTemplate.propTypes = propTypes;
 
 const passwordResetEmail = (user, link) =>
-  renderEmail(<PasswordResetTemplate user={user.profile.name} link={link} />);
+  Oy.renderTemplate(<PasswordResetTemplate user={user.profile.name} link={link} />, {
+    title: 'Pizza-day',
+    previewText: 'Reset password',
+  });
 
 export default passwordResetEmail;

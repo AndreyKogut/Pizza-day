@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Box, Email, Item, Span, Image, renderEmail } from 'react-html-email';
+import Oy, { Table, TBody, TR, TD, Img } from 'oy-vey';
 
 const propTypes = {
   userName: PropTypes.string,
@@ -12,66 +12,68 @@ const propTypes = {
 
 const OrderTemplate = (props) => {
   const getListItems = () =>
-    props.items.map(item => (<Item>
-      <Item>
+    props.items.map(item => (<TR key={item._id}>
+      <TD>
         { item.name }
-      </Item>
-      <Item>
+      </TD>
+      <TD>
         { item.price }
-      </Item>
-      <Item>
+      </TD>
+      <TD>
         { item.count }
-      </Item>
-    </Item>));
+      </TD>
+    </TR>));
 
-  return (<Email title="Reset password">
-    <Box>
-      <Item>
-        <Span>Hello { props.userName } !</Span>
-      </Item>
-      <Item>
-        <Span> Event { `"${props.eventName}"` } was ordered.</Span>
-      </Item>
-      <Item>
-        <Span> Here is Your order.</Span>
-      </Item>
-      <Item>
-        <Item>Name</Item>
-        <Item>Price</Item>
-        <Item>Count</Item>
-      </Item>
-      { getListItems() }
-      <Item>
-        <Span>Total price: { props.totalPrice }</Span>
-      </Item>
-      <Item>
-        <Span> Event date: { props.eventDate }</Span>
-      </Item>
-      <Item>
-        <Item />
-        <Item>
-          <Image
-            src={FlowRouter.url('/:image', { image: '/images/logo.png' })}
-            height={100}
-            width={100}
-            alt="Pizza-day logo"
-          />
-        </Item>
-        <Item />
-      </Item>
-    </Box>
-  </Email>);
+  return (<Table>
+    <TBody>
+      <TR>
+        <span>Hello { props.userName } !</span>
+      </TR>
+      <TR>
+        <span>Event { `"${props.eventName}"` } was ordered.</span>
+      </TR>
+      <TR>
+        <span>Here is Your order.</span>
+      </TR>
+      <TR>
+        <Table align="center" cellSpacing={20} style={{ border: '1px solid black' }}>
+          <TR>
+            <TD>Name</TD>
+            <TD>Price</TD>
+            <TD>Count</TD>
+          </TR>
+          { getListItems() }
+        </Table>
+      </TR>
+    </TBody>
+    <TR>
+      <span>Total price: { props.totalPrice }</span>
+    </TR>
+    <TR>
+      <span> Event date: { props.eventDate }</span>
+    </TR>
+    <TR>
+      <TD align="center">
+        <Img
+          src={FlowRouter.url('/:image', { image: '/images/logo.png' })}
+          height={100}
+          width={100}
+
+          alt="Pizza-day logo"
+        />
+      </TD>
+    </TR>
+  </Table>);
 };
 
 OrderTemplate.propTypes = propTypes;
 
 const orderEmail = props =>
-  renderEmail(<OrderTemplate
-    userName={props.userName}
-    eventName={props.eventName}
-    eventDate={props.eventDate}
-    totalPrice={props.totalPrice}
-    items={props.items}
-  />);
+  Oy.renderTemplate(<OrderTemplate
+    {...props}
+  />, {
+    title: 'Your order',
+    previewText: 'Get order',
+  });
 
 export default orderEmail;

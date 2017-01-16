@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "meteor-node-stubs": "~0.2.0",
+    "oy-vey": "^0.7.0",
     "react": "^15.3.2",
     "react-addons-create-fragment": "^15.3.2",
     "react-addons-css-transition-group": "^15.3.2",
