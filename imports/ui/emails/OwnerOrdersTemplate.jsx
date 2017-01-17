@@ -10,7 +10,7 @@ const propTypes = {
   items: PropTypes.arrayOf(Object),
 };
 
-const OrderTemplate = (props) => {
+const OwnerOrdersTemplate = (props) => {
   const getListItems = () =>
     props.items.map(item => (<TR key={item._id}>
       <TD>
@@ -33,12 +33,12 @@ const OrderTemplate = (props) => {
       </TR>
       <TR>
         <TD>
-          <span>Event { `"${props.eventName}"` } was ordered.</span>
+          <span>You ordered event { `"${props.eventName}"` }.</span>
         </TD>
       </TR>
       <TR>
         <TD>
-          <span>Here is Your order.</span>
+          <span>Participants order these items</span>
         </TD>
       </TR>
       <TR>
@@ -58,7 +58,7 @@ const OrderTemplate = (props) => {
       </TR>
       <TR>
         <TD>
-          <span> Event date: { props.eventDate }</span>
+          <span>Event date: { props.eventDate }</span>
         </TD>
       </TR>
       <TR>
@@ -76,14 +76,14 @@ const OrderTemplate = (props) => {
   </Table>);
 };
 
-OrderTemplate.propTypes = propTypes;
+OwnerOrdersTemplate.propTypes = propTypes;
 
-const orderEmail = props =>
-  Oy.renderTemplate(<OrderTemplate
+const ownerEmail = props =>
+  Oy.renderTemplate(<OwnerOrdersTemplate
     {...props}
   />, {
-    title: 'Your order',
-    previewText: 'Get order',
+    title: 'Event orders',
+    previewText: 'Items to order',
   });
 
-export default orderEmail;
+export default ownerEmail;

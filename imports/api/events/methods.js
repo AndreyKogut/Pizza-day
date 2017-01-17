@@ -3,7 +3,7 @@ import { check, Match } from 'meteor/check';
 import Events from './collection';
 import Groups from '../groups/collection';
 import Orders from '../orders/collection';
-import sendUserOrder from '../sendUserOrder';
+import sendOrders from '../sendOrders';
 import { stringList, notEmpty, dateNotPass } from '../checkData';
 
 Meteor.methods({
@@ -121,7 +121,7 @@ Meteor.methods({
         $pull: { participants: { ordered: false } },
       }, (err) => {
         if (!err) {
-          sendUserOrder(requestData.id);
+          sendOrders(requestData.id);
         }
       });
     }

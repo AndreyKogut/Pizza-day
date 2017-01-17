@@ -128,7 +128,7 @@ const EventPage = (props) => {
             <option
               value="delivered"
             >delivered</option>
-          </select> : <span>props.status</span> }
+          </select> : <span className="event-status">{ props.status }</span> }
           { props.isParticipant ?
             <button
               type="button"

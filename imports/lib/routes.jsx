@@ -19,6 +19,18 @@ import App from '../ui/App';
 
 const RD = new ReactiveDict();
 
+FlowRouter.triggers.enter([() => {
+  // change protocol to https for g+ (deploy only)
+
+  const url = Meteor.absoluteUrl();
+  const protocol = url.slice(0, 5);
+  const host = window.location.hostname;
+
+  if (protocol !== 'https' && host !== 'localhost') {
+    window.location.protocol = 'https';
+  }
+}]);
+
 const privateRouteEnter = (context, redirect) => {
   if (!Meteor.userId()) redirect('/login');
 };
