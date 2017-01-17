@@ -1,33 +1,19 @@
-import { check } from 'meteor/check';
+import moment from 'moment';
 
 const notEmpty =
-  (string) => {
-    check(string, String);
-
-    return string.length > 0;
-  };
+  item => !_.isEmpty(item);
 const dateIsValid =
-  date => !isNaN((new Date(date)).getTime());
+  date => moment(date).isValid();
 const dateNotPass =
   (date) => {
-    if (dateIsValid(date)) {
+    if (moment(date).isValid()) {
       const requestDate = new Date(date);
       const currentDate = new Date();
 
       return requestDate.getTime() > currentDate.getTime();
     }
 
-    return false;
-  };
-const stringList =
-  (list) => {
-    for (let i = 0; i < list.length; i += 1) {
-      if (!notEmpty(list[i])) {
-        return false;
-      }
-    }
-
-    return list.length > 0;
+    return true;
   };
 
-export { stringList, notEmpty, dateIsValid, dateNotPass };
+export { notEmpty, dateIsValid, dateNotPass };

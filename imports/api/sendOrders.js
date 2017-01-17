@@ -16,6 +16,7 @@ function sendOrders(eventId) {
   const eventMenuItems = [];
   const allUsersMenuItems = new Map();
   let ordersTotal = 0;
+
   _.map(eventMembers, ({ _id: memberId, order: memberOrder }) => {
     const user = Meteor.users.findOne(memberId);
     const email = user.emails[0].address;
@@ -24,23 +25,25 @@ function sendOrders(eventId) {
     const order = Orders.findOne(memberOrder);
     const totalPrice = order.totalPrice;
     ordersTotal += totalPrice;
+
     const orderMenuItemsWithCount = order.menu;
     const menuMap = new Map();
     eventMenuItems.push(...orderMenuItemsWithCount);
-    _.map(orderMenuItemsWithCount, ({ _id: id, count }) => {
+
+    _.each(orderMenuItemsWithCount, ({ _id: id, count }) => {
       menuMap.set(id, count);
     });
     const orderMenuItems = _.pluck(orderMenuItemsWithCount, '_id');
 
-    const fullMenuItems = Menu.find({ _id: { $in: [...orderMenuItems] } }).fetch();
-    const menuItemsShowFormat = [];
-    _.map(fullMenuItems, ({ _id, name, price }) => {
+    const fullMenuItems = Menu.find({ _id: { $in: orderMenuItems } }).fetch();
+    const menuItemsShowFormat = _.map(fullMenuItems, ({ _id, name, price }) => {
       allUsersMenuItems.set(_id, { name, price });
-      menuItemsShowFormat.push({
+
+      return {
         name,
         price,
         count: menuMap.get(_id),
-      });
+      };
     });
 
     try {

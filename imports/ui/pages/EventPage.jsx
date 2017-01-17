@@ -87,7 +87,7 @@ const EventPage = (props) => {
       <div className="mdl-cell mdl-cell--6-col">
         <h2>{ props.name }
           { editable && <div className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-            <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.name}>
+            <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="name">
               <i className="material-icons">edit</i>
             </label>
             <div className="mdl-textfield__expandable-holder">
@@ -96,14 +96,14 @@ const EventPage = (props) => {
                 ref={(name) => {
                   this.eventName = name;
                 }}
-                id={props.name}
+                id="name"
                 onKeyPress={enterData(() => {
                   updateData({ name: this.eventName.value });
                   this.eventName.value = '';
                 })}
                 className="mdl-textfield__input"
               />
-              <label className="mdl-textfield__label" htmlFor={props.name}>New name</label>
+              <label className="mdl-textfield__label" htmlFor="name">New name</label>
             </div>
           </div> }
         </h2>
@@ -166,7 +166,7 @@ const EventPage = (props) => {
       <div className="mdl-cell mdl-cell--6-col">
         <span className="as-b">{ props.title }
           { editable && <div className="correct-indent mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-            <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={props.title}>
+            <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor="title">
               <i className="material-icons">edit</i>
             </label>
             <div className="mdl-textfield__expandable-holder">
@@ -175,14 +175,14 @@ const EventPage = (props) => {
                 ref={(name) => {
                   this.title = name;
                 }}
-                id={props.title}
+                id="title"
                 onKeyPress={enterData(() => {
                   updateData({ title: this.title.value });
                   this.title.value = '';
                 })}
                 className="mdl-textfield__input"
               />
-              <label className="mdl-textfield__label" htmlFor={props.title}>New title</label>
+              <label className="mdl-textfield__label" htmlFor="title">New title</label>
             </div>
           </div> }
         </span>

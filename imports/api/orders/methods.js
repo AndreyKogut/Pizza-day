@@ -7,13 +7,21 @@ import Menu from '../menu/collection';
 
 Meteor.methods({
   'orders.insert': function orderInsert(requestData) {
-    const requestDataStructure = {
-      eventId: Match.Where(notEmpty),
-      menu: [{
-        _id: Match.Where(notEmpty),
-        count: Number,
-      }],
-    };
+    const requestDataStructure = Match.Where((data) => {
+      try {
+        check(data, {
+          eventId: Match.Where(notEmpty),
+          menu: [{
+            _id: Match.Where(notEmpty),
+            count: Number,
+          }],
+        });
+      } catch (err) {
+        throw new Meteor.Error(400, `Invalid ${err.path}`);
+      }
+
+      return true;
+    });
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
@@ -23,11 +31,7 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Unverified');
     }
 
-    try {
-      check(requestData, requestDataStructure);
-    } catch (err) {
-      throw new Meteor.Error(400, `Invalid ${err.path}`);
-    }
+    check(requestData, requestDataStructure);
 
     const { eventId, ...orderData } = requestData;
     const eventData = Events.findOne({ _id: eventId });
@@ -37,15 +41,13 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Not member');
     }
 
-    let totalPrice = 0;
-
     const orderMenu = _.pluck(requestData.menu, '_id');
 
     const orderMenuItems = Menu.find({ _id: { $in: orderMenu } }).fetch();
 
-    _.map([...orderMenuItems], (item) => {
-      totalPrice += item.price * _.findWhere(requestData.menu, { _id: item._id }).count;
-    });
+    const totalPrice = _.reduce(orderMenuItems, (sum, num) =>
+      sum + (num.price * _.findWhere(requestData.menu, { _id: num._id }).count), 0,
+    );
 
     const orderId = Orders.insert({ userId: this.userId, totalPrice, ...orderData });
 

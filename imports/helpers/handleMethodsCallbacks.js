@@ -4,7 +4,6 @@ function handleMethodsCallbacks(handledFunction = () => {}) {
   return (err, res) => {
     if (err) {
       let errorText = '';
-
       if ((new Meteor.Error(err)).message === '[Error: FS.Collection insert: file does not pass collection filters]') {
         errorText = 'Invalid image';
       } else {

@@ -4,17 +4,25 @@ import Events from './collection';
 import Groups from '../groups/collection';
 import Orders from '../orders/collection';
 import sendOrders from '../sendOrders';
-import { stringList, notEmpty, dateNotPass } from '../checkData';
+import { notEmpty, dateNotPass } from '../checkData';
 
 Meteor.methods({
   'events.insert': function insert(requestData) {
-    const requestDataStructure = {
-      name: Match.Where(notEmpty),
-      groupId: Match.Where(notEmpty),
-      date: Match.Where(dateNotPass),
-      menu: Match.Maybe(Match.Where(stringList)),
-      title: Match.Maybe(String),
-    };
+    const requestDataStructure = Match.Where((data) => {
+      try {
+        check(data, {
+          name: Match.Where(notEmpty),
+          groupId: Match.Where(notEmpty),
+          date: Match.Where(dateNotPass),
+          menu: Match.Maybe([String]),
+          title: Match.Maybe(String),
+        });
+      } catch (err) {
+        throw new Meteor.Error(400, `Invalid ${err.path}`);
+      }
+
+      return true;
+    });
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
@@ -24,11 +32,7 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Unverified');
     }
 
-    try {
-      check(requestData, requestDataStructure);
-    } catch (err) {
-      throw new Meteor.Error(400, `Invalid ${err.path}`);
-    }
+    check(requestData, requestDataStructure);
 
     const groupCreatorId = Groups.findOne({ _id: requestData.groupId }).creator;
 
@@ -46,12 +50,20 @@ Meteor.methods({
   },
 
   'events.update': function updateEvent(requestData) {
-    const requestDataStructure = {
-      id: Match.Where(notEmpty),
-      name: Match.Maybe(String),
-      date: Match.Maybe(Match.Where(dateNotPass)),
-      title: Match.Maybe(String),
-    };
+    const requestDataStructure = Match.Where((data) => {
+      try {
+        check(data, {
+          id: Match.Where(notEmpty),
+          name: Match.Maybe(Match.Where(notEmpty)),
+          date: Match.Maybe(Match.Where(dateNotPass)),
+          title: Match.Maybe(Match.Where(notEmpty)),
+        });
+      } catch (err) {
+        throw new Meteor.Error(400, `Invalid ${err.path}`);
+      }
+
+      return true;
+    });
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
@@ -61,36 +73,38 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Unverified');
     }
 
-    try {
-      check(requestData, requestDataStructure);
-    } catch (err) {
-      throw new Meteor.Error(400, `Invalid ${err.path}`);
-    }
+    check(requestData, requestDataStructure);
+
+    const { id, ...fieldsToUpdate } = requestData;
 
     const group = Events.findOne({
-      _id: requestData.id,
+      _id: id,
     });
 
     if (group.creator !== this.userId) {
       throw new Meteor.Error(403, 'Not owner');
     }
 
-    const updateData = _.pick(requestData, value => value);
-
-    if (!_.isEmpty(updateData)) {
-      Events.update({ _id: requestData.id }, { $set: { ...updateData } });
-    }
+    Events.update({ _id: requestData.id }, { $set: fieldsToUpdate });
   },
 
   'events.updateStatus': function orderEvent(requestData) {
-    const requestDataStructure = {
-      id: Match.Where(notEmpty),
-      status: Match.Where((data) => {
-        const requiredStatus = ['ordering', 'ordered', 'delivering', 'delivered'];
+    const requestDataStructure = Match.Where((data) => {
+      try {
+        check(data, {
+          id: Match.Where(notEmpty),
+          status: Match.Where((status) => {
+            const requiredStatus = ['ordering', 'ordered', 'delivering', 'delivered'];
 
-        return _.contains(requiredStatus, data);
-      }),
-    };
+            return _.contains(requiredStatus, status);
+          }),
+        });
+      } catch (err) {
+        throw new Meteor.Error(400, `Invalid ${err.path}`);
+      }
+
+      return true;
+    });
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
@@ -100,11 +114,7 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Unverified');
     }
 
-    try {
-      check(requestData, requestDataStructure);
-    } catch (err) {
-      throw new Meteor.Error(400, `Invalid ${err.path}`);
-    }
+    check(requestData, requestDataStructure);
 
     const event = Events.findOne({ _id: requestData.id });
 
@@ -155,10 +165,14 @@ Meteor.methods({
   },
 
   'events.addMenuItems': function addMenuItems(requestData) {
-    const requestDataStructure = {
-      id: Match.Where(notEmpty),
-      items: [Match.Where(notEmpty)],
-    };
+    const requestDataStructure = Match.Where((data) => {
+      check(data, {
+        id: Match.Where(notEmpty),
+        items: [Match.Where(notEmpty)],
+      });
+
+      return true;
+    });
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
@@ -168,11 +182,7 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Unverified');
     }
 
-    try {
-      check(requestData, requestDataStructure);
-    } catch (err) {
-      throw new Meteor.Error(400, `Invalid ${err.path}`);
-    }
+    check(requestData, requestDataStructure);
 
     const event = Events.findOne({ _id: requestData.id });
     if (event.status !== 'ordering') {

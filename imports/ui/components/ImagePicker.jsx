@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { FS } from 'meteor/cfs:base-package';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
+import showMessage from '../../helpers/showMessage';
 import Avatars from '../../api/avatars/collection';
 
 const propTypes = {
@@ -70,8 +71,7 @@ class ImagePicker extends Component {
         this.setState({ imageUrl: image });
       }, 500);
     } else {
-      // TODO: create banner
-      alert('Can\'t load file');
+      showMessage('Can not load image');
     }
   };
 

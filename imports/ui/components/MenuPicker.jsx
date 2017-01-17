@@ -154,13 +154,13 @@ const OrderMenuPicker = createContainer(({ defaultValue = [], id, getMenuList })
   const handleMenu = Meteor.subscribe('EventMenu', id);
   const itemsMap = new Map();
 
-  defaultValue.forEach((value) => {
+  _.each(defaultValue, ((value) => {
     if (_.isObject(value)) {
       itemsMap.set(..._.values(value));
     } else {
       itemsMap.set(value, 1);
     }
-  });
+  }));
 
   return {
     items: Menu.find().fetch(),

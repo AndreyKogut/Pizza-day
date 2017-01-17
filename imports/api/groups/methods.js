@@ -6,13 +6,21 @@ import { notEmpty } from '../checkData';
 
 Meteor.methods({
   'groups.insert': function insert(requestData) {
-    const requestDateStructure = {
-      name: Match.Where(notEmpty),
-      description: Match.Maybe(String),
-      avatar: Match.Maybe(String),
-      members: Match.Maybe([Match.Where(notEmpty)]),
-      menu: Match.Maybe([Match.Where(notEmpty)]),
-    };
+    const requestDateStructure = Match.Where((data) => {
+      try {
+        check(data, {
+          name: Match.Where(notEmpty),
+          description: Match.Maybe(String),
+          avatar: Match.Maybe(String),
+          members: Match.Maybe([Match.Where(notEmpty)]),
+          menu: Match.Maybe([Match.Where(notEmpty)]),
+        });
+      } catch (err) {
+        throw new Meteor.Error(400, `Invalid ${err.path}`);
+      }
+
+      return true;
+    });
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
@@ -26,13 +34,8 @@ Meteor.methods({
 
     const { members = [], avatar = '/images/group-avatar.png', ...fieldsToInsert } = requestData;
 
-    const convertedMembers = [{
-      _id: this.userId,
-      verified: true,
-    }];
-
-    members.map(item => convertedMembers.push({
-      _id: item,
+    const convertedMembers = _.map(members, id => ({
+      _id: id,
       verified: false,
     }));
 
@@ -46,13 +49,21 @@ Meteor.methods({
   },
 
   'groups.update': function updateGroups(requestData) {
-    const requestDataStructure = {
-      id: String,
-      name: Match.Maybe(String),
-      description: Match.Maybe(String),
-      avatar: Match.Maybe(String),
-      menu: Match.Maybe([Match.Where(notEmpty)]),
-    };
+    const requestDataStructure = Match.Where((data) => {
+      try {
+        check(data, {
+          id: String,
+          name: Match.Maybe(Match.Where(notEmpty)),
+          description: Match.Maybe(Match.Where(notEmpty)),
+          avatar: Match.Maybe(Match.Where(notEmpty)),
+          menu: Match.Maybe([Match.Where(notEmpty)]),
+        });
+      } catch (err) {
+        throw new Meteor.Error(400, `Invalid ${err.path}`);
+      }
+
+      return true;
+    });
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
@@ -62,25 +73,17 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Unverified');
     }
 
-    try {
-      check(requestData, requestDataStructure);
-    } catch (err) {
-      throw new Meteor.Error(400, `Invalid ${err.path}`);
-    }
+    check(requestData, requestDataStructure);
 
     const { id, ...pushData } = requestData;
 
-    const groupCreator = Groups.findOne({ _id: requestData.id }).creator;
+    const groupCreator = Groups.findOne({ _id: id }).creator;
 
     if (groupCreator !== this.userId) {
       throw new Meteor.Error(403, 'Not owner');
     }
 
-    const pushNotEmptyData = _.pick(pushData, value => value);
-
-    if (!_.isEmpty(pushNotEmptyData)) {
-      Groups.update({ _id: id }, { $set: { ...pushNotEmptyData } });
-    }
+    Groups.update({ _id: id }, { $set: { ...pushData } });
   },
 
   'groups.remove': function removeGroup(id) {
@@ -104,10 +107,14 @@ Meteor.methods({
   },
 
   'groups.addMembers': function addMembers(requestData) {
-    const requestDataStructure = {
-      id: Match.Where(notEmpty),
-      items: [Match.Where(notEmpty)],
-    };
+    const requestDataStructure = Match.Where((data) => {
+      check(data, {
+        id: Match.Where(notEmpty),
+        items: [Match.Where(notEmpty)],
+      });
+
+      return true;
+    });
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
@@ -125,10 +132,8 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Not owner');
     }
 
-    const convertedMembers = [];
-
-    requestData.items.map(item => convertedMembers.push({
-      _id: item,
+    const convertedMembers = _.map(requestData.items, id => ({
+      _id: id,
       verified: false,
     }));
 
@@ -136,10 +141,14 @@ Meteor.methods({
   },
 
   'groups.addMenuItems': function addMenuItems(requestData) {
-    const requestDataStructure = {
-      id: Match.Where(notEmpty),
-      items: [Match.Where(notEmpty)],
-    };
+    const requestDataStructure = Match.Where((data) => {
+      check(data, {
+        id: Match.Where(notEmpty),
+        items: [Match.Where(notEmpty)],
+      });
+
+      return true;
+    });
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
@@ -161,10 +170,14 @@ Meteor.methods({
   },
 
   'groups.removeMember': function removeMember(requestData) {
-    const requestDataStructure = {
-      groupId: Match.Where(notEmpty),
-      userId: Match.Where(notEmpty),
-    };
+    const requestDataStructure = Match.Where((data) => {
+      check(data, {
+        groupId: Match.Where(notEmpty),
+        userId: Match.Where(notEmpty),
+      });
+
+      return true;
+    });
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');

@@ -30,20 +30,24 @@ Accounts.onCreateUser((publicData, privateData) => {
 
 Meteor.methods({
   'user.insert': function insert(requestData) {
-    const requestDataStructure = {
-      email: Match.Where(notEmpty),
-      password: Match.Where(notEmpty),
-      name: Match.Where(notEmpty),
-      about: Match.Maybe(String),
-      company: Match.Maybe(String),
-      position: Match.Maybe(String),
-    };
+    const requestDataStructure = Match.Where((data) => {
+      try {
+        check(data, {
+          email: Match.Where(notEmpty),
+          password: Match.Where(notEmpty),
+          name: Match.Where(notEmpty),
+          about: Match.Maybe(String),
+          company: Match.Maybe(String),
+          position: Match.Maybe(String),
+        });
+      } catch (err) {
+        throw new Meteor.Error(400, `Invalid ${err.path}`);
+      }
 
-    try {
-      check(requestData, requestDataStructure);
-    } catch (err) {
-      throw new Meteor.Error(400, `Invalid ${err.path}`);
-    }
+      return true;
+    });
+
+    check(requestData, requestDataStructure);
 
     const { email, password, ...profile } = requestData;
 
@@ -69,13 +73,17 @@ Meteor.methods({
   },
 
   'user.update': function update(requestData) {
-    const requestDataStructure = {
-      name: Match.Maybe(String),
-      avatar: Match.Maybe(String),
-      about: Match.Maybe(String),
-      company: Match.Maybe(String),
-      position: Match.Maybe(String),
-    };
+    const requestDataStructure = Match.Where((data) => {
+      check(data, {
+        name: Match.Maybe(String),
+        avatar: Match.Maybe(String),
+        about: Match.Maybe(String),
+        company: Match.Maybe(String),
+        position: Match.Maybe(String),
+      });
+
+      return true;
+    });
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
@@ -85,11 +93,7 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Unverified');
     }
 
-    try {
-      check(requestData, requestDataStructure);
-    } catch (err) {
-      throw new Meteor.Error(400, `Invalid ${err.path}`);
-    }
+    check(requestData, requestDataStructure);
 
     if (requestData.email) {
       const exist = Meteor.users.findOne({ 'emails.address': requestData.email });
@@ -108,15 +112,15 @@ Meteor.methods({
       'profile.position': requestData.position,
     };
 
+    // pick not empty items
+
     const updateData = _.pick(updateFields, value => value);
 
-    if (!_.isEmpty(updateData)) {
-      Meteor.users.upsert(this.userId, {
-        $set: {
-          ...updateData,
-        },
-      });
-    }
+    Meteor.users.upsert(this.userId, {
+      $set: {
+        ...updateData,
+      },
+    });
   },
   'user.resendVerificationLink': function resend() {
     if (!this.userId) {

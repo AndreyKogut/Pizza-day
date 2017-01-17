@@ -8,12 +8,16 @@ import { notEmpty } from '../checkData';
 
 Meteor.methods({
   'menu.insert': function insert(requestData) {
-    const requestDataStructure = {
-      name: Match.Where(notEmpty),
-      description: Match.Where(notEmpty),
-      mass: Match.Where(notEmpty),
-      price: Number,
-    };
+    const requestDataStructure = Match.Where((data) => {
+      check(data, {
+        name: Match.Where(notEmpty),
+        description: Match.Where(notEmpty),
+        mass: Match.Where(notEmpty),
+        price: Number,
+      });
+
+      return true;
+    });
 
     check(requestData, requestDataStructure);
 
