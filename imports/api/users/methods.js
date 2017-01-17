@@ -175,7 +175,7 @@ Meteor.publish('GroupMembers', function publishGroupMembers(groupId) {
     return this.ready();
   }
 
-  const members = Groups.findOne({ _id: groupId }).members;
+  const members = Groups.findOne({ _id: groupId }).members.filter(user => user.verified);
 
   const usersId = _.pluck(members, '_id');
 

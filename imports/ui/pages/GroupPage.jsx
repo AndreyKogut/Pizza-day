@@ -11,6 +11,8 @@ import { GroupUsersList } from '../components/UsersList';
 
 const propTypes = {
   id: PropTypes.string,
+  isMember: PropTypes.string,
+  isInvited: PropTypes.string,
   name: PropTypes.string,
   description: PropTypes.string,
   avatar: PropTypes.string,
@@ -44,6 +46,20 @@ const GroupPage = (props) => {
   function addMenuItems(items) {
     Meteor.call('groups.addMenuItems',
       { id: props.id, items },
+      handleMethodsCallbacks(),
+    );
+  }
+
+  function joinGroup() {
+    Meteor.call('groups.join',
+      props.id,
+      handleMethodsCallbacks(),
+    );
+  }
+
+  function leaveGroup() {
+    Meteor.call('groups.leave',
+      props.id,
       handleMethodsCallbacks(),
     );
   }
@@ -99,6 +115,28 @@ const GroupPage = (props) => {
       <div className="mdl-layout-spacer" />
       { editable &&
         <div className="controls">
+          { props.isInvited && <button
+            type="button"
+            id="join-group"
+            className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--accent"
+            onClick={joinGroup}
+          >
+            <i className="material-icons">add_circle_outline</i>
+            <div className="mdl-tooltip" data-mdl-for="join-group">
+              Join group
+            </div>
+          </button> }
+          { props.isMember && <button
+            type="button"
+            id="leave-group"
+            className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--accent"
+            onClick={leaveGroup}
+          >
+            <i className="material-icons">not_interested</i>
+            <div className="mdl-tooltip" data-mdl-for="leave-group">
+              Leave group
+            </div>
+          </button> }
           <Controls
             controls={{ menu: true, users: true, avatar: true }}
             members={props.members}
@@ -184,10 +222,20 @@ const GroupPageContainer = createContainer(({ id }) => {
   const handleGroup = Meteor.subscribe('Group', id);
 
   const groupData = Groups.findOne(id) || {};
+  const isInvited = _.some(groupData.members, member => _.isEqual(member, {
+    _id: Meteor.userId(),
+    verified: false,
+  }));
+  const isMember = _.some(groupData.members, member => _.isEqual(member, {
+    _id: Meteor.userId(),
+    verified: true,
+  }));
 
   return {
     id,
     ...groupData,
+    isMember,
+    isInvited,
     groupLoading: !handleGroup.ready(),
   };
 }, GroupPage);

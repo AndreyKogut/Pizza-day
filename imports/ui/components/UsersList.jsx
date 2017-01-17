@@ -15,13 +15,13 @@ const defaultProps = {
   itemClick: () => {},
 };
 
-const UsersList = ({ items, usersLoading, itemClick, editable }) => {
-  if (usersLoading) {
+const UsersList = (props) => {
+  if (props.usersLoading) {
     return <div>Users loading...</div>;
   }
 
   const getList = () =>
-    items.map((item) => {
+    props.items.map((item) => {
       _.defaults(item, {
         emails: [{
           address: '',
@@ -37,11 +37,11 @@ const UsersList = ({ items, usersLoading, itemClick, editable }) => {
         key={item._id}
       >
         <UserListItem userObject={item} />
-        { editable && <div className="mdl-list__item-secondary-content">
+        { props.editable && <div className="mdl-list__item-secondary-content">
           <button
             type="button"
             className="mdl-button mdl-js-button mdl-button--icon"
-            onClick={() => { itemClick(item._id); }}
+            onClick={() => { props.itemClick(item._id); }}
           ><i className="material-icons">clear</i></button></div> }
       </li>);
     });
@@ -55,7 +55,7 @@ const GroupUsersList = createContainer(({ id, ...params }) => {
   const handleUsers = Meteor.subscribe('GroupMembers', id);
 
   return {
-    items: Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch(),
+    items: Meteor.users.find().fetch(),
     ...params,
     usersLoading: !handleUsers.ready(),
   };

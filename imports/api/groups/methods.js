@@ -213,6 +213,25 @@ Meteor.methods({
       multi: true,
     });
   },
+  'groups.join': function joinGroup(id) {
+    check(id, Match.Where(notEmpty));
+
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    Groups.update({ _id: id, 'members._id': this.userId }, { $set: { 'members.$.verified': true } });
+  },
+  'groups.leave': function leaveGroup(id) {
+    check(id, Match.Where(notEmpty));
+
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    Groups.update({ _id: id },
+      { $pull: { members: { _id: this.userId } } });
+  },
 });
 
 Meteor.publish('Groups', function getGroups() {

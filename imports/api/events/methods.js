@@ -155,7 +155,12 @@ Meteor.methods({
 
     const groupMembers = Groups.findOne({ _id: event.groupId }).members;
 
-    if (!_.indexOf(groupMembers, this.userId)) {
+    const isMember = _.some(groupMembers, member => _.isEqual(member, {
+      _id: Meteor.userId(),
+      verified: true,
+    }));
+
+    if (!isMember) {
       throw new Meteor.Error(403, 'Not member');
     }
 
@@ -262,11 +267,22 @@ Meteor.publish('Event', function publishEvent(id) {
   check(id, Match.Where(notEmpty));
 
   const groupId = Events.findOne({ _id: id }).groupId;
-  const groupMembers = Groups.findOne({ _id: groupId }).members;
+  const group = Groups.findOne({ _id: groupId });
 
-  if (!_.some(groupMembers, ({ _id: userId }) => userId === this.userId)) {
+  const groupMember = _.some(group.members, member => _.isEqual(member, {
+    _id: Meteor.userId,
+    verified: true,
+  }));
+
+  if (!groupMember && !group.creator) {
     return this.ready();
   }
 
-  return Events.find({ _id: id });
+  return Events.find({ _id: id,
+    $or: [{
+      'participants._id': this.userId,
+    }, {
+      creator: this.userId,
+    }],
+  });
 });
