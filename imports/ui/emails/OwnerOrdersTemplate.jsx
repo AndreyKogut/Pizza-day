@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import Oy, { Table, TBody, TR, TD, Img } from 'oy-vey';
+import moment from 'moment';
+import { headerText, tableText, tableHeader, regularText, tableStyle } from './styles/emailStyles';
 
 const propTypes = {
   userName: PropTypes.string,
@@ -11,8 +13,10 @@ const propTypes = {
 };
 
 const OwnerOrdersTemplate = (props) => {
+  const formattedDate = moment(props.eventDate).format('LLL');
+
   const getListItems = () =>
-    props.items.map(item => (<TR key={item._id}>
+    props.items.map(item => (<TR key={item._id} style={tableText}>
       <TD>
         { item.name }
       </TD>
@@ -24,41 +28,43 @@ const OwnerOrdersTemplate = (props) => {
       </TD>
     </TR>));
 
-  return (<Table>
+  return (<Table align="left">
     <TBody>
       <TR>
         <TD>
-          <span>Hello { props.userName } !</span>
+          <span style={headerText}>Hello { props.userName } !</span>
         </TD>
       </TR>
       <TR>
         <TD>
-          <span>You ordered event { `"${props.eventName}"` }.</span>
+          <span style={regularText}>You ordered event { `"${props.eventName}"` }.</span>
         </TD>
       </TR>
       <TR>
         <TD>
-          <span>Participants order these items</span>
+          <span style={regularText}>Participants order these items:</span>
         </TD>
       </TR>
       <TR>
-        <Table align="center" cellSpacing={20} style={{ border: '1px solid black' }}>
-          <TR>
-            <TD>Name</TD>
-            <TD>Price</TD>
-            <TD>Count</TD>
-          </TR>
-          { getListItems() }
-        </Table>
+        <TD align="center">
+          <Table cellSpacing={20} style={tableStyle}>
+            <TR style={tableHeader}>
+              <TD>Name</TD>
+              <TD>Price</TD>
+              <TD>Count</TD>
+            </TR>
+            { getListItems() }
+          </Table>
+        </TD>
       </TR>
       <TR>
-        <TD>
-          <span>Total price: { props.totalPrice }</span>
+        <TD align="center">
+          <span style={regularText}>Total price: { props.totalPrice }</span>
         </TD>
       </TR>
       <TR>
         <TD>
-          <span>Event date: { props.eventDate }</span>
+          <span style={regularText}>Event date: { formattedDate }</span>
         </TD>
       </TR>
       <TR>
@@ -67,7 +73,6 @@ const OwnerOrdersTemplate = (props) => {
             src={FlowRouter.url('/:image', { image: '/images/logo.png' })}
             height={100}
             width={100}
-
             alt="Pizza-day logo"
           />
         </TD>

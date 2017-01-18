@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import Oy, { Table, TBody, TR, TD, A, Img } from 'oy-vey';
+import { linkStyle, headerText } from './styles/emailStyles';
+
 
 const propTypes = {
   user: PropTypes.string,
@@ -8,25 +10,25 @@ const propTypes = {
 };
 
 const EmailVerificationTemplate = ({ user, link }) =>
-  <Table>
+  <Table align="left">
     <TBody>
       <TR>
         <TD>
-          <span>Hello { user }</span>
+          <span style={headerText}>Hello { user }</span>
         </TD>
         <TD>
-          <A href={link}>Verify</A> Your email address.
+          <A href={link} style={linkStyle}>Verify Your email address.</A>
         </TD>
       </TR>
       <TR>
-        <TD />
-        <Img
-          src={FlowRouter.url('/:image', { image: '/images/logo.png' })}
-          height={100}
-          width={100}
-          alt="Pizza-day logo"
-        />
-        <TD />
+        <TD align="center">
+          <Img
+            src={FlowRouter.url('/:image', { image: '/images/logo.png' })}
+            height={100}
+            width={100}
+            alt="Pizza-day logo"
+          />
+        </TD>
       </TR>
     </TBody>
   </Table>;

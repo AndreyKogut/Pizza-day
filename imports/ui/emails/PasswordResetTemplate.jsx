@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import Oy, { Table, TBody, TR, TD, A, Img } from 'oy-vey';
+import { linkStyle, headerText } from './styles/emailStyles';
 
 const propTypes = {
   user: PropTypes.string,
@@ -8,31 +9,28 @@ const propTypes = {
 };
 
 const PasswordResetTemplate = ({ user, link }) =>
-  <Table>
+  <Table align="left">
     <TBody>
-      <TR>
+      <TR style={{ borderBottom: '2px solid #424242' }}>
         <TD>
-          <span>Hello { user }</span>
+          <span style={headerText}>Hello { user }</span>
         </TD>
       </TR>
       <TR>
         <TD>
-          <span>Reset password link</span>
+          <A href={link} style={linkStyle}>Reset password link</A>
         </TD>
       </TR>
       <TR>
         <TD>
-          <A href={link}>Reset</A>
+          <Img
+            src={FlowRouter.url('/:image', { image: '/images/logo.png' })}
+            height={100}
+            width={100}
+            align="center"
+            alt="Pizza-day logo"
+          />
         </TD>
-      </TR>
-      <TR>
-        <Img
-          src={FlowRouter.url('/:image', { image: '/images/logo.png' })}
-          height={100}
-          width={100}
-          align="center"
-          alt="Pizza-day logo"
-        />
       </TR>
     </TBody>
   </Table>;
