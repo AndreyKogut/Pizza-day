@@ -1,11 +1,17 @@
 import React, { PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
+import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { groupsSubsManager } from '../../lib/subsManager';
 import { GroupMenuPicker } from '../components/MenuPicker';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
+import Groups from '../../api/groups/collection';
 
 const propTypes = {
   groupId: PropTypes.string,
+  groupMenu: PropTypes.arrayOf(String),
+  groupName: PropTypes.string,
+  groupLoading: PropTypes.bool,
 };
 
 const CreateEvent = (props) => {
@@ -29,9 +35,13 @@ const CreateEvent = (props) => {
     );
   }
 
+  if (props.groupLoading) {
+    return <div>Loading</div>;
+  }
+
   return (<div className="content page-content">
     <div className="mdl-grid main-header">
-      <h3 className="m-auto">New event</h3>
+      <h3 className="m-auto">New event for { `"${props.groupName}"` }</h3>
     </div>
     <form onSubmit={createEvent}>
       <div className="mdl-grid main-header">
@@ -83,6 +93,7 @@ const CreateEvent = (props) => {
         <GroupMenuPicker
           groupId={props.groupId}
           getMenuList={(data) => { this.menu = [...data]; }}
+          showItems={props.groupMenu}
         />
       </div>
       <div className="mdl-grid mb--30">
@@ -98,5 +109,20 @@ const CreateEvent = (props) => {
 
 CreateEvent.propTypes = propTypes;
 
-export default CreateEvent;
+const CreateEventContainer = createContainer(({ groupId }) => {
+  const handleEvent = groupsSubsManager.subscribe('Group', groupId);
 
+  const group = Groups.findOne(groupId) || {};
+
+  return {
+    groupId,
+    groupMenu: group.menu,
+    groupName: group.name,
+    groupLoading: !handleEvent.ready(),
+  };
+}, CreateEvent);
+
+export default CreateEvent;
+export {
+  CreateEventContainer,
+};

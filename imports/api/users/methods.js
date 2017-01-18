@@ -28,6 +28,12 @@ Accounts.onCreateUser((publicData, privateData) => {
   };
 });
 
+Meteor.users.deny({
+  update() {
+    return true;
+  },
+});
+
 Meteor.methods({
   'user.insert': function insert(requestData) {
     const requestDataStructure = Match.Where((data) => {
@@ -175,7 +181,7 @@ Meteor.publish('GroupMembers', function publishGroupMembers(groupId) {
     return this.ready();
   }
 
-  const members = Groups.findOne({ _id: groupId }).members.filter(user => user.verified);
+  const members = Groups.findOne({ _id: groupId }).members;
 
   const usersId = _.pluck(members, '_id');
 

@@ -52,11 +52,11 @@ const UsersList = (props) => {
   </ul>);
 };
 
-const GroupUsersList = createContainer(({ id, ...params }) => {
+const GroupUsersList = createContainer(({ id, showItems, ...params }) => {
   const handleUsers = usersSubsManager.subscribe('GroupMembers', id);
 
   return {
-    items: Meteor.users.find().fetch(),
+    items: Meteor.users.find({ _id: { $in: showItems } }).fetch(),
     ...params,
     usersLoading: !handleUsers.ready(),
   };

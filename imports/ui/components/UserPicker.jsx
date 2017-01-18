@@ -147,12 +147,10 @@ class UserPicker extends Component {
 UserPicker.propTypes = propTypes;
 UserPicker.defaultProps = defaultProps;
 
-const UserPickerContainer = createContainer(({ hideItems, ...props }) => {
+const UserPickerContainer = createContainer(({ hideItems = [], ...props }) => {
   const handleUsers = usersSubsManager.subscribe('UsersList');
 
-  const convertToStringsList = _.pluck(hideItems, '_id');
-
-  const list = Meteor.users.find({ _id: { $nin: convertToStringsList } }).fetch();
+  const list = Meteor.users.find({ _id: { $nin: hideItems } }).fetch();
 
   return {
     ...props,

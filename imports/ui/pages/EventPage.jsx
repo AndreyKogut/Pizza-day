@@ -28,7 +28,7 @@ const defaultProps = {
 
 const EventPage = (props) => {
   const editable = props.creator === Meteor.userId();
-  const formatedDate = moment(props.date).format('LLL');
+  const formattedDate = moment(props.date).format('LLL');
 
   function updateData(obj) {
     Meteor.call('events.update',
@@ -191,7 +191,7 @@ const EventPage = (props) => {
         </span>
       </div>
       <div className="mdl-layout-spacer" />
-      <h5 className="as-b headline">{ formatedDate }</h5>
+      <h5 className="as-b headline">{ formattedDate }</h5>
     </div>
     { props.orderId ?
       <div className="mdl-grid">
@@ -222,6 +222,7 @@ const EventPage = (props) => {
       <OrderMenuPicker
         id={props.eventId}
         key={props.menu}
+        showItems={props.menu}
         getMenuList={(list) => { this.menu = [...list]; }}
       /> }
   </div>);

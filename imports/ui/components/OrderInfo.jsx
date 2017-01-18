@@ -57,14 +57,15 @@ const OrderInfoContainer = createContainer(({ id }) => {
   const handleMenu = orderSubsManager.subscribe('OrderMenu', id);
 
   const order = Order.findOne({ _id: id }) || {};
+  const menuItemIds = _.pluck(order.menu, '_id') || [];
   const mapOfItemCounter = new Map();
 
-  _.map(order.menu, ({ _id: itemId, count }) => { mapOfItemCounter.set(itemId, count); });
+  _.each(order.menu, ({ _id: itemId, count }) => { mapOfItemCounter.set(itemId, count); });
 
   return {
     total: order.totalPrice,
     mapOfItemCounter,
-    items: Menu.find().fetch(),
+    items: Menu.find({ _id: { $in: menuItemIds } }).fetch(),
     menuLoading: !handleMenu.ready(),
   };
 }, OrderInfo);

@@ -49,7 +49,7 @@ const GroupEventsList = createContainer(({ id }) => {
   const handleEvents = eventsSubsManager.subscribe('GroupEvents', id);
 
   return {
-    items: Events.find().fetch(),
+    items: Events.find({ groupId: id }).fetch(),
     eventsLoading: !handleEvents.ready(),
   };
 }, EventsList);

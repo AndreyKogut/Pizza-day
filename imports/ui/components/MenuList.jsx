@@ -43,11 +43,11 @@ const MenuList = ({ items, menuLoading }) => {
   </div>);
 };
 
-const GroupMenuList = createContainer(({ id }) => {
+const GroupMenuList = createContainer(({ id, showItems = [] }) => {
   const handleMenu = menuSubsManager.subscribe('GroupMenu', id);
 
   return {
-    items: Menu.find().fetch(),
+    items: Menu.find({ _id: { $in: showItems } }).fetch(),
     menuLoading: !handleMenu.ready(),
   };
 }, MenuList);

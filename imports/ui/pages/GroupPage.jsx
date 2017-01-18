@@ -18,7 +18,7 @@ const propTypes = {
   description: PropTypes.string,
   avatar: PropTypes.string,
   creator: PropTypes.string,
-  members: PropTypes.arrayOf(Object),
+  membersIds: PropTypes.arrayOf(String),
   menu: PropTypes.arrayOf(String),
   groupLoading: PropTypes.bool,
 };
@@ -140,7 +140,7 @@ const GroupPage = (props) => {
           </button> }
           <Controls
             controls={{ menu: true, users: true, avatar: true }}
-            members={props.members}
+            members={props.membersIds}
             menu={props.menu}
             addMembers={(items) => { addMembers(items); }}
             addMenuItems={(items) => { addMenuItems(items); }}
@@ -195,8 +195,9 @@ const GroupPage = (props) => {
       <div className="">
         <h3 className="ta-c">Members</h3>
         <GroupUsersList
-          key={`members${props.members && props.members.length}`}
+          key={`members${props.membersIds && props.membersIds.length}`}
           id={props.id}
+          showItems={props.membersIds}
           editable={editable}
           itemClick={(id) => {
             removeMember(id);
@@ -209,6 +210,7 @@ const GroupPage = (props) => {
         <GroupMenuList
           key={`members${props.menu && props.menu.length}`}
           id={props.id}
+          showItems={props.menu}
         />
       </div>
     </div>
@@ -221,18 +223,20 @@ Event.defaultProps = defaultProps;
 const GroupPageContainer = createContainer(({ id }) => {
   const handleGroup = groupsSubsManager.subscribe('Group', id);
 
-  const groupData = Groups.findOne(id) || {};
-  const isInvited = _.some(groupData.members, member => _.isEqual(member, {
+  const { members, ...groupData } = Groups.findOne(id) || {};
+  const membersIds = _.pluck(members, '_id');
+  const isInvited = _.some(members, member => _.isEqual(member, {
     _id: Meteor.userId(),
     verified: false,
   }));
-  const isMember = _.some(groupData.members, member => _.isEqual(member, {
+  const isMember = _.some(members, member => _.isEqual(member, {
     _id: Meteor.userId(),
     verified: true,
   }));
 
   return {
     id,
+    membersIds,
     ...groupData,
     isMember,
     isInvited,

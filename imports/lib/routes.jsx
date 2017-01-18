@@ -3,6 +3,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { mount } from 'react-mounter';
+import { clearAll } from './subsManager';
 import UserCabinetContainer from '../ui/pages/UserCabinet';
 import SignUp from '../ui/pages/SignUp';
 import Login from '../ui/pages/Login';
@@ -10,7 +11,7 @@ import GroupsPageContainer from '../ui/pages/GroupsPage';
 import GroupPageContainer from '../ui/pages/GroupPage';
 import EventPageContainer from '../ui/pages/EventPage';
 import CreateGroup from '../ui/pages/CreateGroup';
-import CreateEvent from '../ui/pages/CreateEvent';
+import { CreateEventContainer } from '../ui/pages/CreateEvent';
 import EventsPageContainer from '../ui/pages/EventsPage';
 import PasswordReset from '../ui/pages/PasswordReset';
 import ForgotPassword from '../ui/pages/ForgotPassword';
@@ -64,6 +65,7 @@ Accounts.onLogin(() => {
 
 Accounts.onLogout(() => {
   FlowRouter.go('/login');
+  clearAll();
 });
 
 publicRouts.route('/login', {
@@ -139,7 +141,7 @@ privateRouts.route('/groups/:groupId/create-event', {
   name: 'CreateEvent',
   action({ groupId }) {
     mount(App, {
-      content: () => <CreateEvent groupId={groupId} />,
+      content: () => <CreateEventContainer groupId={groupId} />,
     });
   },
 });

@@ -150,26 +150,27 @@ class MenuPicker extends Component {
 MenuPicker.propTypes = propTypes;
 MenuPicker.defaultProps = defaultProps;
 
-const OrderMenuPicker = createContainer(({ defaultValue = [], id, getMenuList }) => {
-  const handleMenu = menuSubsManager.subscribe('EventMenu', id);
-  const itemsMap = new Map();
+const OrderMenuPicker =
+  createContainer(({ defaultValue = [], showItems = [], id, getMenuList }) => {
+    const handleMenu = menuSubsManager.subscribe('EventMenu', id);
+    const itemsMap = new Map();
 
-  _.each(defaultValue, ((value) => {
-    if (_.isObject(value)) {
-      itemsMap.set(..._.values(value));
-    } else {
-      itemsMap.set(value, 1);
-    }
-  }));
+    _.each(defaultValue, ((value) => {
+      if (_.isObject(value)) {
+        itemsMap.set(..._.values(value));
+      } else {
+        itemsMap.set(value, 1);
+      }
+    }));
 
-  return {
-    items: Menu.find().fetch(),
-    selectedItems: itemsMap,
-    withCounters: true,
-    getMenuList,
-    menuLoading: !handleMenu.ready(),
-  };
-}, MenuPicker);
+    return {
+      items: Menu.find({ _id: { $in: showItems } }).fetch(),
+      selectedItems: itemsMap,
+      withCounters: true,
+      getMenuList,
+      menuLoading: !handleMenu.ready(),
+    };
+  }, MenuPicker);
 
 const EventMenuPicker = createContainer(({ eventId, hideItems, getMenuList }) => {
   const handleMenu = menuSubsManager.subscribe('GroupMenuForEvent', eventId);
@@ -182,11 +183,11 @@ const EventMenuPicker = createContainer(({ eventId, hideItems, getMenuList }) =>
   };
 }, MenuPicker);
 
-const GroupMenuPicker = createContainer(({ groupId, getMenuList }) => {
+const GroupMenuPicker = createContainer(({ groupId, getMenuList, showItems = [] }) => {
   const handleMenu = menuSubsManager.subscribe('GroupMenu', groupId);
 
   return {
-    items: Menu.find().fetch() || [],
+    items: Menu.find({ _id: { $in: showItems } }).fetch(),
     withCounters: false,
     getMenuList,
     menuLoading: !handleMenu.ready(),
