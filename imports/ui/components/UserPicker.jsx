@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
+import { usersSubsManager } from '../../lib/subsManager';
 import UserListItem from '../../ui/components/UserListItem';
 import UserPickerFilter from '../../ui/components/UserListFilter';
 
@@ -147,7 +148,7 @@ UserPicker.propTypes = propTypes;
 UserPicker.defaultProps = defaultProps;
 
 const UserPickerContainer = createContainer(({ hideItems, ...props }) => {
-  const handleUsers = Meteor.subscribe('UsersList');
+  const handleUsers = usersSubsManager.subscribe('UsersList');
 
   const convertToStringsList = _.pluck(hideItems, '_id');
 

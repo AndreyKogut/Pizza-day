@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
-import { Meteor } from 'meteor/meteor';
+import { eventsSubsManager } from '../../lib/subsManager';
 import EventsList from '../components/EventsList';
 import Events from '../../api/events/collection';
 
@@ -27,7 +27,7 @@ EventsPage.propTypes = propTypes;
 EventsPage.defaultProps = defaultProps;
 
 const EventsPageContainer = createContainer(() => {
-  const handleEvents = Meteor.subscribe('Events');
+  const handleEvents = eventsSubsManager.subscribe('Events');
 
   return {
     events: Events.find().fetch(),

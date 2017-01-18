@@ -9,7 +9,7 @@ import Login from '../ui/pages/Login';
 import GroupsPageContainer from '../ui/pages/GroupsPage';
 import GroupPageContainer from '../ui/pages/GroupPage';
 import EventPageContainer from '../ui/pages/EventPage';
-import CreateGroupContainer from '../ui/pages/CreateGroup';
+import CreateGroup from '../ui/pages/CreateGroup';
 import CreateEvent from '../ui/pages/CreateEvent';
 import EventsPageContainer from '../ui/pages/EventsPage';
 import PasswordReset from '../ui/pages/PasswordReset';
@@ -166,7 +166,7 @@ privateRouts.route('/create-group', {
   name: 'CreateGroup',
   action() {
     mount(App, {
-      content: () => <CreateGroupContainer />,
+      content: () => <CreateGroup />,
     });
   },
 });

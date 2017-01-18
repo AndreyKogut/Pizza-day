@@ -1,19 +1,12 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
-import MenuPicker from '../components/MenuPicker';
-import Menu from '../../api/menu/collection';
+import { ItemsMenuPicker } from '../components/MenuPicker';
 import ImagePicker from '../components/ImagePicker';
 import UserPicker from '../components/UserPicker';
 
-const propTypes = {
-  menu: PropTypes.arrayOf(Object),
-  menuLoading: PropTypes.bool,
-};
-
-const CreateGroup = (props) => {
+const CreateGroup = () => {
   function successCreateCallback(id) {
     FlowRouter.go('/groups/:id', { id });
   }
@@ -32,10 +25,6 @@ const CreateGroup = (props) => {
       { name, description, avatar, menu, members },
       handleMethodsCallbacks(successCreateCallback),
     );
-  }
-
-  if (props.menuLoading) {
-    return <div>Loading</div>;
   }
 
   return (<div className="content page-content">
@@ -94,8 +83,7 @@ const CreateGroup = (props) => {
         <h4>Group menu</h4>
       </div>
       <div className="mdl-grid">
-        <MenuPicker
-          items={props.menu}
+        <ItemsMenuPicker
           getMenuList={(data) => { this.menu = [...data]; }}
         />
       </div>
@@ -110,17 +98,4 @@ const CreateGroup = (props) => {
   </div>);
 };
 
-CreateGroup.propTypes = propTypes;
-
-const CreateGroupContainer = createContainer(() => {
-  const handleMenu = Meteor.subscribe('Menu');
-
-  const menu = Menu.find().fetch();
-
-  return {
-    menuLoading: !handleMenu.ready(),
-    menu,
-  };
-}, CreateGroup);
-
-export default CreateGroupContainer;
+export default CreateGroup;

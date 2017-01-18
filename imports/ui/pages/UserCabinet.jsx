@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { usersSubsManager } from '../../lib/subsManager';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 import showMessage from '../../helpers/showMessage';
 import Controls from '../components/Controls';
@@ -113,7 +114,7 @@ const UserCabinet = (props) => {
           Create group
         </div>
         <div className="mdl-tooltip" data-mdl-for="reset-password">
-          Change password and logout other devices
+          Change password
         </div>
         <div className="mdl-tooltip" data-mdl-for="verify">
           Resend verification email
@@ -202,7 +203,7 @@ const UserCabinet = (props) => {
 UserCabinet.propTypes = propTypes;
 
 const UserCabinetContainer = createContainer(({ id }) => {
-  const handleUser = Meteor.subscribe('user', id);
+  const handleUser = usersSubsManager.subscribe('user', id);
 
   const user = Meteor.users.findOne(id) || {};
 

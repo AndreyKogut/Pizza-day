@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
-import { Meteor } from 'meteor/meteor';
+import { groupsSubsManager } from '../../lib/subsManager';
 import Groups from '../../api/groups/collection';
 import GroupsList from '../components/GroupsList';
 
@@ -27,7 +27,7 @@ GroupsPage.propTypes = propTypes;
 GroupsPage.defaultProps = defaultProps;
 
 const GroupsPageContainer = createContainer(() => {
-  const handleGroups = Meteor.subscribe('Groups');
+  const handleGroups = groupsSubsManager.subscribe('Groups');
 
   return {
     groups: Groups.find().fetch(),

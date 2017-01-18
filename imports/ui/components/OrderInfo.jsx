@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
+import { orderSubsManager } from '../../lib/subsManager';
 import Menu from '../../api/menu/collection';
 import Order from '../../api/orders/collection';
 
@@ -53,7 +54,7 @@ const OrderInfo = (props) => {
 
 const OrderInfoContainer = createContainer(({ id }) => {
   Meteor.subscribe('Order', id);
-  const handleMenu = Meteor.subscribe('OrderMenu', id);
+  const handleMenu = orderSubsManager.subscribe('OrderMenu', id);
 
   const order = Order.findOne({ _id: id }) || {};
   const mapOfItemCounter = new Map();

@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
+import moment from 'moment';
+import { eventsSubsManager } from '../../lib/subsManager';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 import { OrderMenuPicker } from '../components/MenuPicker';
 import { OrderInfoContainer } from '../components/OrderInfo';
@@ -26,6 +28,7 @@ const defaultProps = {
 
 const EventPage = (props) => {
   const editable = props.creator === Meteor.userId();
+  const formatedDate = moment(props.date).format('LLL');
 
   function updateData(obj) {
     Meteor.call('events.update',
@@ -188,7 +191,7 @@ const EventPage = (props) => {
         </span>
       </div>
       <div className="mdl-layout-spacer" />
-      <h5 className="as-b headline">{ props.date }</h5>
+      <h5 className="as-b headline">{ formatedDate }</h5>
     </div>
     { props.orderId ?
       <div className="mdl-grid">
@@ -228,7 +231,7 @@ EventPage.propTypes = propTypes;
 EventPage.defaultProps = defaultProps;
 
 const EventPageContainer = createContainer(({ eventId }) => {
-  const handleEvent = Meteor.subscribe('Event', eventId);
+  const handleEvent = eventsSubsManager.subscribe('Event', eventId);
 
   const event = Events.findOne(eventId) || {};
 
