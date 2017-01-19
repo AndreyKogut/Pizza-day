@@ -119,7 +119,11 @@ class MenuPicker extends Component {
 
   render() {
     if (this.props.menuLoading) {
-      return <div>Loading..</div>;
+      return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
+    }
+
+    if (!this.props.items.length) {
+      return <div className="empty-list" />;
     }
 
     return (<div className="m-auto mb--30">

@@ -18,7 +18,11 @@ const defaultProps = {
 
 const UsersList = (props) => {
   if (props.usersLoading) {
-    return <div>Users loading...</div>;
+    return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
+  }
+
+  if (!props.items.length) {
+    return <div className="empty-list" />;
   }
 
   const getList = () =>

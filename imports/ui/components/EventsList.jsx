@@ -16,7 +16,11 @@ const defaultProps = {
 
 const EventsList = ({ items, eventsLoading }) => {
   if (eventsLoading) {
-    return <div>Loading...</div>;
+    return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
+  }
+
+  if (!items.length) {
+    return <div className="empty-list" />;
   }
 
   return (<div className="mdl-grid"> { items.map((event) => {

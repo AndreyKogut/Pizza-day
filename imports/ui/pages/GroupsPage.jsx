@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { groupsSubsManager } from '../../lib/subsManager';
 import Groups from '../../api/groups/collection';
@@ -15,7 +16,11 @@ const defaultProps = {
 
 const GroupsPage = ({ groups, groupsLoading }) => {
   if (groupsLoading) {
-    return <div>Loading...</div>;
+    return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
+  }
+
+  if (!groups.length) {
+    return <div className="empty-list empty-list--big" />;
   }
 
   return (<div className="content page-content">
@@ -30,7 +35,10 @@ const GroupsPageContainer = createContainer(() => {
   const handleGroups = groupsSubsManager.subscribe('Groups');
 
   return {
-    groups: Groups.find().fetch(),
+    groups: Groups.find({ $or: [
+      { 'members._id': Meteor.userId() },
+      { creator: Meteor.userId() },
+    ] }).fetch(),
     groupsLoading: !handleGroups.ready(),
   };
 }, GroupsPage);

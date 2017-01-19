@@ -82,7 +82,7 @@ const EventPage = (props) => {
   }
 
   if (props.eventLoading) {
-    return <div>Loading event...</div>;
+    return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
   }
 
   return (<div className="content page-content">

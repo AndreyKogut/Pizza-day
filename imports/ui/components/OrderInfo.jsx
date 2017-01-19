@@ -20,7 +20,11 @@ const defaultProps = {
 
 const OrderInfo = (props) => {
   if (props.menuLoading) {
-    return <div>Order loading...</div>;
+    return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
+  }
+
+  if (!props.items.length) {
+    return <div className="empty-list" />;
   }
 
   return (<div>

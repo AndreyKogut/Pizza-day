@@ -10,7 +10,11 @@ const propTypes = {
 
 const MenuList = ({ items, menuLoading }) => {
   if (menuLoading) {
-    return <div>Menu loading...</div>;
+    return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
+  }
+
+  if (!items.length) {
+    return <div className="empty-list" />;
   }
 
   function getList() {

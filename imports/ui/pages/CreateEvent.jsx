@@ -36,7 +36,7 @@ const CreateEvent = (props) => {
   }
 
   if (props.groupLoading) {
-    return <div>Loading</div>;
+    return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
   }
 
   return (<div className="content page-content">
