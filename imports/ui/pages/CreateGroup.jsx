@@ -2,7 +2,7 @@ import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
-import { ItemsMenuPicker } from '../components/MenuPicker';
+import MenuPickerGlobal from '../components/MenuPickerGlobal';
 import ImagePicker from '../components/ImagePicker';
 import UserPicker from '../components/UserPicker';
 
@@ -83,7 +83,7 @@ const CreateGroup = () => {
         <h4>Group menu</h4>
       </div>
       <div className="mdl-grid">
-        <ItemsMenuPicker
+        <MenuPickerGlobal
           getMenuList={(data) => { this.menu = [...data]; }}
         />
       </div>

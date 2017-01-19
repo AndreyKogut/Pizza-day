@@ -8,6 +8,7 @@ const propTypes = {
   items: PropTypes.arrayOf(Object),
   getMenuList: PropTypes.func,
   withCounters: PropTypes.bool,
+  isLoadingAvailable: PropTypes.bool,
   selectedItems: PropTypes.instanceOf(Map),
   menuLoading: PropTypes.bool,
 };
@@ -17,6 +18,9 @@ const defaultProps = {
   items: [],
   selectedItems: new Map(),
 };
+
+const RD = new ReactiveDict();
+RD.set('count', 10);
 
 class MenuPicker extends Component {
   constructor(props) {
@@ -117,6 +121,16 @@ class MenuPicker extends Component {
     }
   };
 
+  scrollBottom = (event) => {
+    if (this.props.isLoadingAvailable) {
+      const scrollPosition = event.target.scrollTop;
+      const maxScrollHeight = event.target.scrollHeight - event.target.offsetHeight;
+      if (scrollPosition >= maxScrollHeight) {
+        RD.set('count', RD.get('count') + 10);
+      }
+    }
+  };
+
   render() {
     if (this.props.menuLoading) {
       return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
@@ -129,7 +143,7 @@ class MenuPicker extends Component {
     return (<div className="m-auto mb--30">
       <MenuPickerFilter changeCallback={(filter) => { this.filterItems(filter); }} />
       <div className="mdl-grid">
-        <div className="table-container">
+        <div className="table-container" onScroll={this.scrollBottom}>
           <table className="table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
             <thead>
               <tr>
@@ -198,21 +212,9 @@ const GroupMenuPicker = createContainer(({ groupId, getMenuList, showItems = [] 
   };
 }, MenuPicker);
 
-const ItemsMenuPicker = createContainer(({ hideItems = [], getMenuList }) => {
-  const handleMenu = menuSubsManager.subscribe('Menu');
-
-  return {
-    items: Menu.find({ _id: { $nin: hideItems } }).fetch(),
-    withCounters: false,
-    getMenuList,
-    menuLoading: !handleMenu.ready(),
-  };
-}, MenuPicker);
-
 export default MenuPicker;
 export {
   OrderMenuPicker,
-  ItemsMenuPicker,
   EventMenuPicker,
   GroupMenuPicker,
 };

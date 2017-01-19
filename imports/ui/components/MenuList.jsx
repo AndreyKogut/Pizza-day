@@ -8,17 +8,17 @@ const propTypes = {
   menuLoading: PropTypes.bool,
 };
 
-const MenuList = ({ items, menuLoading }) => {
-  if (menuLoading) {
+const MenuList = (props) => {
+  if (props.menuLoading) {
     return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
   }
 
-  if (!items.length) {
+  if (!props.items.length) {
     return <div className="empty-list" />;
   }
 
   function getList() {
-    return items.map(({ _id: id, ...itemInfo }) => (
+    return props.items.map(({ _id: id, ...itemInfo }) => (
       <tr key={id}>
         <td>{ itemInfo.name }.</td>
         <td>{ itemInfo.description }</td>
@@ -29,7 +29,7 @@ const MenuList = ({ items, menuLoading }) => {
   }
 
   return (<div className="mdl-grid">
-    <div className="table-container">
+    <div className="table-container" >
       <table className="table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
         <thead>
           <tr>
@@ -47,14 +47,16 @@ const MenuList = ({ items, menuLoading }) => {
   </div>);
 };
 
-const GroupMenuList = createContainer(({ id, showItems = [] }) => {
-  const handleMenu = menuSubsManager.subscribe('GroupMenu', id);
+const GroupMenuList =
+  createContainer(({ id, showItems = [] }) => {
+    const handleMenu = menuSubsManager.subscribe('GroupMenu', id);
 
-  return {
-    items: Menu.find({ _id: { $in: showItems } }).fetch(),
-    menuLoading: !handleMenu.ready(),
-  };
-}, MenuList);
+    const menuItems = Menu.find({ _id: { $in: showItems } }).fetch();
+    return {
+      items: menuItems,
+      menuLoading: !handleMenu.ready(),
+    };
+  }, MenuList);
 
 MenuList.propTypes = propTypes;
 

@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { ItemsMenuPicker, EventMenuPicker } from '../../ui/components/MenuPicker';
+import { EventMenuPicker } from '../../ui/components/MenuPicker';
+import MenuPickerGlobalListContainer from '../../ui/components/MenuPickerGlobal';
 import UserPickerContainer from '../../ui/components/UserPicker';
 import ImagePicker from '../../ui/components/ImagePicker';
 
@@ -76,7 +77,7 @@ class Controls extends Component {
             getMenuList={(items) => { this.menu = items; }}
           />);
         } else {
-          template = (<ItemsMenuPicker
+          template = (<MenuPickerGlobalListContainer
             hideItems={this.props.menu}
             getMenuList={(items) => { this.menu = items; }}
           />);

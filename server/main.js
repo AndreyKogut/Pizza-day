@@ -18,7 +18,7 @@ Meteor.startup(() => {
   const menuItemsCount = Menu.find().fetch().length;
 
   if (!menuItemsCount) {
-    for (let i = 0; i < 50; i += 1) {
+    for (let i = 0; i < 1000; i += 1) {
       Meteor.call('menu.insert', new MenuItem());
     }
   }

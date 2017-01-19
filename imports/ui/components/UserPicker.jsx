@@ -9,12 +9,16 @@ const propTypes = {
   list: PropTypes.arrayOf(Object),
   getUsersList: PropTypes.func,
   usersLoading: PropTypes.bool,
+  isLoadingAvailable: PropTypes.bool,
 };
 
 const defaultProps = {
   list: [],
   getUsersList: () => {},
 };
+
+const RD = new ReactiveDict();
+RD.set('count', 10);
 
 class UserPicker extends Component {
   constructor(props) {
@@ -119,6 +123,16 @@ class UserPicker extends Component {
     });
   };
 
+  scrollBottom = (event) => {
+    if (this.props.isLoadingAvailable) {
+      const scrollPosition = event.target.scrollTop;
+      const maxScrollHeight = event.target.scrollHeight - event.target.offsetHeight;
+      if (scrollPosition >= maxScrollHeight) {
+        RD.set('count', RD.get('count') + 10);
+      }
+    }
+  };
+
   render() {
     if (this.props.usersLoading) {
       return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
@@ -139,7 +153,7 @@ class UserPicker extends Component {
         </div>
         <div className="mdl-cell mdl-cell--6-col">
           <h5>Members</h5>
-          <ul className="user-list">
+          <ul className="user-list" onScroll={this.scrollBottom}>
             { this.getPickedUsers() }
           </ul>
         </div>
@@ -153,12 +167,13 @@ UserPicker.defaultProps = defaultProps;
 
 const UserPickerContainer = createContainer(({ hideItems = [], ...props }) => {
   const handleUsers = usersSubsManager.subscribe('UsersList');
-
-  const list = Meteor.users.find({ _id: { $nin: hideItems } }).fetch();
+  const limit = RD.get('count');
+  const list = Meteor.users.find({ _id: { $nin: hideItems } }, { limit }).fetch();
 
   return {
     ...props,
     list,
+    isLoadingAvailable: limit === list.length,
     usersLoading: !handleUsers.ready(),
   };
 }, UserPicker);

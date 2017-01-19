@@ -7,8 +7,8 @@ const propTypes = {
 const MenuPickerFilter = ({ changeCallback }) => {
   const changeFields = () => {
     const name = this.itemName.value;
-    const gte = this.gte.value ? this.gte.value : undefined;
-    const lte = this.lte.value ? this.lte.value : undefined;
+    const gte = this.gte.value ? Number(this.gte.value) : undefined;
+    const lte = this.lte.value ? Number(this.lte.value) : undefined;
 
     changeCallback({ name, gte, lte });
   };

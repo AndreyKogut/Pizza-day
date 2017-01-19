@@ -27,6 +27,28 @@ Meteor.methods({
 
 Meteor.publish('Menu', () => Menu.find());
 
+Meteor.publish('MenuFiltered', (request) => {
+  const checkData = Match.Where((data) => {
+    check(data, {
+      filter: {
+        gte: Number,
+        lte: Number,
+        name: String,
+      },
+      limiter: Number,
+    });
+
+    return true;
+  });
+
+  check(request, checkData);
+
+  return Menu.find({
+    name: { $regex: `.*${request.filter.name}.*` },
+    price: { $gte: request.filter.gte, $lte: request.filter.lte },
+  }, { limit: request.limiter });
+});
+
 Meteor.publish('GroupMenu', function publishGroupMenu(id) {
   check(id, Match.Where(notEmpty));
 
