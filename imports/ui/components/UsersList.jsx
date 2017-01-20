@@ -9,6 +9,7 @@ const propTypes = {
   usersLoading: PropTypes.bool,
   itemClick: PropTypes.func,
   editable: PropTypes.bool,
+  getUserMode: PropTypes.bool,
 };
 
 const defaultProps = {
@@ -48,6 +49,12 @@ const UsersList = (props) => {
             className="mdl-button mdl-js-button mdl-button--icon"
             onClick={() => { props.itemClick(item._id); }}
           ><i className="material-icons">clear</i></button></div> }
+        { props.getUserMode && <div className="mdl-list__item-secondary-content">
+          <button
+            type="button"
+            className="mdl-button mdl-js-button mdl-button--icon"
+            onClick={() => { props.itemClick(item); }}
+          ><i className="material-icons">add</i></button></div> }
       </li>);
     });
 
@@ -66,10 +73,21 @@ const GroupUsersList = createContainer(({ id, showItems, ...params }) => {
   };
 }, UsersList);
 
+const EventUsersList = createContainer(({ eventId, showItems, ...params }) => {
+  const handleUsers = usersSubsManager.subscribe('EventParticipant', eventId);
+
+  return {
+    items: Meteor.users.find({ _id: { $in: showItems } }).fetch(),
+    ...params,
+    usersLoading: !handleUsers.ready(),
+  };
+}, UsersList);
+
 UsersList.propTypes = propTypes;
 UsersList.defaultProps = defaultProps;
 
 export default UsersList;
 export {
   GroupUsersList,
+  EventUsersList,
 };

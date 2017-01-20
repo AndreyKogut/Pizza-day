@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { check, Match } from 'meteor/check';
 import { notEmpty } from '../checkData';
 import Groups from '../../api/groups/collection';
+import Events from '../../api/events/collection';
 
 Accounts.onCreateUser((publicData, privateData) => {
   if (privateData.services.google) {
@@ -208,12 +209,29 @@ Meteor.publish('GroupMembers', function publishGroupMembers(groupId) {
     return this.ready();
   }
 
-  const members = Groups.findOne({ _id: groupId }).members;
+  const group = Groups.findOne({ _id: groupId }) || {};
 
-  const usersId = _.pluck(members, '_id');
+  const usersId = _.pluck(group.members, '_id');
 
   return Meteor.users.find({
     _id: { $in: [...usersId] },
+    'emails.verified': true,
+  }, { fields: { emails: 1, profile: 1 } });
+});
+
+Meteor.publish('EventParticipant', function publishEventParticipants(eventId) {
+  check(eventId, Match.Where(notEmpty));
+
+  if (!this.userId) {
+    return this.ready();
+  }
+
+  const event = Events.findOne(eventId) || {};
+
+  const participants = _.pluck(event.participants, '_id');
+
+  return Meteor.users.find({
+    _id: { $in: [...participants] },
     'emails.verified': true,
   }, { fields: { emails: 1, profile: 1 } });
 });

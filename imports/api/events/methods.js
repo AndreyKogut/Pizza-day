@@ -165,7 +165,7 @@ Meteor.methods({
     }
 
     Events.update({ _id: id },
-      { $push: { participants: { _id: this.userId, order: '', ordered: false } } },
+      { $push: { participants: { _id: this.userId, order: '', ordered: false, coupons: [] } } },
     );
   },
 
@@ -246,6 +246,55 @@ Meteor.methods({
     );
 
     Orders.remove({ _id: eventParticipant.order });
+  },
+  'events.setCoupon': function setCoupon(requestData) {
+    const requestDataStructure = Match.Where((data) => {
+      try {
+        check(data, {
+          eventId: Match.Where(notEmpty),
+          userId: Match.Where(notEmpty),
+          itemId: Match.Where(notEmpty),
+          freeItems: Match.Maybe(Number),
+          discount: Match.Maybe(Number),
+        });
+
+        if (!data.freeItems && !data.discount) {
+          throw new Meteor.Error();
+        }
+      } catch (err) {
+        throw new Meteor.Error(400, 'Invalid coupon');
+      }
+
+      return true;
+    });
+
+    check(requestData, requestDataStructure);
+
+    const { eventId, userId, ...coupon } = requestData;
+
+    if (!this.userId) {
+      throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    const event = Events.findOne(eventId) || {};
+
+    if (this.userId !== event.creator) {
+      throw new Meteor.Error(403, 'Not owner');
+    }
+
+    if (event.status !== 'ordering') {
+      throw new Meteor.Error(403, 'Event ordered');
+    }
+
+    const { itemId, ...discounts } = coupon;
+
+    Events.update(
+      { _id: eventId, participants: { $elemMatch: { _id: userId } } }, {
+        $push: {
+          'participants.$.coupons': { _id: itemId, ...discounts },
+        },
+      },
+    );
   },
 });
 

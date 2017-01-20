@@ -15,6 +15,7 @@ import { CreateEventContainer } from '../ui/pages/CreateEvent';
 import EventsPageContainer from '../ui/pages/EventsPage';
 import PasswordReset from '../ui/pages/PasswordReset';
 import ForgotPassword from '../ui/pages/ForgotPassword';
+import Coupons from '../ui/pages/Coupons';
 import handleMethodsCallbacks from '../helpers/handleMethodsCallbacks';
 import App from '../ui/App';
 
@@ -164,6 +165,15 @@ privateRouts.route('/groups/:id/events/:eventId', {
   },
 });
 
+privateRouts.route('/groups/:id/events/:eventId/coupons', {
+  name: 'CreateEvent',
+  action({ id, eventId }) {
+    mount(App, {
+      content: () => <Coupons id={id} eventId={eventId} />,
+    });
+  },
+});
+
 privateRouts.route('/create-group', {
   name: 'CreateGroup',
   action() {
@@ -184,7 +194,7 @@ FlowRouter.notFound = {
     }
 
     mount(App, {
-      content: () => <div>Not found</div>,
+      content: () => <div className="not-found">Not found <span className="mdl-color-text--primary">404</span></div>,
     });
   },
 };

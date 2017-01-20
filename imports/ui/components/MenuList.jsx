@@ -6,6 +6,13 @@ import Menu from '../../api/menu/collection';
 const propTypes = {
   items: PropTypes.arrayOf(Object),
   menuLoading: PropTypes.bool,
+  picker: PropTypes.bool,
+  getItem: PropTypes.func,
+};
+
+const defaultProps = {
+  picker: false,
+  getItem: () => {},
 };
 
 const MenuList = (props) => {
@@ -18,13 +25,17 @@ const MenuList = (props) => {
   }
 
   function getList() {
-    return props.items.map(({ _id: id, ...itemInfo }) => (
-      <tr key={id}>
-        <td>{ itemInfo.name }.</td>
-        <td>{ itemInfo.description }</td>
-        <td>({ itemInfo.mass })</td>
-        <td>{ itemInfo.price }</td>
-      </tr>
+    return props.items.map(item => (<tr key={item._id}>
+      { props.picker && <td><button
+        type="button"
+        className="mdl-button mdl-js-button mdl-button--icon"
+        onClick={() => { props.getItem(item); }}
+      ><i className="material-icons">add</i></button></td> }
+      <td>{ item.name }.</td>
+      <td>{ item.description }</td>
+      <td>({ item.mass })</td>
+      <td>{ item.price }</td>
+    </tr>
     ));
   }
 
@@ -33,10 +44,11 @@ const MenuList = (props) => {
       <table className="table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
         <thead>
           <tr>
-            <th className="mdl-data-table__cell--non-numeric">Name</th>
-            <th>Description</th>
-            <th>Weight</th>
-            <th>Price</th>
+            { props.picker && <td>Pick</td> }
+            <td className="mdl-data-table__cell--non-numeric">Name</td>
+            <td>Description</td>
+            <td>Weight</td>
+            <td>Price</td>
           </tr>
         </thead>
         <tbody>
@@ -58,9 +70,23 @@ const GroupMenuList =
     };
   }, MenuList);
 
+const EventMenuList =
+  createContainer(({ id, showItems = [], ...props }) => {
+    const handleMenu = menuSubsManager.subscribe('EventMenu', id);
+
+    const menuItems = Menu.find({ _id: { $in: showItems } }).fetch();
+    return {
+      ...props,
+      items: menuItems,
+      menuLoading: !handleMenu.ready(),
+    };
+  }, MenuList);
+
 MenuList.propTypes = propTypes;
+MenuList.defaultProps = defaultProps;
 
 export default MenuList;
 export {
   GroupMenuList,
+  EventMenuList,
 };

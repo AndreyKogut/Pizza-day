@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { createContainer } from 'meteor/react-meteor-data';
 import moment from 'moment';
 import { eventsSubsManager } from '../../lib/subsManager';
@@ -162,6 +163,17 @@ const EventPage = (props) => {
             menu={props.menu}
             addMenuItems={(items) => { addMenuItems(items); }}
           /> }
+          { editable && <button
+            type="button"
+            id="coupons"
+            className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect"
+            onClick={() => { FlowRouter.go(`${FlowRouter.current().path}/coupons`); }}
+          >
+            <div className="mdl-tooltip" data-mdl-for="coupons">
+              Give coupon
+            </div>
+            <i className="material-icons">free_breakfast</i>
+          </button> }
         </div>
       </div>
     </div>
