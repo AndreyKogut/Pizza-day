@@ -1,24 +1,17 @@
 import React, { Component, PropTypes } from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
-import { Meteor } from 'meteor/meteor';
-import { usersSubsManager } from '../../lib/subsManager';
 import UserListItem from '../../ui/components/UserListItem';
 import UserPickerFilter from '../../ui/components/UserListFilter';
+import UsersListGlobalContainer from '../../ui/components/UsersListGlobal';
 
 const propTypes = {
-  list: PropTypes.arrayOf(Object),
   getUsersList: PropTypes.func,
-  usersLoading: PropTypes.bool,
-  isLoadingAvailable: PropTypes.bool,
+  hideItems: PropTypes.arrayOf(String),
 };
 
 const defaultProps = {
-  list: [],
   getUsersList: () => {},
+  hideItems: [],
 };
-
-const RD = new ReactiveDict();
-RD.set('count', 10);
 
 class UserPicker extends Component {
   constructor(props) {
@@ -26,37 +19,19 @@ class UserPicker extends Component {
 
     this.state = {
       users: new Set(),
+      filter: {
+        email: '',
+        name: '',
+      },
+      limiter: 10,
     };
   }
 
-  getAllUsers = () => {
-    let filteredData;
+  getPickedUsersIds = () => {
+    const pickedItemsIds = _.pluck([...this.state.users], '_id');
+    pickedItemsIds.push(...this.props.hideItems);
 
-    if (!this.state.filteredUsers) {
-      filteredData = this.props.list;
-    } else {
-      filteredData = this.state.filteredUsers;
-    }
-
-    return filteredData.map((user) => {
-      if (_.some([...this.state.users], val => user._id === val._id)) return '';
-
-      return (<li
-        className="mdl-list__item mdl-list__item--two-line"
-        key={user._id}
-      >
-        <UserListItem userObject={user} />
-        <div className="mdl-list__item-secondary-content">
-          <button
-            type="button"
-            className="mdl-button mdl-js-button mdl-button--icon"
-            onClick={() => { this.addUser(user); }}
-          >
-            <i className="material-icons">add</i>
-          </button>
-        </div>
-      </li>);
-    });
+    return pickedItemsIds;
   };
 
   getPickedUsers = () =>
@@ -78,6 +53,15 @@ class UserPicker extends Component {
           </button>
         </div>
       </li>));
+
+  changeFilter = (filter) => {
+    const updateFilter = _.defaults(filter, {
+      email: '',
+      name: '',
+    });
+
+    this.setState({ filter: updateFilter });
+  };
 
   addUser = (user) => {
     const newState = new Set(this.state.users);
@@ -101,55 +85,19 @@ class UserPicker extends Component {
     });
   }
 
-  filterUsers = ({ name = '', email = '' }) => {
-    const filteredUsers = this.props.list.filter(
-      (user) => {
-        _.defaults(user, {
-          profile: {
-            name: '',
-          },
-          emails: [{
-            address: '',
-          }],
-        });
-
-        return user.emails[0].address.includes(email) &&
-          user.profile.name.includes(name);
-      },
-    );
-
-    this.setState({
-      filteredUsers,
-    });
-  };
-
-  scrollBottom = (event) => {
-    if (this.props.isLoadingAvailable) {
-      const scrollPosition = event.target.scrollTop;
-      const maxScrollHeight = event.target.scrollHeight - event.target.offsetHeight;
-      if (scrollPosition >= maxScrollHeight) {
-        RD.set('count', RD.get('count') + 10);
-      }
-    }
-  };
-
   render() {
-    if (this.props.usersLoading) {
-      return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
-    }
-
-    if (!this.props.list.length) {
-      return <div className="empty-list" />;
-    }
-
     return (<div className="m-auto">
-      <UserPickerFilter changeCallback={(filter) => { this.filterUsers(filter); }} />
+      <UserPickerFilter changeCallback={(filter) => { this.changeFilter(filter); }} />
       <div className="mdl-grid">
         <div className="mdl-cell mdl-cell--6-col">
           <h5>All</h5>
-          <ul className="user-list">
-            { this.getAllUsers() }
-          </ul>
+          <UsersListGlobalContainer
+            addedUser={(user) => { this.addUser(user); }}
+            filter={this.state.filter}
+            limiter={this.state.limiter}
+            updateLimiter={(value) => { this.setState({ limiter: value }); }}
+            hideItems={this.getPickedUsersIds()}
+          />
         </div>
         <div className="mdl-cell mdl-cell--6-col">
           <h5>Members</h5>
@@ -165,17 +113,4 @@ class UserPicker extends Component {
 UserPicker.propTypes = propTypes;
 UserPicker.defaultProps = defaultProps;
 
-const UserPickerContainer = createContainer(({ hideItems = [], ...props }) => {
-  const handleUsers = usersSubsManager.subscribe('UsersList');
-  const limit = RD.get('count');
-  const list = Meteor.users.find({ _id: { $nin: hideItems } }, { limit }).fetch();
-
-  return {
-    ...props,
-    list,
-    isLoadingAvailable: limit === list.length,
-    usersLoading: !handleUsers.ready(),
-  };
-}, UserPicker);
-
-export default UserPickerContainer;
+export default UserPicker;

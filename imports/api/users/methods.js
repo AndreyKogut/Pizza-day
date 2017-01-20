@@ -174,6 +174,33 @@ Meteor.publish('UsersList', function publishUsers() {
   }, { fields: { emails: 1, profile: 1 } });
 });
 
+Meteor.publish('UsersListFilter', function publishUsers(requestData) {
+  const requestDataStructure = Match.Where((data) => {
+    check(data, {
+      filter: {
+        email: String,
+        name: String,
+      },
+      limiter: Number,
+    });
+
+    return true;
+  });
+
+  if (!this.userId) {
+    return this.ready();
+  }
+
+  check(requestData, requestDataStructure);
+
+  return Meteor.users.find({
+    _id: { $ne: this.userId },
+    'profile.name': { $regex: `.*${requestData.filter.name}.*` },
+    'emails.address': { $regex: `.*${requestData.filter.email}.*` },
+    'emails.verified': true,
+  }, { fields: { emails: 1, profile: 1 } });
+});
+
 Meteor.publish('GroupMembers', function publishGroupMembers(groupId) {
   check(groupId, Match.Where(notEmpty));
 
