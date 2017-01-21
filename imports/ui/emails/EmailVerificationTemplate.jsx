@@ -16,6 +16,8 @@ const EmailVerificationTemplate = ({ user, link }) =>
         <TD>
           <span style={headerText}>Hello { user }</span>
         </TD>
+      </TR>
+      <TR>
         <TD>
           <A href={link} style={linkStyle}>Verify Your email address.</A>
         </TD>
@@ -41,7 +43,7 @@ const verificationEmail = (user, link) =>
     link={link}
   />, {
     title: 'Pizza-day',
-    previewText: 'Email verification',
+    previewText: 'Email verification for Pizza-day',
   });
 
 export default verificationEmail;

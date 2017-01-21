@@ -11,7 +11,7 @@ const propTypes = {
 const PasswordResetTemplate = ({ user, link }) =>
   <Table align="left">
     <TBody>
-      <TR style={{ borderBottom: '2px solid #424242' }}>
+      <TR>
         <TD>
           <span style={headerText}>Hello { user }</span>
         </TD>
@@ -40,7 +40,7 @@ PasswordResetTemplate.propTypes = propTypes;
 const passwordResetEmail = (user, link) =>
   Oy.renderTemplate(<PasswordResetTemplate user={user.profile.name} link={link} />, {
     title: 'Pizza-day',
-    previewText: 'Reset password',
+    previewText: 'Reset password of Pizza-day',
   });
 
 export default passwordResetEmail;

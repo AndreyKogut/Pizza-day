@@ -70,7 +70,7 @@ Meteor.methods({
     try {
       Accounts.sendVerificationEmail(userId, email);
     } catch (err) {
-      // mailgun sending available for my address
+      console.log(err);
     }
 
     return {
@@ -129,6 +129,7 @@ Meteor.methods({
       },
     });
   },
+
   'user.resendVerificationLink': function resend() {
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
@@ -137,9 +138,11 @@ Meteor.methods({
     try {
       Accounts.sendVerificationEmail(this.userId);
     } catch (err) {
+      console.log(err);
       throw new Meteor.Error(403, 'All emails verified');
     }
   },
+
   'user.userPasswordResetLink': function passReset() {
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
@@ -151,6 +154,7 @@ Meteor.methods({
 
     Accounts.sendResetPasswordEmail(this.userId);
   },
+
   'user.forgotPasswordResetLink': function passReset(email) {
     check(email, Match.Where(notEmpty));
 
@@ -160,7 +164,11 @@ Meteor.methods({
       throw new Meteor.Error(403, 'User not found');
     }
 
-    Accounts.sendResetPasswordEmail(user._id, email);
+    try {
+      Accounts.sendResetPasswordEmail(user._id, email);
+    } catch (err) {
+      console.log(err);
+    }
   },
 });
 

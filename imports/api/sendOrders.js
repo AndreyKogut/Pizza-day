@@ -60,7 +60,7 @@ function sendOrders(eventId) {
     discountsTotal += discount;
     try {
       Email.send({
-        from: 'pizza-day@mail.com',
+        from: 'an_ko_ol@meta.ua',
         to: email,
         subject: 'Menu order',
         html: orderEmail({
@@ -90,7 +90,7 @@ function sendOrders(eventId) {
 
   try {
     Email.send({
-      from: 'pizza-day@mail.com',
+      from: 'an_ko_ol@meta.ua',
       to: creatorAddress,
       subject: 'Event ordered',
       html: ownerEmail({
