@@ -10,6 +10,11 @@ const regularText = {
   lineHeight: 2,
 };
 
+const lineThrough = {
+  textDecoration: 'line-through',
+  fontSize: '0.8em',
+};
+
 const tableHeader = {
   fontSize: '16px',
   color: '#ff5722',
@@ -40,4 +45,5 @@ export {
   tableText,
   tableStyle,
   linkStyle,
+  lineThrough,
 };

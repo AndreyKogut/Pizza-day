@@ -16,14 +16,16 @@ function sendOrders(eventId) {
   const eventMenuItems = [];
   const allUsersMenuItems = new Map();
   let ordersTotal = 0;
+  let discountsTotal = 0;
 
-  _.map(eventMembers, ({ _id: memberId, order: memberOrder }) => {
+  _.map(eventMembers, ({ _id: memberId, order: memberOrder, coupons }) => {
     const user = Meteor.users.findOne(memberId);
     const email = user.emails[0].address;
     const userName = user.profile.name;
 
     const order = Orders.findOne(memberOrder);
     const totalPrice = order.totalPrice;
+    let discount = 0;
     ordersTotal += totalPrice;
 
     const orderMenuItemsWithCount = order.menu;
@@ -38,14 +40,24 @@ function sendOrders(eventId) {
     const fullMenuItems = Menu.find({ _id: { $in: orderMenuItems } }).fetch();
     const menuItemsShowFormat = _.map(fullMenuItems, ({ _id, name, price }) => {
       allUsersMenuItems.set(_id, { name, price });
+      const count = menuMap.get(_id);
+      const itemDiscount = _.find(coupons, item => _id === item._id);
+
+      if (itemDiscount) {
+        discount += itemDiscount.freeItems >= count ?
+          count * price :
+          (itemDiscount.freeItems * price) +
+            ((count - itemDiscount.freeItems) * price * (itemDiscount.discount / 100 || 0));
+      }
 
       return {
         name,
         price,
-        count: menuMap.get(_id),
+        count,
       };
     });
 
+    discountsTotal += discount;
     try {
       Email.send({
         from: 'pizza-day@mail.com',
@@ -56,6 +68,7 @@ function sendOrders(eventId) {
           eventName,
           eventDate,
           totalPrice,
+          discount,
           items: menuItemsShowFormat,
         }),
       });
@@ -86,6 +99,7 @@ function sendOrders(eventId) {
         eventDate,
         items: eventItemsToOwner,
         totalPrice: ordersTotal,
+        discount: discountsTotal,
       }),
     });
   } catch (err) { /* not me */ }

@@ -10,6 +10,7 @@ const propTypes = {
   eventDate: PropTypes.string,
   totalPrice: PropTypes.number,
   items: PropTypes.arrayOf(Object),
+  discount: PropTypes.number,
 };
 
 const OwnerOrdersTemplate = (props) => {
@@ -59,9 +60,15 @@ const OwnerOrdersTemplate = (props) => {
       </TR>
       <TR>
         <TD align="center">
-          <span style={regularText}>Total price: { props.totalPrice }</span>
+          <span style={regularText}>Total price: { props.totalPrice }$</span>
         </TD>
       </TR>
+      { props.discount &&
+        <TR>
+          <TD align="center">
+            <span style={regularText}>You gave coupons for { props.discount }$</span>
+          </TD>
+        </TR> }
       <TR>
         <TD>
           <span style={regularText}>Event date: { formattedDate }</span>

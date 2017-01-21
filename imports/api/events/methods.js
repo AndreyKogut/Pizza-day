@@ -247,6 +247,7 @@ Meteor.methods({
 
     Orders.remove({ _id: eventParticipant.order });
   },
+
   'events.setCoupon': function setCoupon(requestData) {
     const requestDataStructure = Match.Where((data) => {
       try {
@@ -291,7 +292,10 @@ Meteor.methods({
     Events.update(
       { _id: eventId, participants: { $elemMatch: { _id: userId } } }, {
         $push: {
-          'participants.$.coupons': { _id: itemId, ...discounts },
+          'participants.$.coupons': {
+            $each: [{ _id: itemId, ...discounts }],
+            $position: 0,
+          },
         },
       },
     );

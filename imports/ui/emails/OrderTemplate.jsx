@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import Oy, { Table, TBody, TR, TD, Img } from 'oy-vey';
 import moment from 'moment';
-import { headerText, tableText, tableHeader, regularText, tableStyle } from './styles/emailStyles';
+import { headerText, tableText, tableHeader, regularText, tableStyle, lineThrough } from './styles/emailStyles';
 
 const propTypes = {
   userName: PropTypes.string,
@@ -10,6 +10,7 @@ const propTypes = {
   eventDate: PropTypes.string,
   totalPrice: PropTypes.number,
   items: PropTypes.arrayOf(Object),
+  discount: PropTypes.number,
 };
 
 const OrderTemplate = (props) => {
@@ -59,7 +60,13 @@ const OrderTemplate = (props) => {
       </TR>
       <TR>
         <TD align="center">
-          <span style={regularText}>Total price: { props.totalPrice }</span>
+          { !props.discount ?
+            <span style={regularText}>Total price: { props.totalPrice }$</span> :
+            <span style={regularText}>Total price:
+              <span style={lineThrough}>{ props.totalPrice }$</span>
+              <span>{ props.totalPrice - props.discount }$({props.discount}$ discount)</span>
+            </span>
+          }
         </TD>
       </TR>
       <TR>
@@ -68,7 +75,7 @@ const OrderTemplate = (props) => {
         </TD>
       </TR>
       <TR>
-        <TD align="center">
+        <TD>
           <Img
             src={FlowRouter.url('/:image', { image: '/images/logo.png' })}
             height={100}
