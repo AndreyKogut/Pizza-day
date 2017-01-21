@@ -14,8 +14,12 @@ function handleMethodsCallbacks(handledFunction = () => {}) {
           }
           case 403: {
             switch (err.reason) {
+              case 'No participants': {
+                errorText = 'Event has 0 orders';
+                break;
+              }
               case 'Invalid email': {
-                errorText = 'Such email don not exist';
+                errorText = 'Such email does not exist';
                 break;
               }
               case 'User not found': {
@@ -46,7 +50,7 @@ function handleMethodsCallbacks(handledFunction = () => {}) {
                 errorText = 'No such email and password combination';
                 break;
               }
-              case 'Email already exists' : {
+              case 'Email already exists.' : {
                 errorText = 'Email already exist';
                 break;
               }

@@ -60,7 +60,7 @@ function sendOrders(eventId) {
     discountsTotal += discount;
     try {
       Email.send({
-        from: 'an_ko_ol@meta.ua',
+        from: Meteor.settings.from,
         to: email,
         subject: 'Menu order',
         html: orderEmail({
@@ -88,21 +88,25 @@ function sendOrders(eventId) {
     }))
     .value();
 
-  try {
-    Email.send({
-      from: 'an_ko_ol@meta.ua',
-      to: creatorAddress,
-      subject: 'Event ordered',
-      html: ownerEmail({
-        userName: creator.profile.name,
-        eventName,
-        eventDate,
-        items: eventItemsToOwner,
-        totalPrice: ordersTotal,
-        discount: discountsTotal,
-      }),
-    });
-  } catch (err) { /* not me */ }
+  if (eventMenuItems.length) {
+    try {
+      Email.send({
+        from: Meteor.settings.from,
+        to: creatorAddress,
+        subject: 'Event ordered',
+        html: ownerEmail({
+          userName: creator.profile.name,
+          eventName,
+          eventDate,
+          items: eventItemsToOwner,
+          totalPrice: ordersTotal,
+          discount: discountsTotal,
+        }),
+      });
+    } catch (err) { /* not me */ }
+  } else {
+    throw new Meteor.Error(403, 'No participants');
+  }
 }
 
 export default sendOrders;

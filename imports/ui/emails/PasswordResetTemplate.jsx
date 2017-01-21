@@ -22,12 +22,11 @@ const PasswordResetTemplate = ({ user, link }) =>
         </TD>
       </TR>
       <TR>
-        <TD>
+        <TD align="center">
           <Img
             src={FlowRouter.url('/:image', { image: '/images/logo.png' })}
             height={100}
             width={100}
-            align="center"
             alt="Pizza-day logo"
           />
         </TD>

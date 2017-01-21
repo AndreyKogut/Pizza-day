@@ -129,11 +129,8 @@ Meteor.methods({
         _id: requestData.id,
       }, {
         $pull: { participants: { ordered: false } },
-      }, (err) => {
-        if (!err) {
-          sendOrders(requestData.id);
-        }
       });
+      sendOrders(requestData.id);
     }
   },
 

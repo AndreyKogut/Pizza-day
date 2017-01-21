@@ -3,5 +3,6 @@
     "client_id": "96769035741-0m624p4elv9sfre7bgfi8ija9kfc9i71.apps.googleusercontent.com",
     "client_secret": "oJbk9pQEB0Tl8nBzvlf8JqYz"
   },
-  "smtp": "smtp://postmaster@sandbox53bc9fd5f8804fc485365ba744d51a41.mailgun.org:3293016dabd40149ed7d3feb3b9a1c37@smtp.mailgun.org:587"
+  "smtp": "smtp://an_ko_ol@mail.ru:sgh_u700v@smtp.mail.ru:465",
+  "from": "Pizza day <an_ko_ol@mail.ru>"
 }

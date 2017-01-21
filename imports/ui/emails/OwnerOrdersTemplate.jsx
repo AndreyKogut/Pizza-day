@@ -63,9 +63,9 @@ const OwnerOrdersTemplate = (props) => {
           <span style={regularText}>Total price: { props.totalPrice }$</span>
         </TD>
       </TR>
-      { props.discount &&
+      { props.discount !== 0 &&
         <TR>
-          <TD align="center">
+          <TD>
             <span style={regularText}>You gave coupons for { props.discount }$</span>
           </TD>
         </TR> }

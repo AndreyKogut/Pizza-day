@@ -69,7 +69,7 @@ const EventPage = (props) => {
     Meteor.call('events.updateStatus', {
       id: props.eventId,
       status: event.target.value,
-    });
+    }, handleMethodsCallbacks());
   }
 
   function enterData(func) {

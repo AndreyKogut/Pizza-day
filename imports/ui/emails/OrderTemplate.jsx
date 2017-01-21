@@ -60,13 +60,12 @@ const OrderTemplate = (props) => {
       </TR>
       <TR>
         <TD align="center">
-          { !props.discount ?
-            <span style={regularText}>Total price: { props.totalPrice }$</span> :
+          { props.discount !== 0 ?
             <span style={regularText}>Total price:
               <span style={lineThrough}>{ props.totalPrice }$</span>
               <span>{ props.totalPrice - props.discount }$({props.discount}$ discount)</span>
-            </span>
-          }
+            </span> :
+            <span style={regularText}>Total price { props.totalPrice }$</span> }
         </TD>
       </TR>
       <TR>
@@ -75,7 +74,7 @@ const OrderTemplate = (props) => {
         </TD>
       </TR>
       <TR>
-        <TD>
+        <TD align="center">
           <Img
             src={FlowRouter.url('/:image', { image: '/images/logo.png' })}
             height={100}

@@ -70,7 +70,9 @@ Meteor.methods({
     try {
       Accounts.sendVerificationEmail(userId, email);
     } catch (err) {
-      console.log(err);
+      Meteor.users.remove({ _id: userId });
+
+      throw new Meteor.Error(403, 'Invalid email');
     }
 
     return {
@@ -138,7 +140,6 @@ Meteor.methods({
     try {
       Accounts.sendVerificationEmail(this.userId);
     } catch (err) {
-      console.log(err);
       throw new Meteor.Error(403, 'All emails verified');
     }
   },
@@ -164,11 +165,7 @@ Meteor.methods({
       throw new Meteor.Error(403, 'User not found');
     }
 
-    try {
-      Accounts.sendResetPasswordEmail(user._id, email);
-    } catch (err) {
-      console.log(err);
-    }
+    Accounts.sendResetPasswordEmail(user._id, email);
   },
 });
 
