@@ -43,3 +43,10 @@ zodiase:mdl
 email
 reactive-dict
 meteorhacks:subs-manager
+practicalmeteor:mocha
+dburles:factory
+practicalmeteor:faker
+hwillson:stub-collections
+practicalmeteor:sinon
+practicalmeteor:chai
+xolvio:cleaner

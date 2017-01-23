@@ -7,6 +7,7 @@
     "pretest": "npm run lint --silent"
   },
   "dependencies": {
+    "faker": "^3.1.0",
     "meteor-node-stubs": "~0.2.0",
     "oy-vey": "^0.7.0",
     "react": "^15.3.2",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "babel-eslint": "^7.1.1",
     "babel-preset-stage-2": "^6.18.0",
+    "enzyme": "^2.7.0",
     "eslint": "^3.12.2",
     "eslint-config-airbnb": "^13.0.0",
     "eslint-import-resolver-meteor": "^0.3.4",

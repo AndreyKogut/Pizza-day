@@ -104,16 +104,7 @@ Meteor.methods({
 
     check(requestData, requestDataStructure);
 
-    if (requestData.email) {
-      const exist = Meteor.users.findOne({ 'emails.address': requestData.email });
-
-      if (exist) {
-        throw new Meteor.Error(403, 'Email already exists');
-      }
-    }
-
     const updateFields = {
-      emails: requestData.email ? [{ address: requestData.email, verified: false }] : '',
       'profile.name': requestData.name,
       'profile.avatar': requestData.avatar,
       'profile.about': requestData.about,

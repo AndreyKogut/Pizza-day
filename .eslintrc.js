@@ -16,8 +16,9 @@ module.exports = {
   "env": {
     "browser": true,
     "es6": true,
+    "mocha": true,
     "meteor": true,
-    "node": true
+    "node": true,
   },
   "rules": {
     'import/extensions': 0,
