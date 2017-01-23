@@ -5,18 +5,11 @@ import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { stubs } from 'meteor/practicalmeteor:sinon';
-import { expect } from 'meteor/practicalmeteor:chai';
-import faker from 'faker';
+import { expect, should } from 'meteor/practicalmeteor:chai';
+import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
+import Groups from '../groups/collection';
+import Events from '../events/collection';
 import './methods';
-
-Factory.define('users', Meteor.users, {
-  email: () => faker.internet.email(),
-  password: () => faker.internet.password(),
-  name: () => faker.name.findName(),
-  company: () => faker.company.companyName(),
-  position: () => faker.name.jobTitle(),
-  about: () => faker.lorem.sentences(),
-});
 
 describe('Users collection/methods testing', function () {
   after(function () {
@@ -46,18 +39,6 @@ describe('Users collection/methods testing', function () {
   });
 
   describe('Updating user', function () {
-    const user = Factory.tree('users');
-    const creation = new Promise((resolve, reject) => {
-      Meteor.call('user.insert', user, (err) => {
-        if (err) {
-          reject(err);
-        }
-
-        const currentUser = Meteor.users.findOne();
-        resolve(currentUser);
-      });
-    });
-
     it('Update unauthorized user got unauthorized', function () {
       return expect(
           () => Meteor.call('user.update', {}),
@@ -65,60 +46,165 @@ describe('Users collection/methods testing', function () {
     });
 
     it('Update unverified user got unverified', function () {
-      return creation.then(function (res) {
-        expect(
-          () => Meteor.server.method_handlers['user.update'].call({ userId: res._id }, {}),
+      const unverifiedEmail = Factory.tree('email', { verified: false });
+      const user = Factory.create('user', { emails: [unverifiedEmail] });
+
+      return expect(
+          () => Meteor.server.method_handlers['user.update'].call({ userId: user._id }, {}),
         ).to.throw('Unverified');
-      });
     });
 
     describe('Signed and verified user updates', function () {
+      let userId = null;
+
       before(function () {
-        const verifiedUser = { emails: [{
-          verified: true,
-        }] };
-        stubs.create('findOne', Meteor.users, 'findOne');
-        stubs.findOne.returns(verifiedUser);
+        resetDatabase();
+        const user = Factory.create('user');
+        userId = user._id;
       });
+
+      it('Update user with empty object got error', function () {
+        return expect(
+            () => Meteor.server.method_handlers['user.update'].call({ userId }, {}),
+        ).to.throw();
+      });
+
+      it('Update user profile name', function () {
+        return Meteor.server.method_handlers['user.update'].call({ userId }, { name: 'New' });
+      });
+
+      it('Update user profile company', function () {
+        return Meteor.server.method_handlers['user.update'].call({ userId }, { company: 'New' });
+      });
+
+      it('Update user profile position', function () {
+        return Meteor.server.method_handlers['user.update'].call({ userId }, { position: 'New' });
+      });
+
+      it('Update user profile about', function () {
+        return Meteor.server.method_handlers['user.update'].call({ userId }, { about: 'New' });
+      });
+
+      it('Update user profile avatar', function () {
+        return Meteor.server.method_handlers['user.update'].call({ userId }, { avatar: 'New' });
+      });
+    });
+  });
+
+  describe('Users publications', function () {
+    describe('Users publications for not registered user', function () {
+      let insertedUsers;
+      before(function () {
+        resetDatabase();
+        insertedUsers = _.times(3, () => Factory.create('user'));
+      });
+
+      it('User publication return empty cursor', function () {
+        const collector = new PublicationCollector();
+
+        return collector.collect('User', insertedUsers[0]._id, (collections) => {
+          should().not.exist(collections.users);
+        });
+      });
+
+      it('UsersList publication return empty cursor', function () {
+        const collector = new PublicationCollector();
+
+        return collector.collect('UsersList', {}, (collections) => {
+          should().not.exist(collections.users);
+        });
+      });
+
+      it('UsersListFilter publication return empty cursor', function () {
+        const collector = new PublicationCollector();
+
+        return collector.collect('UsersListFilter', {}, (collections) => {
+          should().not.exist(collections.users);
+        });
+      });
+
+      it('GroupMembers publication return empty cursor', function () {
+        const collector = new PublicationCollector();
+
+        return collector.collect('GroupMembers', 'id', (collections) => {
+          should().not.exist(collections.users);
+        });
+      });
+
+      it('EventParticipant publication return empty cursor', function () {
+        const collector = new PublicationCollector();
+
+        return collector.collect('EventParticipant', 'id', (collections) => {
+          should().not.exist(collections.users);
+        });
+      });
+    });
+
+    describe('Users publications for signed user', function () {
+      let insertedUsers;
+
+      before(function () {
+        resetDatabase();
+        insertedUsers = _.times(3, () => Factory.create('user'));
+
+        const participants = _.times(3, i => Factory.build('participant', { _id: insertedUsers[i]._id }));
+        stubs.create('eventFind', Events, 'findOne');
+        stubs.eventFind.returns({ participants });
+
+        const members = _.times(3, i => Factory.build('member', { _id: insertedUsers[i]._id }));
+        stubs.create('groupFind', Groups, 'findOne');
+        stubs.groupFind.returns({ members });
+      });
+
       after(function () {
         stubs.restoreAll();
       });
 
-      it('Update user with empty object got error', function () {
-        return creation.then(function (res) {
-          expect(
-            () => Meteor.server.method_handlers['user.update'].call({ userId: res._id }, {}),
-          ).to.throw();
+      it('User publication return user', function () {
+        const collector = new PublicationCollector({ userId: insertedUsers[0]._id });
+
+        return collector.collect('User', insertedUsers[0]._id, (collections) => {
+          expect(collections.users).to.have.lengthOf(1);
         });
       });
 
-      it('Update user profile name', function () {
-        return creation.then(function (res) {
-          Meteor.server.method_handlers['user.update'].call({ userId: res._id }, { name: 'New' });
+      it('UsersList publication return 2/3 users', function () {
+        const collector = new PublicationCollector({ userId: insertedUsers[0]._id });
+
+        return collector.collect('UsersList', {}, (collections) => {
+          expect(collections.users).to.have.lengthOf(2);
         });
       });
 
-      it('Update user profile company', function () {
-        return creation.then(function (res) {
-          Meteor.server.method_handlers['user.update'].call({ userId: res._id }, { company: 'New' });
+      it('UsersListFilter publication return user number 2 when filter match his name', function () {
+        const collector = new PublicationCollector({ userId: insertedUsers[0]._id });
+
+        const filter = {
+          filter: {
+            email: insertedUsers[1].emails[0].address,
+            name: '',
+          },
+          limiter: 3,
+        };
+
+        return collector.collect('UsersListFilter', filter, (collections) => {
+          expect(collections.users).to.have.lengthOf(1);
         });
       });
 
-      it('Update user profile position', function () {
-        return creation.then(function (res) {
-          Meteor.server.method_handlers['user.update'].call({ userId: res._id }, { position: 'New' });
+      it('GroupMembers publication return 3/3 users', function () {
+        const collector = new PublicationCollector({ userId: insertedUsers[0]._id });
+
+        return collector.collect('GroupMembers', 'id', (collections) => {
+          expect(collections.users).to.have.lengthOf(3);
         });
       });
 
-      it('Update user profile about', function () {
-        return creation.then(function (res) {
-          Meteor.server.method_handlers['user.update'].call({ userId: res._id }, { about: 'New' });
-        });
-      });
+      it('EventParticipant publication return 3/3 users', function () {
+        const collector = new PublicationCollector({ userId: insertedUsers[0]._id });
 
-      it('Update user profile avatar', function () {
-        return creation.then(function (res) {
-          Meteor.server.method_handlers['user.update'].call({ userId: res._id }, { avatar: 'New' });
+        return collector.collect('EventParticipant', 'id', (collections) => {
+          expect(collections.users).to.have.lengthOf(3);
         });
       });
     });

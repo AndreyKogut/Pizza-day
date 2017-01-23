@@ -160,6 +160,16 @@ Meteor.methods({
   },
 });
 
+Meteor.publish('User', function publishUser(id) {
+  check(id, Match.Where(notEmpty));
+
+  if (!this.userId) {
+    return this.ready();
+  }
+
+  return Meteor.users.find(id);
+});
+
 Meteor.publish('UsersList', function publishUsers() {
   if (!this.userId) {
     return this.ready();
@@ -230,10 +240,4 @@ Meteor.publish('EventParticipant', function publishEventParticipants(eventId) {
     _id: { $in: [...participants] },
     'emails.verified': true,
   }, { fields: { emails: 1, profile: 1 } });
-});
-
-Meteor.publish('user', (id) => {
-  check(id, Match.Where(notEmpty));
-
-  return Meteor.users.find(id);
 });

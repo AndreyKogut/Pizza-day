@@ -203,7 +203,7 @@ const UserCabinet = (props) => {
 UserCabinet.propTypes = propTypes;
 
 const UserCabinetContainer = createContainer(({ id }) => {
-  const handleUser = usersSubsManager.subscribe('user', id);
+  const handleUser = usersSubsManager.subscribe('User', id);
 
   const user = Meteor.users.findOne(id) || {};
 
