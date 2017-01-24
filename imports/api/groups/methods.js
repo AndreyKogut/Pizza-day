@@ -56,7 +56,6 @@ Meteor.methods({
           name: Match.Maybe(Match.Where(notEmpty)),
           description: Match.Maybe(Match.Where(notEmpty)),
           avatar: Match.Maybe(Match.Where(notEmpty)),
-          menu: Match.Maybe([Match.Where(notEmpty)]),
         });
       } catch (err) {
         throw new Meteor.Error(400, `Invalid ${err.path}`);
@@ -213,6 +212,7 @@ Meteor.methods({
       multi: true,
     });
   },
+
   'groups.join': function joinGroup(id) {
     check(id, Match.Where(notEmpty));
 
@@ -220,13 +220,22 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Unauthorized');
     }
 
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
+
     Groups.update({ _id: id, 'members._id': this.userId }, { $set: { 'members.$.verified': true } });
   },
+
   'groups.leave': function leaveGroup(id) {
     check(id, Match.Where(notEmpty));
 
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
+    }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
     }
 
     Groups.update({ _id: id },

@@ -18,7 +18,7 @@ Factory.define('participant', null, {
   ordered: false,
 });
 
-Factory.define('users', Meteor.users, {
+Factory.define('user', null, {
   email: () => faker.internet.email(),
   password: () => faker.internet.password(),
   name: () => faker.name.findName(),
@@ -27,7 +27,7 @@ Factory.define('users', Meteor.users, {
   about: () => faker.lorem.sentences(),
 });
 
-Factory.define('user', Meteor.users, {
+Factory.define('users', Meteor.users, {
   emails: [() => Factory.tree('email')],
   profile: {
     name: () => faker.name.findName(),

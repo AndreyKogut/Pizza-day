@@ -18,7 +18,7 @@ describe('Users collection/methods testing', function () {
 
   describe('Creating user', function () {
     it('Creating user with full info', function () {
-      const user = Factory.tree('users');
+      const user = Factory.tree('user');
 
       return Meteor.call('user.insert', user);
     });
@@ -30,7 +30,7 @@ describe('Users collection/methods testing', function () {
     });
 
     it('Get error creating user without name', function () {
-      const user = Factory.tree('users', { name: '' });
+      const user = Factory.tree('user', { name: '' });
 
       return expect(
         () => Meteor.call('user.insert', user),
@@ -47,7 +47,7 @@ describe('Users collection/methods testing', function () {
 
     it('Update unverified user got unverified', function () {
       const unverifiedEmail = Factory.tree('email', { verified: false });
-      const user = Factory.create('user', { emails: [unverifiedEmail] });
+      const user = Factory.create('users', { emails: [unverifiedEmail] });
 
       return expect(
           () => Meteor.server.method_handlers['user.update'].call({ userId: user._id }, {}),
@@ -59,7 +59,7 @@ describe('Users collection/methods testing', function () {
 
       before(function () {
         resetDatabase();
-        const user = Factory.create('user');
+        const user = Factory.create('users');
         userId = user._id;
       });
 
@@ -96,7 +96,7 @@ describe('Users collection/methods testing', function () {
       let insertedUsers;
       before(function () {
         resetDatabase();
-        insertedUsers = _.times(3, () => Factory.create('user'));
+        insertedUsers = _.times(3, () => Factory.create('users'));
       });
 
       it('User publication return empty cursor', function () {
@@ -145,7 +145,7 @@ describe('Users collection/methods testing', function () {
 
       before(function () {
         resetDatabase();
-        insertedUsers = _.times(3, () => Factory.create('user'));
+        insertedUsers = _.times(3, () => Factory.create('users'));
 
         const participants = _.times(3, i => Factory.build('participant', { _id: insertedUsers[i]._id }));
         stubs.create('eventFind', Events, 'findOne');
