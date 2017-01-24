@@ -362,7 +362,7 @@ describe('Events collection/methods testing', function () {
         });
       });
 
-      describe('Get error if event was ordered', function () {
+      describe('No errors is event ordering', function () {
         before(function () {
           const participant = Factory.build('participant', { _id: userId });
           const event = Factory.create('events', {

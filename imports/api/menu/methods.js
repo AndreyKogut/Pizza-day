@@ -91,7 +91,7 @@ Meteor.publish('OrderMenu', function publishOrder(id) {
 
   const order = Orders.findOne({ _id: id }) || {};
 
-  if (this.userId !== order.userId) {
+  if (!this.userId || (this.userId !== order.userId)) {
     return this.ready();
   }
 
