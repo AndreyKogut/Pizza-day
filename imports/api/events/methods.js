@@ -77,11 +77,11 @@ Meteor.methods({
 
     const { id, ...fieldsToUpdate } = requestData;
 
-    const group = Events.findOne({
+    const event = Events.findOne({
       _id: id,
     });
 
-    if (group.creator !== this.userId) {
+    if (event.creator !== this.userId) {
       throw new Meteor.Error(403, 'Not owner');
     }
 
@@ -153,7 +153,7 @@ Meteor.methods({
     const groupMembers = Groups.findOne({ _id: event.groupId }).members;
 
     const isMember = _.some(groupMembers, member => _.isEqual(member, {
-      _id: Meteor.userId(),
+      _id: this.userId,
       verified: true,
     }));
 
@@ -266,13 +266,17 @@ Meteor.methods({
       return true;
     });
 
-    check(requestData, requestDataStructure);
-
-    const { eventId, userId, ...coupon } = requestData;
-
     if (!this.userId) {
       throw new Meteor.Error(403, 'Unauthorized');
     }
+
+    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
+      throw new Meteor.Error(403, 'Unverified');
+    }
+
+    check(requestData, requestDataStructure);
+
+    const { eventId, userId, ...coupon } = requestData;
 
     const event = Events.findOne(eventId) || {};
 
@@ -299,8 +303,12 @@ Meteor.methods({
   },
 });
 
-Meteor.publish('GroupEvents', (id) => {
+Meteor.publish('GroupEvents', function groupEvents(id) {
   check(id, Match.Where(notEmpty));
+
+  if (!this.userId) {
+    return this.ready();
+  }
 
   return Events.find({ groupId: id });
 });
@@ -316,11 +324,15 @@ Meteor.publish('Events', function getEvents() {
 Meteor.publish('Event', function publishEvent(id) {
   check(id, Match.Where(notEmpty));
 
+  if (!this.userId) {
+    return this.ready();
+  }
+
   const groupId = Events.findOne({ _id: id }).groupId;
   const group = Groups.findOne({ _id: groupId });
 
   const groupMember = _.some(group.members, member => _.isEqual(member, {
-    _id: Meteor.userId,
+    _id: this.userId,
     verified: true,
   }));
 
@@ -328,11 +340,5 @@ Meteor.publish('Event', function publishEvent(id) {
     return this.ready();
   }
 
-  return Events.find({ _id: id,
-    $or: [{
-      'participants._id': this.userId,
-    }, {
-      creator: this.userId,
-    }],
-  });
+  return Events.find({ _id: id });
 });

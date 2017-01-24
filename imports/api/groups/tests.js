@@ -43,6 +43,14 @@ describe('Groups collection/methods testing', function () {
         () => Meteor.server.method_handlers['groups.insert'].call({ userId: user._id }, group),
       ).to.throw('Invalid name');
     });
+
+    it('Create group', function () {
+      const group = Factory.tree('group');
+      const user = Factory.create('users');
+
+      return Meteor.server.method_handlers['groups.insert']
+        .call({ userId: user._id }, group);
+    });
   });
 
   describe('Groups methods', function () {

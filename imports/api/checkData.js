@@ -13,7 +13,7 @@ const dateNotPass =
       return requestDate.getTime() > currentDate.getTime();
     }
 
-    return true;
+    return false;
   };
 
 export { notEmpty, dateIsValid, dateNotPass };
