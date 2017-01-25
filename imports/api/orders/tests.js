@@ -3,16 +3,22 @@
 import { Meteor } from 'meteor/meteor';
 import { Factory } from 'meteor/dburles:factory';
 import { expect, should } from 'meteor/practicalmeteor:chai';
+import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import './methods';
 
 describe('Orders collection/methods testing', function () {
+  after(function () {
+    resetDatabase();
+  });
+
   describe('Creating order', function () {
     let userId = null;
     let verifiedUserId = null;
 
     before(function () {
-      const unverifiedEmail = Factory.build('email', { verified: false });
+      resetDatabase();
+      const unverifiedEmail = Factory.tree('email', { verified: false });
       const unverifiedUser = Factory.create('users', { emails: [unverifiedEmail] });
       userId = unverifiedUser._id;
 
@@ -62,7 +68,8 @@ describe('Orders collection/methods testing', function () {
     let verifiedUserId = null;
 
     before(function () {
-      const unverifiedEmail = Factory.build('email', { verified: false });
+      resetDatabase();
+      const unverifiedEmail = Factory.tree('email', { verified: false });
       const unverifiedUser = Factory.create('users', { emails: [unverifiedEmail] });
       userId = unverifiedUser._id;
 
@@ -72,13 +79,13 @@ describe('Orders collection/methods testing', function () {
 
     it('Get unauthorized for not signed in user', function () {
       return expect(
-        () => Meteor.call('orders.insert'),
+        () => Meteor.call('orders.remove', 'orderId'),
       ).to.throw('Unauthorized');
     });
 
     it('Get unverified for user without verified email', function () {
       return expect(
-        () => Meteor.server.method_handlers['orders.insert'].call({ userId }, 'id'),
+        () => Meteor.server.method_handlers['orders.remove'].call({ userId }, 'id'),
       ).to.throw('Unverified');
     });
 
@@ -86,8 +93,8 @@ describe('Orders collection/methods testing', function () {
       const order = Factory.create('orders');
 
       return expect(
-        () => Meteor.server.method_handlers['orders.insert'].call({ userId: verifiedUserId }, order._id),
-      ).to.throw();
+        () => Meteor.server.method_handlers['orders.remove'].call({ userId: verifiedUserId }, order._id),
+      ).to.throw('Not owner');
     });
 
     it('Remove', function () {
@@ -100,25 +107,18 @@ describe('Orders collection/methods testing', function () {
 
   describe('Orders publications', function () {
     const userId = 'id';
-    let ovnedOrderId = null;
+    let ownedOrderId = null;
     let orderId = null;
 
     before(function () {
+      resetDatabase();
       const order = Factory.create('orders');
       orderId = order._id;
       const ownedOrder = Factory.create('orders', { userId });
-      ovnedOrderId = ownedOrder._id;
+      ownedOrderId = ownedOrder._id;
     });
 
-    it('Get order if unauthorized', function () {
-      const collector = new PublicationCollector();
-
-      return collector.collect('Order', 'id', (collections) => {
-        should().not.exist(collections.orders);
-      });
-    });
-
-    it('Get order if unauthorized', function () {
+    it('Get empty cursor if unauthorized', function () {
       const collector = new PublicationCollector();
 
       return collector.collect('Order', 'id', (collections) => {
@@ -137,7 +137,7 @@ describe('Orders collection/methods testing', function () {
     it('Get order', function () {
       const collector = new PublicationCollector({ userId });
 
-      return collector.collect('Order', ovnedOrderId, (collections) => {
+      return collector.collect('Order', ownedOrderId, (collections) => {
         expect(collections.orders).have.lengthOf(1);
       });
     });

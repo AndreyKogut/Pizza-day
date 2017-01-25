@@ -10,6 +10,10 @@ import Orders from '../orders/collection';
 import './methods';
 
 describe('Menu publications testing', function () {
+  after(function () {
+    resetDatabase();
+  });
+
   describe('For unauthorized user', function () {
     before(function () {
       resetDatabase();
@@ -91,6 +95,10 @@ describe('Menu publications testing', function () {
       groupId = group._id;
       const event = Factory.create('events', { groupId, menu: menuIds });
       eventId = event._id;
+    });
+
+    after(function () {
+      stubs.restoreAll();
     });
 
     it('GroupMenu publication return 3/3 items', function () {
