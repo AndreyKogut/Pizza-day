@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import UserListItem from '../../ui/components/UserListItem';
-import UserPickerFilter from '../../ui/components/UserListFilter';
-import UsersListGlobalContainer from '../../ui/components/UsersListGlobal';
+import UserListItem from '../items/UserListItem';
+import UserPickerFilter from '../filters/UserListFilter';
+import UsersListGlobalContainer from '../lists/UsersListGlobal';
 
 const propTypes = {
   getUsersList: PropTypes.func,
@@ -23,7 +23,7 @@ class UserPicker extends Component {
         email: '',
         name: '',
       },
-      limiter: 10,
+      limiter: 20,
     };
   }
 

@@ -328,8 +328,13 @@ Meteor.publish('Event', function publishEvent(id) {
     return this.ready();
   }
 
-  const groupId = Events.findOne({ _id: id }).groupId;
-  const group = Groups.findOne({ _id: groupId });
+  const event = Events.findOne({ _id: id });
+
+  if (!event) {
+    return this.ready();
+  }
+
+  const group = Groups.findOne({ _id: event.groupId });
 
   const groupMember = _.some(group.members, member => _.isEqual(member, {
     _id: this.userId,

@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
-import { menuSubsManager } from '../../lib/subsManager';
-import Menu from '../../api/menu/collection';
+import { menuSubsManager } from '../../../lib/subsManager';
+import Menu from '../../../api/menu/collection';
 
 const propTypes = {
   items: PropTypes.arrayOf(Object),

@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-import { usersSubsManager } from '../../lib/subsManager';
-import UserListItem from '../components/UserListItem';
+import { usersSubsManager } from '../../../lib/subsManager';
+import UserListItem from '../items/UserListItem';
 
 const propTypes = {
   items: PropTypes.arrayOf(Object),

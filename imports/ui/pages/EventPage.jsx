@@ -5,7 +5,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import moment from 'moment';
 import { eventsSubsManager } from '../../lib/subsManager';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
-import { OrderMenuPicker } from '../components/MenuPicker';
+import { OrderMenuPicker } from '../components/pickers/MenuPicker';
 import { OrderInfoContainer } from '../components/OrderInfo';
 import Events from '../../api/events/collection';
 import Controls from '../../ui/components/Controls';
@@ -80,6 +80,10 @@ const EventPage = (props) => {
 
       return true;
     };
+  }
+
+  if (!props.eventLoading && !props.eventId) {
+    return <div className="not-found">Event not found</div>;
   }
 
   if (props.eventLoading) {
@@ -251,7 +255,7 @@ const EventPageContainer = createContainer(({ eventId }) => {
   const participant = _.findWhere(event.participants, { _id: Meteor.userId() });
 
   return {
-    eventId,
+    eventId: event._id,
     orderId: participant ? participant.order : null,
     ...event,
     isParticipant: !!participant,

@@ -2,9 +2,9 @@ import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
-import MenuPickerGlobal from '../components/MenuPickerGlobal';
-import ImagePicker from '../components/ImagePicker';
-import UserPicker from '../components/UserPicker';
+import MenuPickerGlobal from '../components/pickers/MenuPickerGlobal';
+import ImagePicker from '../components/pickers/ImagePicker';
+import UserPicker from '../components/pickers/UserPicker';
 
 const CreateGroup = () => {
   function successCreateCallback(id) {

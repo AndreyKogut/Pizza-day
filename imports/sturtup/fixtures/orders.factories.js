@@ -1,6 +1,6 @@
 import { Factory } from 'meteor/dburles:factory';
 import faker from 'faker';
-import Orders from './collection';
+import Orders from '../../api/orders/collection';
 
 Factory.define('orders', Orders, {
   eventId: () => faker.random.uuid(),

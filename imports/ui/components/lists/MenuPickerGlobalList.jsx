@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
-import { menuSubsManager } from '../../lib/subsManager';
-import Menu from '../../api/menu/collection';
+import { menuSubsManager } from '../../../lib/subsManager';
+import Menu from '../../../api/menu/collection';
 
 const propTypes = {
   items: PropTypes.arrayOf(Object),
@@ -56,7 +56,7 @@ const MenuPickerGlobalList = (props) => {
       const scrollPosition = event.target.scrollTop;
       const maxScrollHeight = event.target.scrollHeight - event.target.offsetHeight;
       if (scrollPosition >= maxScrollHeight) {
-        props.updateLimiter(props.limiter + 10);
+        props.updateLimiter(props.limiter + 20);
       }
     }
   }
@@ -87,17 +87,17 @@ MenuPickerGlobalList.defaultProps = defaultProps;
 
 const MenuPickerGlobalListContainer =
   createContainer(({ hideItems = [], getMenuList, filter, limiter, ...props }) => {
-    const handleMenu = menuSubsManager.subscribe('MenuFiltered', { filter, limiter });
+    const handleMenu = menuSubsManager.subscribe('MenuFiltered', { hideItems, filter, limiter });
     const menuItems = Menu.find({
       _id: { $nin: hideItems },
       name: { $regex: `.*${filter.name}.*` },
       price: { $gte: filter.gte, $lte: filter.lte },
-    }, { limit: limiter }).fetch();
+    }).fetch();
 
     return {
       ...props,
       limiter,
-      notLoaded: menuItems.length === limiter,
+      notLoaded: menuItems.length >= limiter,
       items: menuItems,
       getMenuList,
       menuLoading: !handleMenu.ready(),

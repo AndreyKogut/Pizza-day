@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { FS } from 'meteor/cfs:base-package';
-import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
-import showMessage from '../../helpers/showMessage';
-import Avatars from '../../api/avatars/collection';
+import handleMethodsCallbacks from '../../../helpers/handleMethodsCallbacks';
+import showMessage from '../../../helpers/showMessage';
+import Avatars from '../../../api/avatars/collection';
 
 const propTypes = {
   currentImageUrl: PropTypes.string,
@@ -66,7 +66,6 @@ class ImagePicker extends Component {
 
     if (this.state.errors < 5) {
       setTimeout(() => {
-        // TODO: find a solution how to create image upload callback(full image)
         this.setState({ imageUrl: '', errors: this.state.errors + 1 });
         this.setState({ imageUrl: image });
       }, 500);

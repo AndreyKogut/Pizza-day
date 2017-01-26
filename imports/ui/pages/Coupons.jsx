@@ -4,8 +4,8 @@ import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { eventsSubsManager } from '../../lib/subsManager';
 import Events from '../../api/events/collection';
-import { EventUsersList } from '../../ui/components/UsersList';
-import { EventMenuList } from '../../ui/components/MenuList';
+import { EventUsersList } from '../components/lists/UsersList';
+import { EventMenuList } from '../components/lists/MenuList';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 import showMessage from '../../helpers/showMessage';
 

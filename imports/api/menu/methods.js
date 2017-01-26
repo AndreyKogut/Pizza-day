@@ -30,6 +30,7 @@ Meteor.publish('Menu', () => Menu.find());
 Meteor.publish('MenuFiltered', (request) => {
   const checkData = Match.Where((data) => {
     check(data, {
+      hideItems: Match.Maybe([String]),
       filter: {
         gte: Number,
         lte: Number,
@@ -44,6 +45,7 @@ Meteor.publish('MenuFiltered', (request) => {
   check(request, checkData);
 
   return Menu.find({
+    _id: { $nin: [...request.hideItems || ''] },
     name: { $regex: `.*${request.filter.name}.*` },
     price: { $gte: request.filter.gte, $lte: request.filter.lte },
   }, { limit: request.limiter });

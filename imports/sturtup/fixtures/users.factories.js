@@ -31,6 +31,7 @@ Factory.define('users', Meteor.users, {
   emails: [() => Factory.tree('email')],
   profile: {
     name: () => faker.name.findName(),
+    avatar: () => faker.internet.avatar(),
     company: () => faker.company.companyName(),
     position: () => faker.name.jobTitle(),
     about: () => faker.lorem.sentences(),

@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { eventsSubsManager } from '../../lib/subsManager';
-import EventsList from '../components/EventsList';
+import EventsList from '../components/lists/EventsList';
 import Events from '../../api/events/collection';
 
 const propTypes = {

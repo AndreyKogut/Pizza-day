@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { groupsSubsManager } from '../../lib/subsManager';
-import { GroupMenuPicker } from '../components/MenuPicker';
+import { GroupMenuPicker } from '../components/pickers/MenuPicker';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 import Groups from '../../api/groups/collection';
 

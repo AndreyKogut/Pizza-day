@@ -51,6 +51,9 @@ const UserCabinet = (props) => {
       handleMethodsCallbacks(() => { showMessage('Reset password link sent'); }),
     );
   }
+  if (!props.userDataLoading && !props.id) {
+    return <div className="not-found">User not found</div>;
+  }
 
   if (props.userDataLoading) {
     return <div className="spinner mdl-spinner mdl-js-spinner is-active" />;
@@ -222,7 +225,7 @@ const UserCabinetContainer = createContainer(({ id }) => {
   });
 
   return {
-    id,
+    id: user._id,
     user,
     userDataLoading: !handleUser.ready(),
   };

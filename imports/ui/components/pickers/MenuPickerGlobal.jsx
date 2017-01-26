@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import MenuPickerFilter from '../../ui/components/MenuPickerFilter';
-import MenuPickerGlobalList from '../../ui/components/MenuPickerGlobalList';
+import MenuPickerFilter from '../filters/MenuPickerFilter';
+import MenuPickerGlobalList from '../lists/MenuPickerGlobalList';
 
 const propTypes = {
   getMenuList: PropTypes.func,
@@ -21,7 +21,7 @@ class MenuPickerGlobal extends Component {
         gte: 0,
         lte: Number.POSITIVE_INFINITY,
       },
-      limiter: 10,
+      limiter: 30,
     };
   }
 

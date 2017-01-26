@@ -1,6 +1,15 @@
+.mdl-layout__content {
+  z-index: initial;
+}
+
 .content.page-content {
   max-width: 1200px;
   margin: auto;
+}
+
+.mdl-data-table td {
+  white-space: normal;
+  text-align: left;
 }
 
 .group-card {
@@ -119,6 +128,10 @@
   align-self: center;
   height: 100%;
   justify-content: flex-end;
+  &__buttons {
+    margin: 10px 0;
+  }
+
   & > * {
     align-self: center;
     white-space: pre;
@@ -149,6 +162,8 @@
     padding: 20px;
     box-sizing: border-box;
   }
+
+  &__buttons {}
 }
 
 .correct-indent {

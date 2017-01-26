@@ -1,6 +1,6 @@
 import { Factory } from 'meteor/dburles:factory';
 import faker from 'faker';
-import Groups from './collection';
+import Groups from '../../api/groups/collection';
 
 Factory.define('group', null, {
   name: () => faker.name.title(),

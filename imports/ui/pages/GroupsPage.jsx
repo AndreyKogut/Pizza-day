@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { groupsSubsManager } from '../../lib/subsManager';
 import Groups from '../../api/groups/collection';
-import GroupsList from '../components/GroupsList';
+import GroupsList from '../components/lists/GroupsList';
 
 const propTypes = {
   groups: PropTypes.arrayOf(Object),

@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
-import { menuSubsManager } from '../../lib/subsManager';
-import MenuPickerFilter from '../../ui/components/MenuPickerFilter';
-import Menu from '../../api/menu/collection';
+import { menuSubsManager } from '../../../lib/subsManager';
+import MenuPickerFilter from '../filters/MenuPickerFilter';
+import Menu from '../../../api/menu/collection';
 
 const propTypes = {
   items: PropTypes.arrayOf(Object),
@@ -140,7 +140,7 @@ class MenuPicker extends Component {
       return <div className="empty-list" />;
     }
 
-    return (<div className="m-auto mb--30">
+    return (<div className="m-auto">
       <MenuPickerFilter changeCallback={(filter) => { this.filterItems(filter); }} />
       <div className="mdl-grid">
         <div className="table-container" onScroll={this.scrollBottom}>

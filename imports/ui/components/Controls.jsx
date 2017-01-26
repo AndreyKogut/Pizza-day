@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { EventMenuPicker } from '../../ui/components/MenuPicker';
-import MenuPickerGlobalListContainer from '../../ui/components/MenuPickerGlobal';
-import UserPickerContainer from '../../ui/components/UserPicker';
-import ImagePicker from '../../ui/components/ImagePicker';
+import { EventMenuPicker } from './pickers/MenuPicker';
+import MenuPickerGlobalListContainer from './pickers/MenuPickerGlobal';
+import UserPickerContainer from './pickers/UserPicker';
+import ImagePicker from './pickers/ImagePicker';
 
 const propTypes = {
   controls: PropTypes.objectOf(Object),
@@ -158,7 +158,7 @@ class Controls extends Component {
       { this.state.type ?
         <div className="controls__picker mdl-shadow--24dp">
           { template }
-          <div className="ta-r">
+          <div className="ta-r controls__buttons">
             <button
               type="button"
               className="mdl-button mdl-js-button mdl-button--raised"

@@ -1,6 +1,6 @@
 import { Factory } from 'meteor/dburles:factory';
 import faker from 'faker';
-import Events from './collection';
+import Events from '../../api/events/collection';
 
 Factory.define('events', Events, {
   name: () => faker.name.title(),

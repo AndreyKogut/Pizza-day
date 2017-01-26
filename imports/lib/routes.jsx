@@ -26,9 +26,8 @@ FlowRouter.triggers.enter([() => {
 
   const url = Meteor.absoluteUrl();
   const protocol = url.slice(0, 5);
-  const host = window.location.hostname;
 
-  if (protocol !== 'https' && host !== 'localhost') {
+  if (protocol !== 'https') {
     window.location.protocol = 'https';
   }
 }]);

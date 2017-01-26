@@ -6,9 +6,9 @@ import { groupsSubsManager } from '../../lib/subsManager';
 import Groups from '../../api/groups/collection';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 import Controls from '../components/Controls';
-import { GroupMenuList } from '../components/MenuList';
-import { GroupEventsList } from '../components/EventsList';
-import { GroupUsersList } from '../components/UsersList';
+import { GroupMenuList } from '../components/lists/MenuList';
+import { GroupEventsList } from '../components/lists/EventsList';
+import { GroupUsersList } from '../components/lists/UsersList';
 
 const propTypes = {
   id: PropTypes.string,
@@ -81,6 +81,10 @@ const GroupPage = (props) => {
 
       return true;
     };
+  }
+
+  if (!props.groupLoading && !props.id) {
+    return <div className="not-found">Group not found</div>;
   }
 
   if (props.groupLoading) {
@@ -229,13 +233,14 @@ const GroupPageContainer = createContainer(({ id }) => {
     _id: Meteor.userId(),
     verified: false,
   }));
+
   const isMember = _.some(members, member => _.isEqual(member, {
     _id: Meteor.userId(),
     verified: true,
   }));
 
   return {
-    id,
+    id: groupData._id,
     membersIds,
     ...groupData,
     isMember,

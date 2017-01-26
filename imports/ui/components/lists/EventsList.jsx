@@ -2,8 +2,8 @@ import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
-import { eventsSubsManager } from '../../lib/subsManager';
-import Events from '../../api/events/collection';
+import { eventsSubsManager } from '../../../lib/subsManager';
+import Events from '../../../api/events/collection';
 
 const propTypes = {
   items: PropTypes.arrayOf(Object),
