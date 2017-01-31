@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
+import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-import { menuSubsManager } from '../../../lib/subsManager';
 import Menu from '../../../api/menu/collection';
 
 const propTypes = {
@@ -61,7 +61,7 @@ const MenuList = (props) => {
 
 const GroupMenuList =
   createContainer(({ id, showItems = [] }) => {
-    const handleMenu = menuSubsManager.subscribe('GroupMenu', id);
+    const handleMenu = Meteor.subscribe('GroupMenu', id);
 
     const menuItems = Menu.find({ _id: { $in: showItems } }).fetch();
     return {
@@ -72,7 +72,7 @@ const GroupMenuList =
 
 const EventMenuList =
   createContainer(({ id, showItems = [], ...props }) => {
-    const handleMenu = menuSubsManager.subscribe('EventMenu', id);
+    const handleMenu = Meteor.subscribe('EventMenu', id);
 
     const menuItems = Menu.find({ _id: { $in: showItems } }).fetch();
     return {

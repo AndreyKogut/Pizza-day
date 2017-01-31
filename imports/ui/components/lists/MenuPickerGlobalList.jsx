@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
+import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-import { menuSubsManager } from '../../../lib/subsManager';
 import Menu from '../../../api/menu/collection';
 
 const propTypes = {
@@ -87,7 +87,7 @@ MenuPickerGlobalList.defaultProps = defaultProps;
 
 const MenuPickerGlobalListContainer =
   createContainer(({ hideItems = [], getMenuList, filter, limiter, ...props }) => {
-    const handleMenu = menuSubsManager.subscribe('MenuFiltered', { hideItems, filter, limiter });
+    const handleMenu = Meteor.subscribe('MenuFiltered', { hideItems, filter, limiter });
     const menuItems = Menu.find({
       _id: { $nin: hideItems },
       name: { $regex: `.*${filter.name}.*` },

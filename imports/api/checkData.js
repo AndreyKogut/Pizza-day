@@ -1,19 +1,11 @@
 import moment from 'moment';
+import { Match } from 'meteor/check';
 
-const notEmpty =
-  item => !_.isEmpty(item);
-const dateIsValid =
-  date => moment(date).isValid();
-const dateNotPass =
-  (date) => {
-    if (moment(date).isValid()) {
-      const requestDate = new Date(date);
-      const currentDate = new Date();
-
-      return requestDate.getTime() > currentDate.getTime();
-    }
-
-    return false;
-  };
+const notEmpty = () =>
+  Match.Where(value => !_.isEmpty(value));
+const dateIsValid = () =>
+  Match.Where(value => moment(value).isValid());
+const dateNotPass = () =>
+  Match.Where(value => moment(new Date()).isBefore(value));
 
 export { notEmpty, dateIsValid, dateNotPass };

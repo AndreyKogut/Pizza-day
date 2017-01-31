@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { groupsSubsManager } from '../../lib/subsManager';
 import Groups from '../../api/groups/collection';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 import Controls from '../components/Controls';
@@ -225,7 +224,7 @@ GroupPage.propTypes = propTypes;
 Event.defaultProps = defaultProps;
 
 const GroupPageContainer = createContainer(({ id }) => {
-  const handleGroup = groupsSubsManager.subscribe('Group', id);
+  const handleGroup = Meteor.subscribe('Group', id);
 
   const { members, ...groupData } = Groups.findOne(id) || {};
   const membersIds = _.pluck(members, '_id');

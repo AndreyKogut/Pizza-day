@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-import { groupsSubsManager } from '../../lib/subsManager';
 import Groups from '../../api/groups/collection';
 import GroupsList from '../components/lists/GroupsList';
 
@@ -32,7 +31,7 @@ GroupsPage.propTypes = propTypes;
 GroupsPage.defaultProps = defaultProps;
 
 const GroupsPageContainer = createContainer(() => {
-  const handleGroups = groupsSubsManager.subscribe('Groups');
+  const handleGroups = Meteor.subscribe('Groups');
 
   return {
     groups: Groups.find({ $or: [

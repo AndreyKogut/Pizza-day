@@ -59,7 +59,11 @@ function handleMethodsCallbacks(handledFunction = () => {}) {
                 break;
               }
               case 'Not member': {
-                errorText = 'You should be participant';
+                errorText = 'You should be group member';
+                break;
+              }
+              case 'Not participant': {
+                errorText = 'You should be event participant';
                 break;
               }
               case 'Unauthorized': {

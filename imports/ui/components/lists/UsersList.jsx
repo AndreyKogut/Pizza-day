@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-import { usersSubsManager } from '../../../lib/subsManager';
 import UserListItem from '../items/UserListItem';
 
 const propTypes = {
@@ -64,7 +63,7 @@ const UsersList = (props) => {
 };
 
 const GroupUsersList = createContainer(({ id, showItems, ...params }) => {
-  const handleUsers = usersSubsManager.subscribe('GroupMembers', id);
+  const handleUsers = Meteor.subscribe('GroupMembers', id);
 
   return {
     items: Meteor.users.find({ _id: { $in: showItems } }).fetch(),
@@ -74,7 +73,7 @@ const GroupUsersList = createContainer(({ id, showItems, ...params }) => {
 }, UsersList);
 
 const EventUsersList = createContainer(({ eventId, showItems, ...params }) => {
-  const handleUsers = usersSubsManager.subscribe('EventParticipant', eventId);
+  const handleUsers = Meteor.subscribe('EventParticipant', eventId);
 
   return {
     items: Meteor.users.find({ _id: { $in: showItems } }).fetch(),

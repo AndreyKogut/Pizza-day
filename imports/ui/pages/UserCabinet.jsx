@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { usersSubsManager } from '../../lib/subsManager';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 import showMessage from '../../helpers/showMessage';
 import Controls from '../components/Controls';
@@ -206,7 +205,7 @@ const UserCabinet = (props) => {
 UserCabinet.propTypes = propTypes;
 
 const UserCabinetContainer = createContainer(({ id }) => {
-  const handleUser = usersSubsManager.subscribe('User', id);
+  const handleUser = Meteor.subscribe('User', id);
 
   const user = Meteor.users.findOne(id) || {};
 

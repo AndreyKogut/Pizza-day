@@ -10,9 +10,9 @@ Meteor.methods({
   'menu.insert': function insert(requestData) {
     const requestDataStructure = Match.Where((data) => {
       check(data, {
-        name: Match.Where(notEmpty),
-        description: Match.Where(notEmpty),
-        mass: Match.Where(notEmpty),
+        name: notEmpty(),
+        description: notEmpty(),
+        mass: notEmpty(),
         price: Number,
       });
 
@@ -52,7 +52,7 @@ Meteor.publish('MenuFiltered', (request) => {
 });
 
 Meteor.publish('GroupMenu', function publishGroupMenu(id) {
-  check(id, Match.Where(notEmpty));
+  check(id, notEmpty());
 
   if (!this.userId) {
     return this.ready();
@@ -64,7 +64,7 @@ Meteor.publish('GroupMenu', function publishGroupMenu(id) {
 });
 
 Meteor.publish('GroupMenuForEvent', function publishGroupMenu(id) {
-  check(id, Match.Where(notEmpty));
+  check(id, notEmpty());
 
   if (!this.userId) {
     return this.ready();
@@ -77,7 +77,7 @@ Meteor.publish('GroupMenuForEvent', function publishGroupMenu(id) {
 });
 
 Meteor.publish('EventMenu', function publishMenu(id) {
-  check(id, Match.Where(notEmpty));
+  check(id, notEmpty());
 
   if (!this.userId) {
     return this.ready();
@@ -89,7 +89,7 @@ Meteor.publish('EventMenu', function publishMenu(id) {
 });
 
 Meteor.publish('OrderMenu', function publishOrder(id) {
-  check(id, Match.Where(notEmpty));
+  check(id, notEmpty());
 
   const order = Orders.findOne({ _id: id }) || {};
 

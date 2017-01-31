@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
+import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-import { menuSubsManager } from '../../../lib/subsManager';
 import MenuPickerFilter from '../filters/MenuPickerFilter';
 import Menu from '../../../api/menu/collection';
 
@@ -170,7 +170,7 @@ MenuPicker.defaultProps = defaultProps;
 
 const OrderMenuPicker =
   createContainer(({ defaultValue = [], showItems = [], id, getMenuList }) => {
-    const handleMenu = menuSubsManager.subscribe('EventMenu', id);
+    const handleMenu = Meteor.subscribe('EventMenu', id);
     const itemsMap = new Map();
 
     _.each(defaultValue, ((value) => {
@@ -191,7 +191,7 @@ const OrderMenuPicker =
   }, MenuPicker);
 
 const EventMenuPicker = createContainer(({ eventId, hideItems, getMenuList }) => {
-  const handleMenu = menuSubsManager.subscribe('GroupMenuForEvent', eventId);
+  const handleMenu = Meteor.subscribe('GroupMenuForEvent', eventId);
 
   return {
     items: Menu.find({ _id: { $nin: hideItems } }).fetch(),
@@ -202,7 +202,7 @@ const EventMenuPicker = createContainer(({ eventId, hideItems, getMenuList }) =>
 }, MenuPicker);
 
 const GroupMenuPicker = createContainer(({ groupId, getMenuList, showItems = [] }) => {
-  const handleMenu = menuSubsManager.subscribe('GroupMenu', groupId);
+  const handleMenu = Meteor.subscribe('GroupMenu', groupId);
 
   return {
     items: Menu.find({ _id: { $in: showItems } }).fetch(),

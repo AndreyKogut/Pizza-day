@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { eventsSubsManager } from '../../lib/subsManager';
 import Events from '../../api/events/collection';
 import { EventUsersList } from '../components/lists/UsersList';
 import { EventMenuList } from '../components/lists/MenuList';
@@ -157,7 +156,7 @@ class Coupons extends Component {
 Coupons.propTypes = propTypes;
 
 const CouponsContainer = createContainer(({ id, eventId }) => {
-  eventsSubsManager.subscribe('Event', eventId);
+  Meteor.subscribe('Event', eventId);
 
   const event = Events.findOne(eventId) || {};
   const eventParticipantsIds = _.pluck(event.participants, '_id');

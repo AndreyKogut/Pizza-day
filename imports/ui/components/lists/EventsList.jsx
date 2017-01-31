@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
+import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
-import { eventsSubsManager } from '../../../lib/subsManager';
 import Events from '../../../api/events/collection';
 
 const propTypes = {
@@ -50,7 +50,7 @@ const EventsList = ({ items, eventsLoading }) => {
 };
 
 const GroupEventsList = createContainer(({ id }) => {
-  const handleEvents = eventsSubsManager.subscribe('GroupEvents', id);
+  const handleEvents = Meteor.subscribe('GroupEvents', id);
 
   return {
     items: Events.find({ groupId: id }).fetch(),

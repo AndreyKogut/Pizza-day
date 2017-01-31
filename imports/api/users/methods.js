@@ -4,6 +4,7 @@ import { check, Match } from 'meteor/check';
 import { notEmpty } from '../checkData';
 import Groups from '../../api/groups/collection';
 import Events from '../../api/events/collection';
+import { validateUser } from '../permitHelpers';
 
 Accounts.onCreateUser((publicData, privateData) => {
   if (privateData.services.google) {
@@ -40,9 +41,9 @@ Meteor.methods({
     const requestDataStructure = Match.Where((data) => {
       try {
         check(data, {
-          email: Match.Where(notEmpty),
-          password: Match.Where(notEmpty),
-          name: Match.Where(notEmpty),
+          email: notEmpty(),
+          password: notEmpty(),
+          name: notEmpty(),
           about: Match.Maybe(String),
           company: Match.Maybe(String),
           position: Match.Maybe(String),
@@ -94,13 +95,7 @@ Meteor.methods({
       return true;
     });
 
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
-
-    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
-      throw new Meteor.Error(403, 'Unverified');
-    }
+    validateUser(this.userId);
 
     check(requestData, requestDataStructure);
 
@@ -124,9 +119,7 @@ Meteor.methods({
   },
 
   'user.resendVerificationLink': function resend() {
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
+    validateUser(this.userId);
 
     try {
       Accounts.sendVerificationEmail(this.userId);
@@ -136,19 +129,13 @@ Meteor.methods({
   },
 
   'user.userPasswordResetLink': function passReset() {
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
-
-    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
-      throw new Meteor.Error(403, 'Unverified');
-    }
+    validateUser(this.userId);
 
     Accounts.sendResetPasswordEmail(this.userId);
   },
 
   'user.forgotPasswordResetLink': function passReset(email) {
-    check(email, Match.Where(notEmpty));
+    check(email, notEmpty());
 
     const user = Meteor.users.findOne({ 'emails.address': email });
 
@@ -161,7 +148,7 @@ Meteor.methods({
 });
 
 Meteor.publish('User', function publishUser(id) {
-  check(id, Match.Where(notEmpty));
+  check(id, notEmpty());
 
   if (!this.userId) {
     return this.ready();
@@ -209,7 +196,7 @@ Meteor.publish('UsersListFilter', function publishUsers(requestData) {
 });
 
 Meteor.publish('GroupMembers', function publishGroupMembers(groupId) {
-  check(groupId, Match.Where(notEmpty));
+  check(groupId, notEmpty());
 
   if (!this.userId) {
     return this.ready();
@@ -226,7 +213,7 @@ Meteor.publish('GroupMembers', function publishGroupMembers(groupId) {
 });
 
 Meteor.publish('EventParticipant', function publishEventParticipants(eventId) {
-  check(eventId, Match.Where(notEmpty));
+  check(eventId, notEmpty());
 
   if (!this.userId) {
     return this.ready();

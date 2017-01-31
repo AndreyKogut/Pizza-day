@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { groupsSubsManager } from '../../lib/subsManager';
 import { GroupMenuPicker } from '../components/pickers/MenuPicker';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 import Groups from '../../api/groups/collection';
@@ -110,7 +109,7 @@ const CreateEvent = (props) => {
 CreateEvent.propTypes = propTypes;
 
 const CreateEventContainer = createContainer(({ groupId }) => {
-  const handleEvent = groupsSubsManager.subscribe('Group', groupId);
+  const handleEvent = Meteor.subscribe('Group', groupId);
 
   const group = Groups.findOne(groupId) || {};
 

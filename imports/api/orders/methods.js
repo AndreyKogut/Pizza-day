@@ -4,15 +4,20 @@ import { notEmpty } from '../checkData';
 import Events from '../events/collection';
 import Orders from './collection';
 import Menu from '../menu/collection';
+import {
+  validateUser,
+  isEventParticipant,
+  isOrderOwner,
+} from '../permitHelpers';
 
 Meteor.methods({
   'orders.insert': function orderInsert(requestData) {
     const requestDataStructure = Match.Where((data) => {
       try {
         check(data, {
-          eventId: Match.Where(notEmpty),
+          eventId: notEmpty(),
           menu: [{
-            _id: Match.Where(notEmpty),
+            _id: notEmpty(),
             count: Number,
           }],
         });
@@ -23,23 +28,13 @@ Meteor.methods({
       return true;
     });
 
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
-
-    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
-      throw new Meteor.Error(403, 'Unverified');
-    }
+    validateUser(this.userId);
 
     check(requestData, requestDataStructure);
 
     const { eventId, ...orderData } = requestData;
-    const eventData = Events.findOne({ _id: eventId });
-    const isParticipant = _.some(eventData.participants, item => item._id === this.userId);
 
-    if (!isParticipant) {
-      throw new Meteor.Error(403, 'Not member');
-    }
+    isEventParticipant(this.userId, eventId);
 
     const orderMenu = _.pluck(requestData.menu, '_id');
 
@@ -58,28 +53,18 @@ Meteor.methods({
   },
 
   'orders.remove': function removeOrder(id) {
-    check(id, Match.Where(notEmpty));
+    check(id, notEmpty());
 
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
+    validateUser(this.userId);
 
-    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
-      throw new Meteor.Error(403, 'Unverified');
-    }
-
-    const order = Orders.findOne({ _id: id });
-
-    if (order.userId !== this.userId) {
-      throw new Meteor.Error(403, 'Not owner');
-    }
+    isOrderOwner(this.userId, id);
 
     Orders.remove({ _id: id });
   },
 });
 
 Meteor.publish('Order', function orderInfo(id) {
-  check(id, Match.Where(notEmpty));
+  check(id, notEmpty());
 
   if (!this.userId) {
     return this.ready();

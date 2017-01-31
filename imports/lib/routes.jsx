@@ -3,7 +3,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { mount } from 'react-mounter';
-import { clearAll } from './subsManager';
 import UserCabinetContainer from '../ui/pages/UserCabinet';
 import SignUp from '../ui/pages/SignUp';
 import Login from '../ui/pages/Login';
@@ -65,7 +64,6 @@ Accounts.onLogin(() => {
 
 Accounts.onLogout(() => {
   FlowRouter.go('/login');
-  clearAll();
 });
 
 publicRouts.route('/login', {

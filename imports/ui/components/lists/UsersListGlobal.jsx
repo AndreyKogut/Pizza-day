@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import { usersSubsManager } from '../../../lib/subsManager';
 import UserListItem from '../items/UserListItem';
 
 const propTypes = {
@@ -66,7 +65,7 @@ UsersListGlobal.defaultProps = defaultProps;
 
 const UsersListGlobalContainer =
   createContainer(({ hideItems = [], filter, limiter, ...props }) => {
-    const handleUsers = usersSubsManager.subscribe('UsersListFilter', { filter, limiter });
+    const handleUsers = Meteor.subscribe('UsersListFilter', { filter, limiter });
     const list = Meteor.users.find({
       _id: { $nin: hideItems },
       'profile.name': { $regex: `.*${filter.name}.*` },

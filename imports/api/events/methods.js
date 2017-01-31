@@ -5,15 +5,23 @@ import Groups from '../groups/collection';
 import Orders from '../orders/collection';
 import sendOrders from '../sendOrders';
 import { notEmpty, dateNotPass } from '../checkData';
+import {
+  validateUser,
+  isUserGroupOwner,
+  isUserEventOwner,
+  isEventOrdered,
+  isEventUserExistInGroup,
+  isEventOwner,
+} from '../permitHelpers';
 
 Meteor.methods({
   'events.insert': function insert(requestData) {
     const requestDataStructure = Match.Where((data) => {
       try {
         check(data, {
-          name: Match.Where(notEmpty),
-          groupId: Match.Where(notEmpty),
-          date: Match.Where(dateNotPass),
+          name: notEmpty(),
+          groupId: notEmpty(),
+          date: dateNotPass(),
           menu: Match.Maybe([String]),
           title: Match.Maybe(String),
         });
@@ -24,21 +32,11 @@ Meteor.methods({
       return true;
     });
 
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
-
-    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
-      throw new Meteor.Error(403, 'Unverified');
-    }
+    validateUser(this.userId);
 
     check(requestData, requestDataStructure);
 
-    const groupCreatorId = Groups.findOne({ _id: requestData.groupId }).creator;
-
-    if (groupCreatorId !== this.userId) {
-      throw new Meteor.Error(403, 'Not owner');
-    }
+    isUserGroupOwner(this.userId, requestData.groupId);
 
     return Events.insert({
       participants: [],
@@ -53,10 +51,10 @@ Meteor.methods({
     const requestDataStructure = Match.Where((data) => {
       try {
         check(data, {
-          id: Match.Where(notEmpty),
-          name: Match.Maybe(Match.Where(notEmpty)),
-          date: Match.Maybe(Match.Where(dateNotPass)),
-          title: Match.Maybe(Match.Where(notEmpty)),
+          id: notEmpty(),
+          name: Match.Maybe(notEmpty()),
+          date: Match.Maybe(dateNotPass()),
+          title: Match.Maybe(notEmpty()),
         });
       } catch (err) {
         throw new Meteor.Error(400, `Invalid ${err.path}`);
@@ -65,25 +63,13 @@ Meteor.methods({
       return true;
     });
 
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
-
-    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
-      throw new Meteor.Error(403, 'Unverified');
-    }
+    validateUser(this.userId);
 
     check(requestData, requestDataStructure);
 
     const { id, ...fieldsToUpdate } = requestData;
 
-    const event = Events.findOne({
-      _id: id,
-    });
-
-    if (event.creator !== this.userId) {
-      throw new Meteor.Error(403, 'Not owner');
-    }
+    isUserEventOwner(this.userId, id);
 
     Events.update({ _id: requestData.id }, { $set: fieldsToUpdate });
   },
@@ -92,7 +78,7 @@ Meteor.methods({
     const requestDataStructure = Match.Where((data) => {
       try {
         check(data, {
-          id: Match.Where(notEmpty),
+          id: notEmpty(),
           status: Match.Where((status) => {
             const requiredStatus = ['ordering', 'ordered', 'delivering', 'delivered'];
 
@@ -106,21 +92,11 @@ Meteor.methods({
       return true;
     });
 
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
-
-    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
-      throw new Meteor.Error(403, 'Unverified');
-    }
+    validateUser(this.userId);
 
     check(requestData, requestDataStructure);
 
-    const event = Events.findOne({ _id: requestData.id });
-
-    if (event.creator !== this.userId) {
-      throw new Meteor.Error(403, 'Not owner');
-    }
+    isUserEventOwner(this.userId, requestData.id);
 
     Events.update({ _id: requestData.id }, { $set: { status: requestData.status } });
 
@@ -135,31 +111,13 @@ Meteor.methods({
   },
 
   'events.joinEvent': function addParticipant(id) {
-    check(id, Match.Where(notEmpty));
+    check(id, notEmpty());
 
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
+    validateUser(this.userId);
 
-    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
-      throw new Meteor.Error(403, 'Unverified');
-    }
+    isEventOrdered(id);
 
-    const event = Events.findOne({ _id: id });
-    if (event.status !== 'ordering') {
-      throw new Meteor.Error(403, 'Event ordered');
-    }
-
-    const groupMembers = Groups.findOne({ _id: event.groupId }).members;
-
-    const isMember = _.some(groupMembers, member => _.isEqual(member, {
-      _id: this.userId,
-      verified: true,
-    }));
-
-    if (!isMember) {
-      throw new Meteor.Error(403, 'Not member');
-    }
+    isEventUserExistInGroup(this.userId, id);
 
     Events.update({ _id: id },
       { $push: { participants: { _id: this.userId, order: '', ordered: false, coupons: [] } } },
@@ -169,51 +127,30 @@ Meteor.methods({
   'events.addMenuItems': function addMenuItems(requestData) {
     const requestDataStructure = Match.Where((data) => {
       check(data, {
-        id: Match.Where(notEmpty),
-        items: [Match.Where(notEmpty)],
+        id: notEmpty(),
+        items: [notEmpty()],
       });
 
       return true;
     });
 
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
-
-    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
-      throw new Meteor.Error(403, 'Unverified');
-    }
+    validateUser(this.userId);
 
     check(requestData, requestDataStructure);
 
-    const event = Events.findOne({ _id: requestData.id });
-    if (event.status !== 'ordering') {
-      throw new Meteor.Error(403, 'Event ordered');
-    }
+    isEventOrdered(requestData.id);
 
-    if (event.creator !== this.userId) {
-      throw new Meteor.Error(403, 'Not owner');
-    }
+    isEventOwner(this.userId, requestData.id);
 
     Events.update({ _id: requestData.id }, { $push: { menu: { $each: requestData.items } } });
   },
 
   'events.leaveEvent': function deleteParticipant(eventId) {
-    check(eventId, Match.Where(notEmpty));
+    check(eventId, notEmpty());
 
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
+    validateUser(this.userId);
 
-    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
-      throw new Meteor.Error(403, 'Unverified');
-    }
-
-    const event = Events.findOne({ _id: eventId });
-
-    if (event.status !== 'ordering') {
-      throw new Meteor.Error(403, 'Event ordered');
-    }
+    isEventOrdered(eventId);
 
     Events.update({ _id: eventId },
       { $pull: { participants: { _id: this.userId } } },
@@ -221,37 +158,26 @@ Meteor.methods({
   },
 
   'events.removeOrdering': function orderEventItems(eventId) {
-    check(eventId, Match.Where(notEmpty));
+    check(eventId, notEmpty());
 
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
+    validateUser(this.userId);
 
-    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
-      throw new Meteor.Error(403, 'Unverified');
-    }
-
-    const event = Events.findOne({ _id: eventId });
-    if (event.status !== 'ordering') {
-      throw new Meteor.Error(403, 'Event ordered');
-    }
-
-    const eventParticipant = _.findWhere(event.participants, { _id: this.userId });
+    isEventOrdered(eventId);
 
     Events.update({ _id: eventId, participants: { $elemMatch: { _id: this.userId } } },
       { $set: { 'participants.$.ordered': false, 'participants.$.order': '' } },
     );
 
-    Orders.remove({ _id: eventParticipant.order });
+    Orders.remove({ _id: this.userId });
   },
 
   'events.setCoupon': function setCoupon(requestData) {
     const requestDataStructure = Match.Where((data) => {
       try {
         check(data, {
-          eventId: Match.Where(notEmpty),
-          userId: Match.Where(notEmpty),
-          itemId: Match.Where(notEmpty),
+          eventId: notEmpty(),
+          userId: notEmpty(),
+          itemId: notEmpty(),
           freeItems: Match.Maybe(Number),
           discount: Match.Maybe(Number),
         });
@@ -266,27 +192,15 @@ Meteor.methods({
       return true;
     });
 
-    if (!this.userId) {
-      throw new Meteor.Error(403, 'Unauthorized');
-    }
-
-    if (!Meteor.users.findOne(this.userId).emails[0].verified) {
-      throw new Meteor.Error(403, 'Unverified');
-    }
+    validateUser(this.userId);
 
     check(requestData, requestDataStructure);
 
     const { eventId, userId, ...coupon } = requestData;
 
-    const event = Events.findOne(eventId) || {};
+    isEventOwner(this.userId, eventId);
 
-    if (this.userId !== event.creator) {
-      throw new Meteor.Error(403, 'Not owner');
-    }
-
-    if (event.status !== 'ordering') {
-      throw new Meteor.Error(403, 'Event ordered');
-    }
+    isEventOrdered(eventId);
 
     const { itemId, ...discounts } = coupon;
 
@@ -304,7 +218,7 @@ Meteor.methods({
 });
 
 Meteor.publish('GroupEvents', function groupEvents(id) {
-  check(id, Match.Where(notEmpty));
+  check(id, notEmpty());
 
   if (!this.userId) {
     return this.ready();
@@ -322,7 +236,7 @@ Meteor.publish('Events', function getEvents() {
 });
 
 Meteor.publish('Event', function publishEvent(id) {
-  check(id, Match.Where(notEmpty));
+  check(id, notEmpty());
 
   if (!this.userId) {
     return this.ready();

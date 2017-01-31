@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { createContainer } from 'meteor/react-meteor-data';
 import moment from 'moment';
-import { eventsSubsManager } from '../../lib/subsManager';
 import handleMethodsCallbacks from '../../helpers/handleMethodsCallbacks';
 import { OrderMenuPicker } from '../components/pickers/MenuPicker';
 import { OrderInfoContainer } from '../components/OrderInfo';
@@ -248,7 +247,7 @@ EventPage.propTypes = propTypes;
 EventPage.defaultProps = defaultProps;
 
 const EventPageContainer = createContainer(({ eventId }) => {
-  const handleEvent = eventsSubsManager.subscribe('Event', eventId);
+  const handleEvent = Meteor.subscribe('Event', eventId);
 
   const event = Events.findOne(eventId) || {};
 
